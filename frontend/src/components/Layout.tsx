@@ -15,19 +15,20 @@ function truncateAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`
 }
 
+const STARS = Array.from({ length: 30 }, (_, i) => ({
+  id: i,
+  left: `${Math.random() * 100}%`,
+  top: `${Math.random() * 100}%`,
+  delay: `${Math.random() * 5}s`,
+  duration: `${2 + Math.random() * 4}s`,
+  size: Math.random() > 0.7 ? 3 : 2,
+}))
+
 function StarField() {
-  const stars = Array.from({ length: 30 }, (_, i) => ({
-    id: i,
-    left: `${Math.random() * 100}%`,
-    top: `${Math.random() * 100}%`,
-    delay: `${Math.random() * 5}s`,
-    duration: `${2 + Math.random() * 4}s`,
-    size: Math.random() > 0.7 ? 3 : 2,
-  }))
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      {stars.map((star) => (
+      {STARS.map((star) => (
         <div
           key={star.id}
           className="star"
@@ -81,7 +82,7 @@ export function Layout() {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "gap-1.5 text-[#7B6F94] transition-all",
+                      "gap-1.5 text-muted-foreground transition-all",
                       isActive && "bg-oracle/10 text-oracle font-semibold"
                     )}
                   >
@@ -109,7 +110,7 @@ export function Layout() {
                 variant="outline"
                 size="sm"
                 onClick={disconnect}
-                className="border-oracle/20 text-[#7B6F94] hover:border-oracle/40 hover:text-foreground"
+                className="border-oracle/20 text-muted-foreground hover:border-oracle/40 hover:text-foreground"
               >
                 Disconnect
               </Button>

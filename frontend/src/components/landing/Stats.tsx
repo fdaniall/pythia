@@ -37,7 +37,7 @@ export function Stats() {
           <FadeIn key={stat.label} delay={i * 0.1}>
             <div className="flex flex-col items-center gap-1.5 text-center">
               <RevealText value={stat.value} color={stat.color} />
-              <span className="text-[11px] font-semibold uppercase tracking-[2px] text-[#44395A]">
+              <span className="text-[11px] font-semibold uppercase tracking-[2px] text-dim">
                 {stat.label}
               </span>
             </div>

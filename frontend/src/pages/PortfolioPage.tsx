@@ -79,7 +79,7 @@ export function PortfolioPage() {
             Portfolio
           </h1>
         </div>
-        <p className="text-[#7B6F94]">
+        <p className="text-muted-foreground">
           Your bets and winnings across all markets.
         </p>
       </div>
@@ -91,7 +91,7 @@ export function PortfolioPage() {
             <TrendingUp className="size-4 text-oracle" />
           </div>
           <div>
-            <p className="text-xs text-[#7B6F94]">Active Bets</p>
+            <p className="text-xs text-muted-foreground">Active Bets</p>
             <p className="text-lg font-semibold text-foreground">{activeBets.length}</p>
           </div>
         </div>
@@ -100,7 +100,7 @@ export function PortfolioPage() {
             <Trophy className="size-4 text-gold" />
           </div>
           <div>
-            <p className="text-xs text-[#7B6F94]">Total Winnings</p>
+            <p className="text-xs text-muted-foreground">Total Winnings</p>
             <p className="text-lg font-semibold text-gold">{totalWinnings} ETH</p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export function PortfolioPage() {
             <CheckCircle className="size-4 text-yes" />
           </div>
           <div>
-            <p className="text-xs text-[#7B6F94]">Win Rate</p>
+            <p className="text-xs text-muted-foreground">Win Rate</p>
             <p className="text-lg font-semibold text-yes">{winRate}%</p>
           </div>
         </div>
@@ -118,7 +118,7 @@ export function PortfolioPage() {
             <Wallet className="size-4 text-oracle-soft" />
           </div>
           <div>
-            <p className="text-xs text-[#7B6F94]">Total Wagered</p>
+            <p className="text-xs text-muted-foreground">Total Wagered</p>
             <p className="text-lg font-semibold text-foreground">5.8 ETH</p>
           </div>
         </div>
@@ -143,7 +143,7 @@ export function PortfolioPage() {
                       {bet.question}
                     </h3>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-[#7B6F94]">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Badge
                       variant={bet.position === "Yes" ? "success" : "destructive"}
                       className="text-[10px]"
@@ -151,7 +151,7 @@ export function PortfolioPage() {
                       {bet.position}
                     </Badge>
                     <span>{bet.amount}</span>
-                    <span className="text-[#44395A]">&middot;</span>
+                    <span className="text-dim">&middot;</span>
                     <span>{bet.deadline}</span>
                   </div>
                 </div>
@@ -166,7 +166,7 @@ export function PortfolioPage() {
                       <span className={cn("text-[10px] font-medium", config.color)}>{config.label}</span>
                     </div>
                   </div>
-                  <ArrowRight className="size-3.5 text-[#44395A] transition-colors group-hover:text-oracle" />
+                  <ArrowRight className="size-3.5 text-dim transition-colors group-hover:text-oracle" />
                 </div>
               </Link>
             )

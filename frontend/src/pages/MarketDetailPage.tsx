@@ -78,7 +78,7 @@ export function MarketDetailPage() {
     <div className="space-y-6">
       <Link
         to="/markets"
-        className="inline-flex items-center gap-1.5 text-sm text-[#7B6F94] transition-colors hover:text-oracle-soft"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-oracle-soft"
       >
         <ArrowLeft className="size-3.5" />
         Back to Markets
@@ -89,18 +89,18 @@ export function MarketDetailPage() {
         <h1 className="font-oracle text-oracle-gradient text-2xl italic leading-snug md:text-3xl">
           {market.question}
         </h1>
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[#7B6F94]">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <Badge variant="success" className="gap-1">
             <span className="animate-oracle-pulse size-1.5 rounded-full bg-yes" />
             Live
           </Badge>
           <span>Market #{id}</span>
-          <span className="text-[#44395A]">&middot;</span>
+          <span className="text-dim">&middot;</span>
           <span className="flex items-center gap-1">
             <Clock className="size-3" />
             {countdown.expired ? "Expired" : countdown.label + " left"}
           </span>
-          <span className="text-[#44395A]">&middot;</span>
+          <span className="text-dim">&middot;</span>
           <span className="flex items-center gap-1">
             <Users className="size-3" />
             {market.bettorCount} bettors
@@ -121,19 +121,19 @@ export function MarketDetailPage() {
 
             <div className="mt-6 grid grid-cols-3 gap-4">
               <div className="rounded-lg bg-[rgba(155,109,255,0.06)] p-3 text-center">
-                <p className="text-xs text-[#7B6F94]">Total Pool</p>
+                <p className="text-xs text-muted-foreground">Total Pool</p>
                 <p className="font-oracle mt-0.5 text-lg italic text-gold">
                   {parseFloat(formatEther(total)).toFixed(1)} ETH
                 </p>
               </div>
               <div className="rounded-lg bg-[rgba(34,197,94,0.06)] p-3 text-center">
-                <p className="text-xs text-[#7B6F94]">Yes Pool</p>
+                <p className="text-xs text-muted-foreground">Yes Pool</p>
                 <p className="mt-0.5 text-lg font-semibold text-yes">
                   {parseFloat(formatEther(market.totalYesPool)).toFixed(1)} ETH
                 </p>
               </div>
               <div className="rounded-lg bg-[rgba(239,68,68,0.06)] p-3 text-center">
-                <p className="text-xs text-[#7B6F94]">No Pool</p>
+                <p className="text-xs text-muted-foreground">No Pool</p>
                 <p className="mt-0.5 text-lg font-semibold text-no">
                   {parseFloat(formatEther(market.totalNoPool)).toFixed(1)} ETH
                 </p>
@@ -167,7 +167,7 @@ export function MarketDetailPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium text-foreground">{a.amount}</span>
-                    <span className="text-xs text-[#44395A]">{a.time}</span>
+                    <span className="text-xs text-dim">{a.time}</span>
                   </div>
                 </div>
               ))}
@@ -192,7 +192,7 @@ export function MarketDetailPage() {
                       entry.rank === 1 && "bg-gold/15 text-gold",
                       entry.rank === 2 && "bg-[#C0C0C0]/15 text-[#C0C0C0]",
                       entry.rank === 3 && "bg-[#CD7F32]/15 text-[#CD7F32]",
-                      entry.rank > 3 && "bg-oracle/10 text-[#7B6F94]",
+                      entry.rank > 3 && "bg-oracle/10 text-muted-foreground",
                     )}>
                       {entry.rank}
                     </span>
@@ -228,6 +228,7 @@ export function MarketDetailPage() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setPosition(true)}
+                  aria-pressed={position}
                   className={cn(
                     "flex flex-col items-center gap-0.5 rounded-lg border px-4 py-3 transition-all",
                     position
@@ -235,14 +236,15 @@ export function MarketDetailPage() {
                       : "border-[rgba(155,109,255,0.1)] bg-transparent hover:border-yes/20"
                   )}
                 >
-                  <TrendingUp className={cn("size-4", position ? "text-yes" : "text-[#7B6F94]")} />
-                  <span className={cn("text-sm font-semibold", position ? "text-yes" : "text-[#7B6F94]")}>Yes</span>
-                  <span className="text-[10px] text-[#7B6F94]">
+                  <TrendingUp className={cn("size-4", position ? "text-yes" : "text-muted-foreground")} />
+                  <span className={cn("text-sm font-semibold", position ? "text-yes" : "text-muted-foreground")}>Yes</span>
+                  <span className="text-[10px] text-muted-foreground">
                     {total > 0n ? Number((market.totalYesPool * 100n) / total) : 50}%
                   </span>
                 </button>
                 <button
                   onClick={() => setPosition(false)}
+                  aria-pressed={!position}
                   className={cn(
                     "flex flex-col items-center gap-0.5 rounded-lg border px-4 py-3 transition-all",
                     !position
@@ -250,9 +252,9 @@ export function MarketDetailPage() {
                       : "border-[rgba(155,109,255,0.1)] bg-transparent hover:border-no/20"
                   )}
                 >
-                  <TrendingDown className={cn("size-4", !position ? "text-no" : "text-[#7B6F94]")} />
-                  <span className={cn("text-sm font-semibold", !position ? "text-no" : "text-[#7B6F94]")}>No</span>
-                  <span className="text-[10px] text-[#7B6F94]">
+                  <TrendingDown className={cn("size-4", !position ? "text-no" : "text-muted-foreground")} />
+                  <span className={cn("text-sm font-semibold", !position ? "text-no" : "text-muted-foreground")}>No</span>
+                  <span className="text-[10px] text-muted-foreground">
                     {total > 0n ? Number((market.totalNoPool * 100n) / total) : 50}%
                   </span>
                 </button>
@@ -260,7 +262,7 @@ export function MarketDetailPage() {
 
               {/* Amount input */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#7B6F94]" htmlFor="bet-amount">
+                <label className="text-sm font-medium text-muted-foreground" htmlFor="bet-amount">
                   Amount (ETH)
                 </label>
                 <Input
@@ -271,7 +273,7 @@ export function MarketDetailPage() {
                   min="0"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="border-oracle/10 bg-[rgba(155,109,255,0.04)] text-foreground placeholder:text-[#44395A] focus-visible:ring-oracle/30"
+                  className="border-oracle/10 bg-[rgba(155,109,255,0.04)] text-foreground placeholder:text-dim focus-visible:ring-oracle/30"
                 />
                 {/* Quick amount buttons */}
                 <div className="flex gap-1.5">
@@ -283,7 +285,7 @@ export function MarketDetailPage() {
                         "flex-1 rounded-md border py-1 text-xs font-medium transition-all",
                         amount === v
                           ? "border-oracle/30 bg-oracle/10 text-oracle"
-                          : "border-oracle/8 text-[#7B6F94] hover:border-oracle/20 hover:text-foreground"
+                          : "border-oracle/8 text-muted-foreground hover:border-oracle/20 hover:text-foreground"
                       )}
                     >
                       {v}
@@ -297,13 +299,13 @@ export function MarketDetailPage() {
               {/* Payout calculator */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-[#7B6F94]">Position</span>
+                  <span className="text-muted-foreground">Position</span>
                   <span className={cn("font-medium", position ? "text-yes" : "text-no")}>
                     {position ? "Yes" : "No"}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#7B6F94]">Platform fee</span>
+                  <span className="text-muted-foreground">Platform fee</span>
                   <span className="text-gold">2%</span>
                 </div>
 
@@ -311,18 +313,18 @@ export function MarketDetailPage() {
                   <>
                     <Separator className="bg-oracle/10" />
                     <div className="flex justify-between">
-                      <span className="flex items-center gap-1 text-[#7B6F94]">
+                      <span className="flex items-center gap-1 text-muted-foreground">
                         <Info className="size-3" />
                         Potential payout
                       </span>
                       <span className="font-semibold text-gold">{payout.net} ETH</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#7B6F94]">Profit</span>
+                      <span className="text-muted-foreground">Profit</span>
                       <span className="font-medium text-yes">+{payout.profit} ETH</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#7B6F94]">Multiplier</span>
+                      <span className="text-muted-foreground">Multiplier</span>
                       <span className="font-medium text-oracle">{payout.multiplier}x</span>
                     </div>
                   </>
@@ -343,7 +345,7 @@ export function MarketDetailPage() {
               {/* Auto-sign hint */}
               <div className="flex items-start gap-2 rounded-lg bg-oracle/[0.04] p-3">
                 <Zap className="mt-0.5 size-3.5 shrink-0 text-oracle" />
-                <p className="text-[12px] leading-relaxed text-[#7B6F94]">
+                <p className="text-[12px] leading-relaxed text-muted-foreground">
                   Enable <span className="font-medium text-oracle">auto-signing</span> for instant bets without wallet popups.
                 </p>
               </div>

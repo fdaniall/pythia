@@ -36,7 +36,7 @@ export function PoolBar({ yesPool, noPool, className, size = "sm" }: PoolBarProp
           style={{ width: `${noPercent}%` }}
         />
       </div>
-      <div className="flex justify-between text-xs text-[#7B6F94]">
+      <div className="flex justify-between text-xs text-muted-foreground">
         <span>{formatEther(yesPool)} ETH</span>
         <span>{formatEther(noPool)} ETH</span>
       </div>

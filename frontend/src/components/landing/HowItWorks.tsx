@@ -64,7 +64,7 @@ export function HowItWorks() {
                 </div>
 
                 {/* Number */}
-                <span className="mb-3 block text-[15px] font-semibold tracking-[2px] text-[#44395A]">
+                <span className="mb-3 block text-[15px] font-semibold tracking-[2px] text-dim">
                   {step.number}
                 </span>
 
@@ -74,13 +74,13 @@ export function HowItWorks() {
                 </h3>
 
                 {/* Description */}
-                <p className="mx-auto max-w-[280px] text-[15px] leading-[1.7] text-[#7B6F94]">
+                <p className="mx-auto max-w-[280px] text-[15px] leading-[1.7] text-muted-foreground">
                   {step.description}
                 </p>
 
                 {/* Preview */}
                 <div className="mt-6 flex flex-col items-center gap-2 border-t border-white/[0.05] pt-5">
-                  <span className="text-[11px] font-semibold uppercase tracking-[2px] text-[#44395A]">
+                  <span className="text-[11px] font-semibold uppercase tracking-[2px] text-dim">
                     {step.preview.label}
                   </span>
                   <span className={`text-[20px] font-bold tracking-[-0.5px] ${i === 2 ? "text-gold" : "text-oracle-soft"}`}>

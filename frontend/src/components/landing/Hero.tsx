@@ -71,7 +71,7 @@ export function Hero() {
         </FadeIn>
 
         <FadeIn delay={0.35}>
-          <p className="mt-4 max-w-[520px] text-[clamp(14px,1.5vw,18px)] leading-[1.7] text-[#7B6F94]">
+          <p className="mt-4 max-w-[520px] text-[clamp(14px,1.5vw,18px)] leading-[1.7] text-muted-foreground">
             The prediction market on Initia. Create markets, bet on outcomes
             with dynamic odds, and claim winnings — all on-chain, from any chain.
           </p>
@@ -92,7 +92,7 @@ export function Hero() {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-white/[0.1] bg-white/[0.03] text-[#7B6F94] backdrop-blur-sm hover:border-oracle/30 hover:text-foreground"
+                className="border-white/[0.1] bg-white/[0.03] text-muted-foreground backdrop-blur-sm hover:border-oracle/30 hover:text-foreground"
               >
                 How It Works
               </Button>
@@ -104,7 +104,7 @@ export function Hero() {
       {/* Scroll indicator */}
       <FadeIn delay={0.8} className="absolute bottom-4 z-[2] md:bottom-12">
         <motion.div style={{ opacity: scrollOpacity }} className="flex flex-col items-center gap-3">
-          <span className="text-[10px] font-semibold uppercase tracking-[4px] text-[#44395A]">
+          <span className="text-[10px] font-semibold uppercase tracking-[4px] text-dim">
             Scroll
           </span>
           <div className="scroll-line" />

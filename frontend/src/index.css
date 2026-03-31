@@ -56,6 +56,7 @@
     --color-gold: #FFD700;
     --color-gold-soft: #FFE566;
     --color-gold-deep: #D4A800;
+    --color-dim: #44395A;
     --color-yes: #22C55E;
     --color-yes-soft: #4ADE80;
     --color-no: #EF4444;
@@ -109,40 +110,7 @@
     --sidebar-ring: #9B6DFF;
 }
 
-/* Force dark — Pythia is always dark */
-.dark {
-    --background: #07050F;
-    --foreground: #E8E0F0;
-    --card: #151020;
-    --card-foreground: #E8E0F0;
-    --popover: #151020;
-    --popover-foreground: #E8E0F0;
-    --primary: #9B6DFF;
-    --primary-foreground: #07050F;
-    --secondary: #1A1425;
-    --secondary-foreground: #E8E0F0;
-    --muted: #1A1425;
-    --muted-foreground: #7B6F94;
-    --accent: #FFD700;
-    --accent-foreground: #07050F;
-    --destructive: #EF4444;
-    --border: rgba(155, 109, 255, 0.12);
-    --input: rgba(155, 109, 255, 0.15);
-    --ring: #9B6DFF;
-    --chart-1: #9B6DFF;
-    --chart-2: #FFD700;
-    --chart-3: #22C55E;
-    --chart-4: #EF4444;
-    --chart-5: #7B6F94;
-    --sidebar: #0F0B1A;
-    --sidebar-foreground: #E8E0F0;
-    --sidebar-primary: #9B6DFF;
-    --sidebar-primary-foreground: #07050F;
-    --sidebar-accent: #1A1425;
-    --sidebar-accent-foreground: #E8E0F0;
-    --sidebar-border: rgba(155, 109, 255, 0.12);
-    --sidebar-ring: #9B6DFF;
-}
+/* Pythia is always dark — :root values serve both light and dark */
 
 @layer base {
     * {

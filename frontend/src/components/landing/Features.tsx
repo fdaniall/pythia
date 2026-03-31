@@ -71,7 +71,7 @@ export function Features() {
           </h2>
         </FadeIn>
         <FadeIn delay={0.2}>
-          <p className="mt-4 max-w-[480px] text-[17px] leading-[1.7] text-[#7B6F94]">
+          <p className="mt-4 max-w-[480px] text-[17px] leading-[1.7] text-muted-foreground">
             Pythia integrates all three Initia-native features for an experience
             no other chain can offer.
           </p>
@@ -94,7 +94,7 @@ export function Features() {
                 <h3 className="mb-2 text-[18px] font-semibold text-foreground transition-colors group-hover:text-white">
                   {feature.title}
                 </h3>
-                <p className="text-[15px] leading-[1.65] text-[#7B6F94]">
+                <p className="text-[15px] leading-[1.65] text-muted-foreground">
                   {feature.description}
                 </p>
               </div>

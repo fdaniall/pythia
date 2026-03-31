@@ -193,6 +193,7 @@ contract PredictionMarket is ReentrancyGuard {
     }
 
     function transferOwnership(address newOwner) external onlyOwner {
+        if (newOwner == address(0)) revert TransferFailed();
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }

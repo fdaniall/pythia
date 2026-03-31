@@ -28,7 +28,7 @@ export function CreateMarketPage() {
             Create Market
           </h1>
         </div>
-        <p className="text-[#7B6F94]">
+        <p className="text-muted-foreground">
           Ask the oracle. Create a new prediction for the world to bet on.
         </p>
       </div>
@@ -42,32 +42,32 @@ export function CreateMarketPage() {
             </div>
             <div>
               <h2 className="text-sm font-semibold text-foreground">Market Details</h2>
-              <p className="text-xs text-[#7B6F94]">Ask a binary question with a clear deadline.</p>
+              <p className="text-xs text-muted-foreground">Ask a binary question with a clear deadline.</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-[#7B6F94]" htmlFor="question">
+                <label className="text-sm font-medium text-muted-foreground" htmlFor="question">
                   Question
                 </label>
-                <span className="text-xs text-[#44395A]">{question.length}/200</span>
+                <span className="text-xs text-dim">{question.length}/200</span>
               </div>
               <Input
                 id="question"
                 placeholder="Will BTC hit $100K by April 10?"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value.slice(0, 200))}
-                className="border-oracle/10 bg-[rgba(155,109,255,0.04)] text-foreground placeholder:text-[#44395A] focus-visible:ring-oracle/30"
+                className="border-oracle/10 bg-[rgba(155,109,255,0.04)] text-foreground placeholder:text-dim focus-visible:ring-oracle/30"
               />
-              <p className="text-xs text-[#44395A]">
+              <p className="text-xs text-dim">
                 Must be a yes/no question with a clear, verifiable outcome.
               </p>
             </div>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-1.5 text-sm font-medium text-[#7B6F94]" htmlFor="deadline">
+              <label className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground" htmlFor="deadline">
                 <Calendar className="size-3.5" />
                 Deadline
               </label>
@@ -76,9 +76,9 @@ export function CreateMarketPage() {
                 type="datetime-local"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="border-oracle/10 bg-[rgba(155,109,255,0.04)] text-foreground placeholder:text-[#44395A] focus-visible:ring-oracle/30"
+                className="border-oracle/10 bg-[rgba(155,109,255,0.04)] text-foreground placeholder:text-dim focus-visible:ring-oracle/30"
               />
-              <p className="text-xs text-[#44395A]">
+              <p className="text-xs text-dim">
                 Betting closes at this time. Market can be resolved after.
               </p>
             </div>
@@ -96,7 +96,7 @@ export function CreateMarketPage() {
 
         {/* Live preview */}
         <div className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[2px] text-[#44395A]">Live Preview</p>
+          <p className="text-xs font-semibold uppercase tracking-[2px] text-dim">Live Preview</p>
           <div className="glass-card rounded-xl p-5">
             <div className="mb-3 flex items-start justify-between gap-2">
               <h3 className="font-oracle text-lg leading-snug italic text-foreground">
@@ -108,7 +108,7 @@ export function CreateMarketPage() {
               </Badge>
             </div>
 
-            <div className="mb-4 flex items-center gap-3 text-xs text-[#7B6F94]">
+            <div className="mb-4 flex items-center gap-3 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Clock className="size-3" />
                 {deadlineDate
@@ -116,14 +116,14 @@ export function CreateMarketPage() {
                   : "No deadline set"
                 }
               </span>
-              <span className="text-[#44395A]">&middot;</span>
+              <span className="text-dim">&middot;</span>
               <span>0 bettors</span>
             </div>
 
             <PoolBar yesPool={0n} noPool={0n} />
 
             <div className="mt-4 rounded-lg bg-oracle/[0.04] p-3">
-              <p className="text-center text-xs text-[#7B6F94]">
+              <p className="text-center text-xs text-muted-foreground">
                 This is how your market will look to bettors.
               </p>
             </div>
@@ -135,7 +135,7 @@ export function CreateMarketPage() {
               <Eye className="size-4 text-oracle" />
               Tips for good markets
             </h3>
-            <ul className="space-y-2 text-sm text-[#7B6F94]">
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex gap-2">
                 <span className="text-oracle">1.</span>
                 Be specific — "Will BTC hit $100K by April 10?" not "Will BTC go up?"

@@ -143,7 +143,7 @@ export function MarketsPage() {
             <Eye className="size-4 text-oracle" />
           </div>
           <div>
-            <p className="text-xs text-[#7B6F94]">Total Markets</p>
+            <p className="text-xs text-muted-foreground">Total Markets</p>
             <p className="text-lg font-semibold text-foreground">{MOCK_MARKETS.length}</p>
           </div>
         </div>
@@ -152,7 +152,7 @@ export function MarketsPage() {
             <TrendingUp className="size-4 text-yes" />
           </div>
           <div>
-            <p className="text-xs text-[#7B6F94]">Live Now</p>
+            <p className="text-xs text-muted-foreground">Live Now</p>
             <p className="text-lg font-semibold text-yes">{openCount}</p>
           </div>
         </div>
@@ -161,7 +161,7 @@ export function MarketsPage() {
             <Coins className="size-4 text-gold" />
           </div>
           <div>
-            <p className="text-xs text-[#7B6F94]">Total Volume</p>
+            <p className="text-xs text-muted-foreground">Total Volume</p>
             <p className="text-lg font-semibold text-gold">{parseFloat(formatEther(totalVolume)).toFixed(0)} ETH</p>
           </div>
         </div>
@@ -170,7 +170,7 @@ export function MarketsPage() {
             <Users className="size-4 text-oracle-soft" />
           </div>
           <div>
-            <p className="text-xs text-[#7B6F94]">Total Bettors</p>
+            <p className="text-xs text-muted-foreground">Total Bettors</p>
             <p className="text-lg font-semibold text-foreground">{totalBettors}</p>
           </div>
         </div>
@@ -179,16 +179,18 @@ export function MarketsPage() {
       {/* Search + Filter + Create */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Tabs */}
-        <div className="flex gap-1 rounded-xl bg-[rgba(155,109,255,0.04)] p-1">
+        <div role="tablist" className="flex gap-1 rounded-xl bg-[rgba(155,109,255,0.04)] p-1">
           {tabs.map((tab) => (
             <button
               key={tab.value}
+              role="tab"
+              aria-selected={activeTab === tab.value}
               onClick={() => setActiveTab(tab.value)}
               className={cn(
                 "rounded-lg px-3 py-1.5 text-sm font-medium transition-all",
                 activeTab === tab.value
                   ? "bg-oracle/15 text-oracle"
-                  : "text-[#7B6F94] hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               {tab.label}
@@ -199,12 +201,12 @@ export function MarketsPage() {
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[#44395A]" />
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-dim" />
             <Input
               placeholder="Search markets..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-8 w-52 border-oracle/10 bg-[rgba(155,109,255,0.04)] pl-8 text-sm placeholder:text-[#44395A] focus-visible:ring-oracle/30"
+              className="h-8 w-52 border-oracle/10 bg-[rgba(155,109,255,0.04)] pl-8 text-sm placeholder:text-dim focus-visible:ring-oracle/30"
             />
           </div>
 
@@ -233,7 +235,7 @@ export function MarketsPage() {
           <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-oracle/10">
             <Search className="size-5 text-oracle" />
           </div>
-          <p className="text-sm text-[#7B6F94]">No markets found. Try a different filter or search.</p>
+          <p className="text-sm text-muted-foreground">No markets found. Try a different filter or search.</p>
         </div>
       )}
     </div>

@@ -45,7 +45,7 @@ export function CTA() {
           {TRUST_BADGES.map((label) => (
             <span
               key={label}
-              className="rounded-full border border-white/[0.07] bg-white/[0.03] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[1.5px] text-[#44395A]"
+              className="rounded-full border border-white/[0.07] bg-white/[0.03] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[1.5px] text-dim"
             >
               {label}
             </span>

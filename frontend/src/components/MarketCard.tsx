@@ -42,17 +42,17 @@ export function MarketCard({ market }: MarketCardProps) {
         </div>
 
         {/* Meta row */}
-        <div className="mb-4 flex items-center gap-3 text-xs text-[#7B6F94]">
+        <div className="mb-4 flex items-center gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <Clock className="size-3" />
             {countdown.expired ? "Expired" : countdown.label}
           </span>
-          <span className="text-[#44395A]">&middot;</span>
+          <span className="text-dim">&middot;</span>
           <span className="flex items-center gap-1">
             <Users className="size-3" />
             {market.bettorCount ?? 0} bettors
           </span>
-          <span className="text-[#44395A]">&middot;</span>
+          <span className="text-dim">&middot;</span>
           <span className="text-gold font-medium">
             {parseFloat(formatEther(total)).toFixed(1)} ETH
           </span>

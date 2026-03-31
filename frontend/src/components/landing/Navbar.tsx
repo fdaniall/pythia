@@ -54,7 +54,7 @@ export function Navbar() {
               <button
                 key={link.href}
                 onClick={() => scrollTo(link.href)}
-                className="text-[14px] text-[#7B6F94] transition-colors hover:text-foreground"
+                className="text-[14px] text-muted-foreground transition-colors hover:text-foreground"
               >
                 {link.label}
               </button>
@@ -77,7 +77,7 @@ export function Navbar() {
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex size-9 items-center justify-center rounded-lg text-[#7B6F94] transition-colors hover:text-foreground md:hidden"
+            className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:hidden"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -92,7 +92,7 @@ export function Navbar() {
             <button
               key={link.href}
               onClick={() => scrollTo(link.href)}
-              className="font-oracle text-2xl italic text-[#7B6F94] transition-colors hover:text-foreground"
+              className="font-oracle text-2xl italic text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
             </button>
