@@ -1,3 +1,4 @@
+import { Navbar } from "@/components/landing/Navbar"
 import { Hero } from "@/components/landing/Hero"
 import { Stats } from "@/components/landing/Stats"
 import { HowItWorks } from "@/components/landing/HowItWorks"
@@ -8,9 +9,8 @@ import { Footer } from "@/components/landing/Footer"
 export function LandingPage() {
   return (
     <div className="bg-oracle-glow relative min-h-screen">
-      {/* Noise texture */}
       <div className="noise-overlay" />
-
+      <Navbar />
       <Hero />
       <Stats />
       <HowItWorks />

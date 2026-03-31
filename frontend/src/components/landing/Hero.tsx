@@ -47,34 +47,29 @@ export function Hero() {
           poster="/hero-poster.jpg"
           className="h-full w-full object-cover object-center md:hidden"
         />
-        {/* Overlay */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(7,5,15,0.3)_0%,rgba(7,5,15,0.7)_70%,rgba(7,5,15,0.95)_100%),linear-gradient(to_bottom,transparent_0%,transparent_60%,#07050F_100%)]" />
       </div>
 
       {/* Content */}
       <div className="relative z-[2] flex max-w-[800px] flex-col items-center px-4 text-center sm:px-6">
-        {/* Oracle eye icon */}
         <FadeIn>
           <div className="mb-6 flex size-16 items-center justify-center rounded-2xl border border-oracle/20 bg-oracle/5 backdrop-blur-sm">
             <Eye className="size-8 text-oracle" strokeWidth={1.5} />
           </div>
         </FadeIn>
 
-        {/* Title */}
         <FadeIn delay={0.1}>
           <h1 className="font-oracle text-[clamp(48px,12vw,120px)] font-normal italic leading-none tracking-tight text-white [text-shadow:0_0_80px_rgba(155,109,255,0.35),0_0_160px_rgba(155,109,255,0.1)]">
             Pythia
           </h1>
         </FadeIn>
 
-        {/* Tagline */}
         <FadeIn delay={0.2}>
           <p className="font-oracle mt-5 text-[clamp(18px,3vw,28px)] italic leading-[1.4] text-white/85">
             See the future. Bet on it.
           </p>
         </FadeIn>
 
-        {/* Description */}
         <FadeIn delay={0.35}>
           <p className="mt-4 max-w-[520px] text-[clamp(14px,1.5vw,18px)] leading-[1.7] text-[#7B6F94]">
             The prediction market on Initia. Create markets, bet on outcomes
@@ -82,7 +77,6 @@ export function Hero() {
           </p>
         </FadeIn>
 
-        {/* CTAs */}
         <FadeIn delay={0.5}>
           <div className="mt-10 flex items-center gap-4 max-[768px]:w-full max-[768px]:max-w-[280px] max-[768px]:flex-col">
             <Link to="/markets">
@@ -94,17 +88,13 @@ export function Hero() {
                 <ArrowRight className="size-4" />
               </Button>
             </Link>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="#how-it-works">
               <Button
                 variant="outline"
                 size="lg"
                 className="border-white/[0.1] bg-white/[0.03] text-[#7B6F94] backdrop-blur-sm hover:border-oracle/30 hover:text-foreground"
               >
-                Read Docs
+                How It Works
               </Button>
             </a>
           </div>

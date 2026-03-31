@@ -8,6 +8,7 @@ export interface Market {
   outcome: boolean
   creator: string
   createdAt: bigint
+  bettorCount?: number
 }
 
 export interface Bet {
