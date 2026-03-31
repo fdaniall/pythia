@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-/// @title InitBet Prediction Market
+/// @title Pythia Prediction Market
 /// @notice Binary prediction markets on Initia appchain
 contract PredictionMarket is ReentrancyGuard {
     struct Market {

@@ -23,7 +23,7 @@ export function Layout() {
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-            <span className="text-primary">InitBet</span>
+            <span className="text-primary">Pythia</span>
           </Link>
 
           <nav className="flex items-center gap-1">
