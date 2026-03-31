@@ -59,7 +59,7 @@ export function Hero() {
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h1 className="font-oracle text-[clamp(48px,12vw,120px)] font-normal italic leading-none tracking-tight text-white [text-shadow:0_0_80px_rgba(155,109,255,0.35),0_0_160px_rgba(155,109,255,0.1)]">
+          <h1 className="font-oracle text-oracle-shimmer text-[clamp(48px,12vw,120px)] font-normal italic leading-none tracking-tight [text-shadow:0_0_80px_rgba(155,109,255,0.35),0_0_160px_rgba(155,109,255,0.1)]">
             Pythia
           </h1>
         </FadeIn>

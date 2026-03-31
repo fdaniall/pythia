@@ -386,6 +386,59 @@
     100% { top: 100%; }
 }
 
+/* ── Flow Arrow Particles (HowItWorks connectors) ── */
+.flow-arrow {
+    width: 64px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(155, 109, 255, 0.4), rgba(155, 109, 255, 0.1));
+    position: relative;
+}
+
+.flow-arrow::before {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: -4px;
+    width: 8px;
+    height: 8px;
+    border-right: 1.5px solid var(--pythia-purple);
+    border-top: 1.5px solid var(--pythia-purple);
+    transform: rotate(45deg);
+}
+
+.flow-arrow-particle {
+    position: absolute;
+    top: -2.5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--pythia-purple);
+    box-shadow: 0 0 8px rgba(155, 109, 255, 0.6);
+    animation: arrow-flow 2.5s ease-in-out infinite;
+}
+
+@keyframes arrow-flow {
+    0% { left: 0; opacity: 0; }
+    20%, 80% { opacity: 1; }
+    100% { left: calc(100% - 6px); opacity: 0; }
+}
+
+/* ── Animated Shimmer Gradient Text ── */
+.text-oracle-shimmer {
+    background: linear-gradient(108deg,
+        #E8E0F0 0%, #B794FF 25%, #E8E0F0 50%, #FFE566 75%, #E8E0F0 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: oracle-text-shimmer 6s ease-in-out infinite alternate;
+}
+
+@keyframes oracle-text-shimmer {
+    from { background-position: 0% center; }
+    to { background-position: 100% center; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .btn-shimmer::before,
     .animate-oracle-pulse,
@@ -394,6 +447,12 @@
     .scroll-line::after,
     .ambient-orb-purple,
     .ambient-orb-gold {
+        animation: none;
+    }
+    .flow-arrow-particle {
+        display: none;
+    }
+    .text-oracle-shimmer {
         animation: none;
     }
 }

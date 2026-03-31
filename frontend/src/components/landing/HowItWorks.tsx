@@ -1,5 +1,5 @@
 import { FadeIn } from "@/components/FadeIn"
-import { HelpCircle, Coins, Trophy, ChevronRight } from "lucide-react"
+import { HelpCircle, Coins, Trophy } from "lucide-react"
 
 const steps = [
   {
@@ -51,10 +51,20 @@ export function HowItWorks() {
           {steps.map((step, i) => (
             <FadeIn key={step.number} delay={i * 0.15}>
               <div className="group relative text-center">
-                {/* Arrow connector (between cards, desktop only) */}
+                {/* Watermark number */}
+                <span
+                  className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 select-none font-oracle text-[120px] italic leading-none text-white/[0.03]"
+                  aria-hidden="true"
+                >
+                  {step.number}
+                </span>
+
+                {/* Flow arrow connector (desktop only) */}
                 {i < steps.length - 1 && (
-                  <div className="pointer-events-none absolute -right-3 top-[52px] z-10 hidden md:block">
-                    <ChevronRight className="size-5 text-oracle/25" />
+                  <div className="pointer-events-none absolute -right-6 top-[52px] z-10 hidden md:block">
+                    <div className="flow-arrow">
+                      <div className="flow-arrow-particle" />
+                    </div>
                   </div>
                 )}
 

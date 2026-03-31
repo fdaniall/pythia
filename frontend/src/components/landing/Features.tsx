@@ -1,4 +1,6 @@
+import { useRef, useCallback, type ReactNode } from "react"
 import { FadeIn } from "@/components/FadeIn"
+import { cn } from "@/lib/utils"
 import { Zap, Globe, AtSign, Shield, TrendingUp, Coins } from "lucide-react"
 
 const features = [
@@ -55,6 +57,34 @@ const accentMap: Record<string, { border: string; bg: string; glow: string; icon
   },
 }
 
+function FeatureCard({ children, className }: { children: ReactNode; className?: string }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const glowRef = useRef<HTMLDivElement>(null)
+
+  const onMove = useCallback((e: React.MouseEvent) => {
+    if (!cardRef.current || !glowRef.current) return
+    const r = cardRef.current.getBoundingClientRect()
+    glowRef.current.style.background =
+      `radial-gradient(600px circle at ${e.clientX - r.left}px ${e.clientY - r.top}px, rgba(155,109,255,0.07), transparent 40%)`
+  }, [])
+
+  const onLeave = useCallback(() => {
+    if (glowRef.current) glowRef.current.style.background = "transparent"
+  }, [])
+
+  return (
+    <div
+      ref={cardRef}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      className={cn("glass-card group relative overflow-hidden rounded-xl p-7", className)}
+    >
+      <div ref={glowRef} className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300" />
+      <div className="relative z-10">{children}</div>
+    </div>
+  )
+}
+
 export function Features() {
   return (
     <section className="relative w-full overflow-hidden px-4 py-20 sm:px-8 md:py-28" id="features">
@@ -83,21 +113,25 @@ export function Features() {
         {features.map((feature, i) => {
           const a = accentMap[feature.accent]
           return (
-            <FadeIn key={feature.title} delay={i * 0.1}>
-              <div className="glass-card group rounded-xl p-6 transition-all duration-300">
-                {/* Icon */}
+            <FadeIn
+              key={feature.title}
+              delay={i * 0.1}
+              className={cn(
+                i === 0 && "sm:col-span-2",
+                i === features.length - 1 && "sm:col-span-2 lg:col-span-3"
+              )}
+            >
+              <FeatureCard className="h-full">
                 <div className={`mb-5 flex size-12 items-center justify-center rounded-[14px] border bg-gradient-to-br transition-all duration-300 group-hover:-translate-y-0.5 ${a.border} ${a.bg} ${a.glow}`}>
                   <feature.icon size={22} className={a.icon} />
                 </div>
-
-                {/* Text */}
                 <h3 className="mb-2 text-[18px] font-semibold text-foreground transition-colors group-hover:text-white">
                   {feature.title}
                 </h3>
                 <p className="text-[15px] leading-[1.65] text-muted-foreground">
                   {feature.description}
                 </p>
-              </div>
+              </FeatureCard>
             </FadeIn>
           )
         })}
