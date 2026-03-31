@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+contracts/out/
+contracts/cache/
+frontend/dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Foundry
+contracts/broadcast/
+contracts/lib/
+
+# Misc
+ds
