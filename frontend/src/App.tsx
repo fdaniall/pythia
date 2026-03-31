@@ -11,6 +11,7 @@ import {
 } from "@initia/interwovenkit-react"
 import InterwovenKitStyles from "@initia/interwovenkit-react/styles.js"
 import { Layout } from "@/components/Layout"
+import { LandingPage } from "@/pages/LandingPage"
 import { MarketsPage } from "@/pages/MarketsPage"
 import { MarketDetailPage } from "@/pages/MarketDetailPage"
 import { CreateMarketPage } from "@/pages/CreateMarketPage"
@@ -46,8 +47,12 @@ function App() {
         >
           <BrowserRouter>
             <Routes>
+              {/* Landing page — no layout chrome */}
+              <Route index element={<LandingPage />} />
+
+              {/* App pages — with nav header */}
               <Route element={<Layout />}>
-                <Route index element={<MarketsPage />} />
+                <Route path="/markets" element={<MarketsPage />} />
                 <Route path="/markets/:id" element={<MarketDetailPage />} />
                 <Route path="/create" element={<CreateMarketPage />} />
                 <Route path="/portfolio" element={<PortfolioPage />} />

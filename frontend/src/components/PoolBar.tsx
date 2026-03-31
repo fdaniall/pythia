@@ -5,9 +5,10 @@ interface PoolBarProps {
   yesPool: bigint
   noPool: bigint
   className?: string
+  size?: "sm" | "md"
 }
 
-export function PoolBar({ yesPool, noPool, className }: PoolBarProps) {
+export function PoolBar({ yesPool, noPool, className, size = "sm" }: PoolBarProps) {
   const total = yesPool + noPool
   const yesPercent = total > 0n ? Number((yesPool * 100n) / total) : 50
   const noPercent = total > 0n ? 100 - yesPercent : 50
@@ -15,24 +16,27 @@ export function PoolBar({ yesPool, noPool, className }: PoolBarProps) {
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex justify-between text-sm">
-        <span className="font-medium text-green-600 dark:text-green-400">
+        <span className="font-medium text-yes">
           Yes {yesPercent}%
         </span>
-        <span className="font-medium text-red-500 dark:text-red-400">
+        <span className="font-medium text-no">
           No {noPercent}%
         </span>
       </div>
-      <div className="flex h-3 overflow-hidden rounded-full bg-muted">
+      <div className={cn(
+        "flex overflow-hidden rounded-full bg-[rgba(155,109,255,0.08)]",
+        size === "md" ? "h-4" : "h-3"
+      )}>
         <div
-          className="bg-green-500 transition-all duration-300"
+          className="pool-bar-yes transition-all duration-500"
           style={{ width: `${yesPercent}%` }}
         />
         <div
-          className="bg-red-500 transition-all duration-300"
+          className="pool-bar-no transition-all duration-500"
           style={{ width: `${noPercent}%` }}
         />
       </div>
-      <div className="flex justify-between text-xs text-muted-foreground">
+      <div className="flex justify-between text-xs text-[#7B6F94]">
         <span>{formatEther(yesPool)} ETH</span>
         <span>{formatEther(noPool)} ETH</span>
       </div>

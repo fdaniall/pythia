@@ -1,4 +1,5 @@
 import { MarketCard } from "@/components/MarketCard"
+import { Eye } from "lucide-react"
 import type { Market } from "@/types/market"
 
 // Mock data for development — will be replaced with on-chain reads
@@ -40,14 +41,21 @@ const MOCK_MARKETS: Market[] = [
 
 export function MarketsPage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Markets</h1>
-        <p className="text-muted-foreground">
-          Predict outcomes, bet with conviction.
+    <div className="space-y-8">
+      {/* Page header */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-2.5">
+          <Eye className="size-5 text-oracle" />
+          <h1 className="font-oracle text-oracle-gradient text-3xl italic">
+            Markets
+          </h1>
+        </div>
+        <p className="text-[#7B6F94]">
+          Predict outcomes, bet with conviction. The oracle sees all.
         </p>
       </div>
 
+      {/* Market grid */}
       <div className="grid gap-4 sm:grid-cols-2">
         {MOCK_MARKETS.map((market) => (
           <MarketCard key={market.id} market={market} />
