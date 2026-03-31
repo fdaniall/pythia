@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react"
 import { MarketCard } from "@/components/MarketCard"
+import { FadeIn } from "@/components/FadeIn"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, Search, TrendingUp, Users, Coins, Plus } from "lucide-react"
@@ -135,9 +136,22 @@ export function MarketsPage() {
   const openCount = MOCK_MARKETS.filter((m) => getMarketStatus(m) === "open").length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Page header */}
+      <FadeIn>
+        <div className="space-y-2">
+          <h1 className="font-oracle text-oracle-gradient text-3xl italic">
+            Explore Markets
+          </h1>
+          <p className="text-muted-foreground">
+            Discover predictions and bet on what comes next.
+          </p>
+        </div>
+      </FadeIn>
+
       {/* Stats banner */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <FadeIn delay={0.05}>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="glass-card flex items-center gap-3 rounded-xl p-4">
           <div className="flex size-9 items-center justify-center rounded-lg bg-oracle/10">
             <Eye className="size-4 text-oracle" />
@@ -175,6 +189,7 @@ export function MarketsPage() {
           </div>
         </div>
       </div>
+      </FadeIn>
 
       {/* Search + Filter + Create */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -225,9 +240,11 @@ export function MarketsPage() {
 
       {/* Market grid */}
       {filtered.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {filtered.map((market) => (
-            <MarketCard key={market.id} market={market} />
+        <div className="grid gap-5 sm:grid-cols-2">
+          {filtered.map((market, i) => (
+            <FadeIn key={market.id} delay={Math.min(i * 0.05, 0.3)}>
+              <MarketCard market={market} />
+            </FadeIn>
           ))}
         </div>
       ) : (

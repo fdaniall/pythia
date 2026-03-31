@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { FadeIn } from "@/components/FadeIn"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import {
@@ -70,8 +71,9 @@ export function PortfolioPage() {
     : 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
+      <FadeIn>
       <div className="space-y-2">
         <div className="flex items-center gap-2.5">
           <BarChart3 className="size-5 text-oracle" />
@@ -83,9 +85,11 @@ export function PortfolioPage() {
           Your bets and winnings across all markets.
         </p>
       </div>
+      </FadeIn>
 
       {/* Stats overview */}
-      <div className="grid gap-3 sm:grid-cols-4">
+      <FadeIn delay={0.1}>
+      <div className="grid gap-4 sm:grid-cols-4">
         <div className="glass-card flex items-center gap-3 rounded-xl p-4">
           <div className="flex size-9 items-center justify-center rounded-lg bg-oracle/10">
             <TrendingUp className="size-4 text-oracle" />
@@ -123,8 +127,10 @@ export function PortfolioPage() {
           </div>
         </div>
       </div>
+      </FadeIn>
 
       {/* Bets list */}
+      <FadeIn delay={0.15}>
       <div className="glass-card rounded-xl p-6">
         <h2 className="mb-4 text-sm font-semibold text-foreground">Your Bets</h2>
         <div className="space-y-3">
@@ -173,6 +179,7 @@ export function PortfolioPage() {
           })}
         </div>
       </div>
+      </FadeIn>
     </div>
   )
 }

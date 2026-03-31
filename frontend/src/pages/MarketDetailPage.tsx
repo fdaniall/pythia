@@ -8,6 +8,7 @@ import { PoolBar } from "@/components/PoolBar"
 import { cn } from "@/lib/utils"
 import { useCountdown } from "@/hooks/useCountdown"
 import { formatEther } from "viem"
+import { FadeIn } from "@/components/FadeIn"
 import {
   ArrowLeft, Clock, Trophy, TrendingUp, TrendingDown,
   Users, Zap, Info,
@@ -75,7 +76,8 @@ export function MarketDetailPage() {
   }, [amount, position, market.totalYesPool, market.totalNoPool, total])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      <FadeIn>
       <Link
         to="/markets"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-oracle-soft"
@@ -107,8 +109,10 @@ export function MarketDetailPage() {
           </span>
         </div>
       </div>
+      </FadeIn>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <FadeIn delay={0.15}>
+      <div className="grid gap-8 lg:grid-cols-3">
         {/* Left column: pool + activity */}
         <div className="space-y-6 lg:col-span-2">
           {/* Pool visualization */}
@@ -353,6 +357,7 @@ export function MarketDetailPage() {
           </div>
         </div>
       </div>
+      </FadeIn>
     </div>
   )
 }

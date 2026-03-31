@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { PoolBar } from "@/components/PoolBar"
+import { FadeIn } from "@/components/FadeIn"
 import { Sparkles, HelpCircle, Calendar, Eye, Clock } from "lucide-react"
 
 export function CreateMarketPage() {
@@ -21,6 +22,7 @@ export function CreateMarketPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       {/* Header */}
+      <FadeIn>
       <div className="space-y-2">
         <div className="flex items-center gap-2.5">
           <Sparkles className="size-5 text-gold" />
@@ -32,9 +34,11 @@ export function CreateMarketPage() {
           Ask the oracle. Create a new prediction for the world to bet on.
         </p>
       </div>
+      </FadeIn>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-8 md:grid-cols-2">
         {/* Form */}
+        <FadeIn delay={0.1}>
         <div className="glass-card rounded-xl p-6">
           <div className="mb-5 flex items-center gap-2">
             <div className="flex size-8 items-center justify-center rounded-lg bg-oracle/10">
@@ -93,11 +97,13 @@ export function CreateMarketPage() {
             </Button>
           </form>
         </div>
+        </FadeIn>
 
         {/* Live preview */}
+        <FadeIn delay={0.2}>
         <div className="space-y-4">
           <p className="text-xs font-semibold uppercase tracking-[2px] text-dim">Live Preview</p>
-          <div className="glass-card rounded-xl p-5">
+          <div className="glass-card animate-float rounded-xl p-6">
             <div className="mb-3 flex items-start justify-between gap-2">
               <h3 className="font-oracle text-lg leading-snug italic text-foreground">
                 {question || "Your question will appear here..."}
@@ -151,6 +157,7 @@ export function CreateMarketPage() {
             </ul>
           </div>
         </div>
+        </FadeIn>
       </div>
     </div>
   )

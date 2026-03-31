@@ -148,17 +148,43 @@
     background-clip: text;
 }
 
-/* ── Glass Card ── */
+/* ── Glass Card (Veyla/Zenith-inspired) ── */
 .glass-card {
-    background: rgba(21, 16, 32, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(155, 109, 255, 0.1);
+    position: relative;
+    background: rgba(21, 16, 32, 0.55);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(155, 109, 255, 0.08);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Top-edge inner highlight */
+.glass-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(155, 109, 255, 0.2), transparent);
+    border-radius: inherit;
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-    border-color: rgba(155, 109, 255, 0.2);
-    box-shadow: 0 0 30px rgba(155, 109, 255, 0.08);
+    border-color: rgba(155, 109, 255, 0.18);
+    box-shadow:
+        0 0 40px rgba(155, 109, 255, 0.08),
+        0 8px 32px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(155, 109, 255, 0.06);
+    transform: translateY(-2px);
+}
+
+.glass-card:hover::after {
+    left: 10%;
+    right: 10%;
+    background: linear-gradient(90deg, transparent, rgba(155, 109, 255, 0.45), transparent);
 }
 
 /* ── Button Shimmer (from Veyla) ── */
@@ -189,21 +215,31 @@
     100% { left: 100%; }
 }
 
-/* ── Glow Effects ── */
+/* ── Glow Effects (multi-layer depth) ── */
 .glow-purple {
-    box-shadow: 0 0 20px rgba(155, 109, 255, 0.3), 0 0 60px rgba(155, 109, 255, 0.1);
+    box-shadow:
+        0 0 20px rgba(155, 109, 255, 0.3),
+        0 0 60px rgba(155, 109, 255, 0.1),
+        0 0 0 1px rgba(155, 109, 255, 0.08);
 }
 
 .glow-gold {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.1);
+    box-shadow:
+        0 0 20px rgba(255, 215, 0, 0.3),
+        0 0 60px rgba(255, 215, 0, 0.1),
+        0 0 0 1px rgba(255, 215, 0, 0.06);
 }
 
 .glow-yes {
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+    box-shadow:
+        0 0 20px rgba(34, 197, 94, 0.3),
+        0 0 50px rgba(34, 197, 94, 0.08);
 }
 
 .glow-no {
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+    box-shadow:
+        0 0 20px rgba(239, 68, 68, 0.3),
+        0 0 50px rgba(239, 68, 68, 0.08);
 }
 
 /* ── Noise Texture Overlay ── */
@@ -229,12 +265,12 @@
 /* ── Animated Pool Bar Glow ── */
 .pool-bar-yes {
     background: linear-gradient(90deg, #22C55E, #4ADE80);
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.5), 0 0 30px rgba(34, 197, 94, 0.12);
 }
 
 .pool-bar-no {
     background: linear-gradient(90deg, #F87171, #EF4444);
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.12);
 }
 
 /* ── Pulse animation for live markets ── */
@@ -275,11 +311,30 @@
 
 /* ── Smooth transitions for interactive elements ── */
 .transition-oracle {
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .transition-oracle:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+}
+
+/* ── Ambient Glow Orbs ── */
+.ambient-orb-purple {
+    animation: orb-float-1 12s ease-in-out infinite;
+}
+
+.ambient-orb-gold {
+    animation: orb-float-2 16s ease-in-out infinite;
+}
+
+@keyframes orb-float-1 {
+    0%, 100% { opacity: 0.6; transform: translate(0, 0) scale(1); }
+    50% { opacity: 1; transform: translate(40px, 30px) scale(1.1); }
+}
+
+@keyframes orb-float-2 {
+    0%, 100% { opacity: 0.5; transform: translate(0, 0) scale(1); }
+    50% { opacity: 0.9; transform: translate(-30px, -40px) scale(1.12); }
 }
 
 /* ── Focus styles ── */
@@ -336,7 +391,9 @@
     .animate-oracle-pulse,
     .animate-float,
     .star,
-    .scroll-line::after {
+    .scroll-line::after,
+    .ambient-orb-purple,
+    .ambient-orb-gold {
         animation: none;
     }
 }

@@ -26,7 +26,7 @@ export function MarketCard({ market }: MarketCardProps) {
 
   return (
     <Link to={`/markets/${market.id}`}>
-      <div className="glass-card transition-oracle group rounded-xl p-5">
+      <div className="glass-card group rounded-xl p-6">
         {/* Header */}
         <div className="mb-3 flex items-start justify-between gap-2">
           <h3 className="font-oracle text-lg leading-snug italic text-foreground group-hover:text-oracle-soft">

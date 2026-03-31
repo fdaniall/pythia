@@ -55,6 +55,12 @@ export function Layout() {
       {/* Noise texture */}
       <div className="noise-overlay" />
 
+      {/* Ambient glow orbs */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
+        <div className="ambient-orb-purple absolute -left-[5%] -top-[10%] size-[500px] rounded-full bg-[radial-gradient(circle,rgba(155,109,255,0.1)_0%,transparent_70%)] blur-[80px] md:size-[700px] md:blur-[120px]" />
+        <div className="ambient-orb-gold absolute -bottom-[5%] -right-[5%] size-[400px] rounded-full bg-[radial-gradient(circle,rgba(255,215,0,0.06)_0%,transparent_70%)] blur-[80px] md:size-[550px] md:blur-[120px]" />
+      </div>
+
       {/* Star particles */}
       <StarField />
 
@@ -129,7 +135,7 @@ export function Layout() {
       </header>
 
       {/* Main */}
-      <main className="relative z-10 mx-auto max-w-6xl px-4 py-8">
+      <main className="relative z-10 mx-auto max-w-6xl px-4 py-10">
         <Outlet />
       </main>
     </div>
