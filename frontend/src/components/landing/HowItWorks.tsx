@@ -27,7 +27,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="relative w-full py-20 md:py-28" id="how-it-works">
+    <section className="relative w-full overflow-hidden py-20 md:py-28" id="how-it-works">
       {/* Background glow */}
       <div className="pointer-events-none absolute right-[-15%] top-[30%] hidden size-[600px] rounded-full bg-[conic-gradient(from_180deg_at_50%_50%,#9B6DFF_0deg,#3a1a7c_360deg)] opacity-[0.08] blur-[120px] md:block" />
 

@@ -8,7 +8,7 @@ import { Footer } from "@/components/landing/Footer"
 
 export function LandingPage() {
   return (
-    <div className="bg-oracle-glow relative min-h-screen">
+    <div className="bg-oracle-glow relative min-h-screen w-full overflow-x-hidden">
       <div className="noise-overlay" />
       <Navbar />
       <Hero />

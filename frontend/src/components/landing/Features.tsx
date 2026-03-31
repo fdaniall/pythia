@@ -57,7 +57,7 @@ const accentMap: Record<string, { border: string; bg: string; glow: string; icon
 
 export function Features() {
   return (
-    <section className="relative w-full px-4 py-20 sm:px-8 md:py-28" id="features">
+    <section className="relative w-full overflow-hidden px-4 py-20 sm:px-8 md:py-28" id="features">
       {/* Header */}
       <div className="mb-16 flex flex-col items-center text-center">
         <FadeIn>
