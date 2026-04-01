@@ -44,18 +44,18 @@ export function Layout() {
               const isActive = location.pathname === item.path
               const Icon = item.icon
               return (
-                <Link key={item.path} to={item.path}>
-                  <button
-                    className={cn(
-                      "flex items-center justify-center gap-2 px-4 py-2 font-technical text-[13px] font-bold tracking-widest uppercase transition-all border-[1.5px] glitch-hover",
-                      isActive
-                        ? "bg-[#CCFF00] text-black border-[#CCFF00]"
-                        : "bg-transparent text-[#888] border-transparent hover:border-[#333] hover:text-white"
-                    )}
-                  >
-                    <Icon className="size-4" strokeWidth={2.5} />
-                    {item.label}
-                  </button>
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    "flex items-center justify-center gap-2 px-4 py-2 font-technical text-[13px] font-bold tracking-widest uppercase transition-all border-[1.5px] glitch-hover no-underline",
+                    isActive
+                      ? "bg-[#CCFF00] text-black border-[#CCFF00]"
+                      : "bg-transparent text-[#888] border-transparent hover:border-[#333] hover:text-white"
+                  )}
+                >
+                  <Icon className="size-4" strokeWidth={2.5} />
+                  {item.label}
                 </Link>
               )
             })}

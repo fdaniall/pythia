@@ -1,5 +1,21 @@
 import type { Market } from "@/types/market"
 
+export const MOCK_LEADERBOARD = [
+  { rank: 1, name: "oracle.init", position: "Yes", amount: 2000000000000000000n },
+  { rank: 2, name: "vitalik.init", position: "No", amount: 1500000000000000000n },
+  { rank: 3, name: "satoshi.init", position: "Yes", amount: 1200000000000000000n },
+  { rank: 4, name: "alice.init", position: "Yes", amount: 800000000000000000n },
+  { rank: 5, name: "bob.init", position: "No", amount: 500000000000000000n },
+]
+
+export const MOCK_ACTIVITY = [
+  { name: "delphi.init", action: "bet Yes", amount: "0.5 ETH", time: "2m ago" },
+  { name: "pythia.init", action: "bet No", amount: "0.3 ETH", time: "8m ago" },
+  { name: "oracle.init", action: "bet Yes", amount: "1.0 ETH", time: "23m ago" },
+  { name: "alice.init", action: "bet Yes", amount: "0.2 ETH", time: "1h ago" },
+  { name: "bob.init", action: "bet No", amount: "0.5 ETH", time: "2h ago" },
+]
+
 export const MOCK_MARKETS: Market[] = [
   {
     id: 0,

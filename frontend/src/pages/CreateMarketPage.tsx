@@ -15,7 +15,6 @@ export function CreateMarketPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: call contract createMarket
-    console.log("Creating market:", { question, deadline })
     toast.success("CONTRACT_DEPLOYED_SUCCESSFULLY", {
       description: "-> Address: 0x8F9B...2A1C\n-> Block: 829104\n-> Initialized: YES",
       duration: 5000,
@@ -23,7 +22,7 @@ export function CreateMarketPage() {
   }
 
   const deadlineDate = deadline ? new Date(deadline) : null
-  const isValid = question.trim().length > 0 && deadline.length > 0
+  const isValid = question.trim().length > 0 && deadlineDate !== null && deadlineDate.getTime() > Date.now()
 
   if (!isConnected) {
     return (

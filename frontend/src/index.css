@@ -110,20 +110,9 @@
     }
 }
 
-/* ── Typography & Gradients ── */
-.font-oracle {
-    font-family: 'Instrument Serif', serif;
-}
+/* ── Typography ── */
 .font-technical {
     font-family: var(--font-mono);
-}
-
-.text-oracle-gradient {
-    color: #CCFF00; /* Flat acid green instead of gradient */
-}
-
-.text-gold-gradient {
-    color: #FFFFFF;
 }
 
 /* ── Brutalist Cards ── */
@@ -147,26 +136,6 @@
     background-position: center center;
 }
 
-/* ── Dotted Background ── */
-.bg-dotted {
-    background-image: radial-gradient(#333 1px, transparent 1px);
-    background-size: 24px 24px;
-}
-
-/* ── Glitch Effect ── */
-.glitch-hover:hover {
-    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both;
-}
-
-@keyframes glitch {
-    0% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
-    100% { transform: translate(0); }
-}
-
 /* ── Primary Button (Brutalist) ── */
 .btn-acid {
     background-color: #CCFF00;
@@ -182,29 +151,6 @@
     background-color: #E6FF66;
     box-shadow: 2px 2px 0px 0px #FFFFFF;
     transform: translate(2px, 2px);
-}
-
-.btn-outline-sharp {
-    background-color: transparent;
-    color: #FFFFFF;
-    border: 1px solid #333333;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    box-shadow: 4px 4px 0px 0px #333333;
-    transition: all 0.2s ease-in-out;
-}
-.btn-outline-sharp:hover {
-    border-color: #FFFFFF;
-    box-shadow: 2px 2px 0px 0px #FFFFFF;
-    transform: translate(2px, 2px);
-}
-
-/* ── Pool Bars ── */
-.pool-bar-yes {
-    background: #CCFF00;
-}
-.pool-bar-no {
-    background: #FF2A2A;
 }
 
 /* ── Marquee Animation ── */
@@ -257,20 +203,6 @@
     .marquee-content {
         animation: none;
     }
-}
-
-/* ── Glitch Effect ── */
-.glitch-hover:hover {
-    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both;
-}
-
-@keyframes glitch {
-    0% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
-    100% { transform: translate(0); }
 }
 
 /* =======================================================

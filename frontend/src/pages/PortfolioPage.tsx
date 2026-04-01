@@ -183,7 +183,7 @@ export function PortfolioPage() {
                     <span className="text-[#333]">&middot;</span>
                     <span className="flex items-center gap-1.5"><Clock className="size-3" /> {bet.deadline}</span>
                     <span className="text-[#333]">&middot;</span>
-                    <span className="text-[#555] font-mono">TX: 0X{Math.random().toString(16).slice(2, 8).toUpperCase()}</span>
+                    <span className="text-[#555] font-mono">TX: 0X{bet.id.toString(16).padStart(6, '0').toUpperCase()}</span>
                   </div>
                 </div>
 
