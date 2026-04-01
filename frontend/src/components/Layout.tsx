@@ -3,6 +3,7 @@ import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { TerminalSquare, Plus, BarChart3, Wallet } from "lucide-react"
+import { TerminalStream } from "@/components/TerminalStream"
 
 const navItems = [
   { path: "/markets", label: "MARKETS", icon: TerminalSquare },
@@ -20,17 +21,19 @@ export function Layout() {
   const { address, username, isConnected, openConnect, openWallet, disconnect } = useInterwovenKit()
 
   return (
-    <div className="bg-technical-grid relative min-h-screen text-white pb-32">
+    <div className="bg-technical-grid relative min-h-screen text-white pb-32 overflow-hidden">
+      {/* Background terminal stream */}
+      <TerminalStream />
 
       {/* Header */}
       <header className="sticky top-0 z-50 border-b-2 border-[#333] bg-black">
         <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="flex size-8 items-center justify-center bg-[#CCFF00] border border-[#CCFF00] transition-transform group-hover:rotate-12 group-hover:bg-white">
+            <div className="flex size-8 items-center justify-center bg-[#CCFF00] border border-[#CCFF00] transition-transform group-hover:rotate-12 group-hover:bg-white glitch-hover">
               <TerminalSquare className="size-5 text-black" strokeWidth={2.5} />
             </div>
-            <span className="font-technical text-2xl font-black uppercase tracking-widest text-white group-hover:text-[#CCFF00] transition-colors">
+            <span className="font-technical text-2xl font-black uppercase tracking-widest text-white group-hover:text-[#CCFF00] transition-colors glitch-hover">
               PYTHIA
             </span>
           </Link>
@@ -44,7 +47,7 @@ export function Layout() {
                 <Link key={item.path} to={item.path}>
                   <button
                     className={cn(
-                      "flex items-center justify-center gap-2 px-4 py-2 font-technical text-[13px] font-bold tracking-widest uppercase transition-all border-[1.5px]",
+                      "flex items-center justify-center gap-2 px-4 py-2 font-technical text-[13px] font-bold tracking-widest uppercase transition-all border-[1.5px] glitch-hover",
                       isActive
                         ? "bg-[#CCFF00] text-black border-[#CCFF00]"
                         : "bg-transparent text-[#888] border-transparent hover:border-[#333] hover:text-white"
@@ -77,7 +80,7 @@ export function Layout() {
             </div>
           ) : (
             <Button
-              className="btn-acid h-10 px-6 font-technical text-[13px]"
+              className="btn-acid h-10 px-6 font-technical text-[13px] glitch-hover"
               onClick={openConnect}
             >
               <Wallet className="size-4 mr-2" strokeWidth={2.5} />

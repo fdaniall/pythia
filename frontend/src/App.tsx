@@ -16,6 +16,7 @@ import { MarketsPage } from "@/pages/MarketsPage"
 import { MarketDetailPage } from "@/pages/MarketDetailPage"
 import { CreateMarketPage } from "@/pages/CreateMarketPage"
 import { PortfolioPage } from "@/pages/PortfolioPage"
+import { Toaster } from "@/components/Toaster"
 
 const wagmiConfig = createConfig({
   connectors: [initiaPrivyWalletConnector],
@@ -46,6 +47,7 @@ function App() {
           theme="dark"
         >
           <BrowserRouter>
+            <Toaster position="bottom-right" />
             <Routes>
               {/* Landing page — no layout chrome */}
               <Route index element={<LandingPage />} />

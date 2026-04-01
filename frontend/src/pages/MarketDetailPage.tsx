@@ -11,6 +11,7 @@ import {
   ArrowLeft, Clock, Trophy, TrendingUp, TrendingDown,
   Users, Zap, Info, TerminalSquare
 } from "lucide-react"
+import { toast } from "sonner"
 
 // Mock — will be replaced with on-chain read
 const MOCK_MARKET = {
@@ -338,6 +339,12 @@ export function MarketDetailPage() {
               <Button
                 className="btn-acid h-14 w-full font-technical text-[14px]"
                 disabled={!amount || Number(amount) <= 0}
+                onClick={() => {
+                  toast.success("TX_EXECUTED_SUCCESSFULLY", {
+                    description: `-> Dest: ${position ? "YES_POOL" : "NO_POOL"}\n-> Value: ${amount} ETH\n-> Block: 13,094,882`,
+                    duration: 5000,
+                  })
+                }}
               >
                 {payout
                   ? `EXECUTE [ ${amount} ETH -> ${position ? "YES" : "NO"} ]`

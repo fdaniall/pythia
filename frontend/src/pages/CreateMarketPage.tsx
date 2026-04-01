@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { PoolBar } from "@/components/PoolBar"
 import { FadeIn } from "@/components/FadeIn"
 import { Sparkles, TerminalSquare, Calendar, Eye, Clock } from "lucide-react"
+import { toast } from "sonner"
 
 export function CreateMarketPage() {
   const [question, setQuestion] = useState("")
@@ -13,6 +14,10 @@ export function CreateMarketPage() {
     e.preventDefault()
     // TODO: call contract createMarket
     console.log("Creating market:", { question, deadline })
+    toast.success("TX_EXECUTED_SUCCESSFULLY", {
+      description: "-> Hash: 0x8F9B...2A1C\n-> Block: 829104",
+      duration: 5000,
+    })
   }
 
   const deadlineDate = deadline ? new Date(deadline) : null

@@ -90,14 +90,18 @@
 
 @layer base {
     * {
-        @apply border-border outline-ring/50;
+        border-color: var(--border);
+        outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
     }
     html {
-        @apply overflow-x-hidden font-sans;
+        overflow-x: hidden;
+        font-family: var(--font-sans);
     }
     body {
-        @apply overflow-x-hidden bg-background text-foreground;
-        background-color: #000000;
+        overflow-x: hidden;
+        background-color: var(--background);
+        color: var(--foreground);
+        cursor: crosshair;
     }
 
     ::selection {
@@ -147,6 +151,20 @@
 .bg-dotted {
     background-image: radial-gradient(#333 1px, transparent 1px);
     background-size: 24px 24px;
+}
+
+/* ── Glitch Effect ── */
+.glitch-hover:hover {
+    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
 }
 
 /* ── Primary Button (Brutalist) ── */
@@ -239,4 +257,18 @@
     .marquee-content {
         animation: none;
     }
+}
+
+/* ── Glitch Effect ── */
+.glitch-hover:hover {
+    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
 }
