@@ -12,6 +12,7 @@ import {
 } from "@initia/interwovenkit-react"
 import InterwovenKitStyles from "@initia/interwovenkit-react/styles.js"
 import { Layout } from "@/components/Layout"
+import { BrutalistModalHacker } from "@/components/BrutalistModalHacker"
 import { LandingPage } from "@/pages/LandingPage"
 import { MarketsPage } from "@/pages/MarketsPage"
 import { MarketDetailPage } from "@/pages/MarketDetailPage"
@@ -63,6 +64,7 @@ export default function App() {
           {booting && <BootLoader onComplete={handleBootComplete} />}
           {!booting && (
             <BrowserRouter>
+              <BrutalistModalHacker />
               <Toaster position="bottom-right" />
               <Routes>
                 {/* Landing page — no layout chrome */}

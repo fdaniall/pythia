@@ -272,3 +272,71 @@
     80% { transform: translate(2px, -2px); }
     100% { transform: translate(0); }
 }
+
+/* =======================================================
+   INITIA INTERWOVENKIT MODAL BRUTALIST OVERRIDES  
+   ======================================================= */
+
+/* Override Initia root variables */
+:root, :host {
+    --border-radius: 0px !important;
+    --font-family: var(--font-mono) !important;
+    --monospace: var(--font-mono) !important;
+    --component-shadow: 8px 8px 0px 0px #CCFF00 !important;
+    --drawer-shadow: 8px 8px 0px 0px #CCFF00 !important;
+    --bg: #0A0A0A !important;
+    --gray-9: #0A0A0A !important;
+    --gray-8: #000000 !important;
+    --border: #333333 !important;
+}
+
+/* Force square corners and brutalist styles on ALL interwovenkit hashed classes */
+[class*="_modal_"], 
+[class*="_content_"], 
+[class*="_inner_"], 
+[class*="_card_"],
+[class*="_overlay_"] > div {
+    border-radius: 0px !important;
+    font-family: var(--font-mono) !important;
+    text-transform: uppercase !important;
+    border: 1px solid #333 !important;
+    box-shadow: 8px 8px 0px 0px #CCFF00 !important;
+    background-color: #0A0A0A !important;
+}
+
+/* Hardcode buttons and list items to be completely square and styled */
+[class*="_button_"],
+[class*="_socialButton_"],
+[class*="_listItem_"],
+[class*="_preset_"],
+[class*="_account_"],
+[class*="_trigger_"],
+[class*="_input_"] {
+    border-radius: 0px !important;
+    font-family: var(--font-mono) !important;
+    text-transform: uppercase !important;
+    border: 1px solid #333 !important;
+    transition: all 0.1s !important;
+}
+
+/* Brutalist Hover effects for lists & buttons */
+[class*="_button_"]:hover,
+[class*="_socialButton_"]:hover,
+[class*="_listItem_"]:hover {
+    background-color: #CCFF00 !important;
+    color: #000 !important;
+    border-color: #CCFF00 !important;
+}
+
+/* Fix text colors inside hover elements */
+[class*="_socialButton_"]:hover *,
+[class*="_listItem_"]:hover * {
+    color: #000 !important;
+}
+
+/* Modals backdrop */
+[class*="_overlay_"], 
+[class*="_backdrop_"] {
+    background-color: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(4px) grayscale(100%) !important;
+}
