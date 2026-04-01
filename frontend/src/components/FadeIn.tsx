@@ -1,5 +1,5 @@
-import { motion } from "framer-motion"
-import type { ReactNode } from "react"
+import { useRef, useEffect, useState } from "react"
+import type { ReactNode, CSSProperties } from "react"
 
 interface FadeInProps {
   children: ReactNode
@@ -9,17 +9,39 @@ interface FadeInProps {
 }
 
 export function FadeIn({ children, delay = 0, className, direction = "up" }: FadeInProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          observer.unobserve(el)
+        }
+      },
+      { rootMargin: "-50px" }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   const y = direction === "up" ? 30 : direction === "down" ? -30 : 0
 
+  const style: CSSProperties = {
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : `translateY(${y}px)`,
+    transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
+    willChange: visible ? "auto" : "opacity, transform",
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.7, delay, ease: [0.25, 0.1, 0.25, 1] }}
-      className={className}
-    >
+    <div ref={ref} style={style} className={className}>
       {children}
-    </motion.div>
+    </div>
   )
 }

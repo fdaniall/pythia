@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import { ArrowRight, Menu, X } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -10,27 +9,28 @@ const navLinks = [
 ]
 
 export function Navbar() {
-  const { scrollY } = useScroll()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 50))
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   useEffect(() => {
-    if (mobileOpen) document.body.style.overflow = "hidden"
-    else document.body.style.overflow = ""
+    document.body.style.overflow = mobileOpen ? "hidden" : ""
     return () => { document.body.style.overflow = "" }
   }, [mobileOpen])
 
   function scrollTo(href: string) {
     setMobileOpen(false)
-    const el = document.querySelector(href)
-    el?.scrollIntoView({ behavior: "smooth" })
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" })
   }
 
   return (
     <>
-      <motion.header
+      <header
         className="fixed top-0 z-50 w-full transition-colors duration-200"
         style={{
           backgroundColor: scrolled ? "#000000" : "transparent",
@@ -78,7 +78,7 @@ export function Navbar() {
             {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
-      </motion.header>
+      </header>
 
       {/* Mobile overlay */}
       {mobileOpen && (

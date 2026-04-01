@@ -1,5 +1,4 @@
-import { useRef } from "react"
-import { useInView } from "framer-motion"
+import { useRef, useEffect, useState } from "react"
 import { FadeIn } from "@/components/FadeIn"
 
 interface StatItem {
@@ -17,7 +16,23 @@ const STATS: StatItem[] = [
 
 function RevealText({ value, color }: { value: string; color: string }) {
   const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true })
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true)
+          observer.unobserve(el)
+        }
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <span

@@ -193,7 +193,7 @@ export function BrutalistModalHacker() {
     observer.observe(document.body, { childList: true, subtree: true })
 
     // Polling fallback — catches cases where shadow DOM changes don't trigger body observer
-    const pollInterval = window.setInterval(updateOverlayState, 300)
+    const pollInterval = window.setInterval(updateOverlayState, 1000)
 
     // CSS variable overrides
     document.documentElement.style.setProperty("--privy-border-radius-md", "0px", "important")
