@@ -3,8 +3,9 @@ import { Link, Outlet, useLocation } from "react-router-dom"
 import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { TerminalSquare, Plus, BarChart3, Wallet, Menu, X, BookOpen, ArrowUp } from "lucide-react"
+import { TerminalSquare, Plus, BarChart3, Wallet, Menu, X, BookOpen, ArrowUp, Search } from "lucide-react"
 import { TerminalStream } from "@/components/TerminalStream"
+import { CommandPalette } from "@/components/CommandPalette"
 
 const navItems = [
   { path: "/markets", label: "MARKETS", icon: TerminalSquare },
@@ -26,6 +27,7 @@ export function Layout() {
   return (
     <div className="bg-technical-grid relative flex min-h-screen flex-col text-white overflow-hidden">
       <TerminalStream />
+      <CommandPalette />
 
       {/* Header */}
       <header className="sticky top-0 z-50 border-b-2 border-[#333] bg-black">
@@ -62,6 +64,17 @@ export function Layout() {
               )
             })}
           </nav>
+
+          {/* Cmd+K trigger */}
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+            className="hidden md:flex items-center gap-2 border border-[#333] px-3 py-1.5 text-[#555] hover:border-[#CCFF00] hover:text-[#CCFF00] transition-all"
+          >
+            <Search className="size-3.5" strokeWidth={2.5} />
+            <span className="font-technical text-[10px] font-bold uppercase tracking-widest">Search</span>
+            <kbd className="ml-1 border border-[#333] px-1.5 py-0.5 font-mono text-[9px] text-[#555]">⌘K</kbd>
+          </button>
 
           {/* Desktop Wallet + Mobile Hamburger */}
           <div className="flex items-center gap-3">

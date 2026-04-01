@@ -8,9 +8,55 @@ import { useCountdown } from "@/hooks/useCountdown"
 import { formatEther } from "viem"
 import { FadeIn } from "@/components/FadeIn"
 import {
-  ArrowLeft, Clock, Trophy, Users, Zap, TerminalSquare
+  ArrowLeft, Clock, Trophy, Users, Zap, TerminalSquare, Share2, Check
 } from "lucide-react"
+import { useState } from "react"
 import { MOCK_MARKETS, MOCK_LEADERBOARD, MOCK_ACTIVITY } from "@/lib/mock-data"
+
+// Deterministic sparkline data per market (seeded by id)
+function generateSparkline(seed: number): number[] {
+  let value = 30 + (seed * 17) % 40
+  const points: number[] = [value]
+  for (let i = 1; i < 20; i++) {
+    // Simple seeded pseudo-random walk
+    const hash = Math.sin(seed * 1000 + i * 137.5) * 10000
+    const delta = (hash - Math.floor(hash)) * 20 - 8
+    value = Math.max(10, Math.min(95, value + delta))
+    points.push(Math.round(value))
+  }
+  return points
+}
+
+function ShareButton({ question }: { question: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const share = async () => {
+    const url = window.location.href
+    const text = `${question} — Predict now on Pythia`
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Pythia Market", text, url })
+        return
+      } catch { /* user cancelled */ }
+    }
+
+    await navigator.clipboard.writeText(`${text}\n${url}`)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={share}
+      className="flex items-center gap-1.5 text-[#888] hover:text-[#CCFF00] transition-colors"
+    >
+      {copied ? <Check className="size-3.5" strokeWidth={2.5} /> : <Share2 className="size-3.5" strokeWidth={2.5} />}
+      {copied ? "COPIED" : "SHARE"}
+    </button>
+  )
+}
 
 export function MarketDetailPage() {
   const { id } = useParams()
@@ -22,13 +68,47 @@ export function MarketDetailPage() {
 
   if (!market) {
     return (
-      <div className="brutalist-card flex flex-col items-center justify-center bg-black py-24 text-center">
-        <p className="font-technical text-[14px] font-bold uppercase tracking-widest text-[#888]">
-          ERR 404: MARKET NOT FOUND.
-        </p>
-        <Link to="/markets" className="mt-4 font-technical text-[12px] text-[#CCFF00] underline uppercase">
-          Back to Markets
-        </Link>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        {/* Glitch error code */}
+        <div className="mb-6 border-2 border-[#FF2A2A] px-8 py-3">
+          <span className="font-mono text-[clamp(40px,8vw,72px)] font-black text-[#FF2A2A] leading-none">
+            404
+          </span>
+        </div>
+
+        {/* Terminal block */}
+        <div className="w-full max-w-md border-2 border-[#333] bg-[#050505] mb-8">
+          <div className="flex items-center gap-2 border-b border-[#333] px-3 py-2 bg-[#0a0a0a]">
+            <div className="size-2 bg-[#FF2A2A]" />
+            <div className="size-2 bg-[#555]" />
+            <div className="size-2 bg-[#555]" />
+            <span className="ml-2 font-mono text-[9px] text-[#555] uppercase">pythia://market-resolver</span>
+          </div>
+          <div className="p-4 font-mono text-[11px] leading-[2] text-left">
+            <p><span className="text-[#CCFF00]">&gt;</span> <span className="text-[#888]">getMarket(id: {id})</span></p>
+            <p><span className="text-[#FF2A2A]">&gt;</span> <span className="text-[#FF2A2A]">ERR: MARKET_NOT_FOUND</span></p>
+            <p><span className="text-[#FF2A2A]">&gt;</span> <span className="text-[#FF2A2A]">No contract deployed at index {id}</span></p>
+            <p><span className="text-[#555]">&gt;</span> <span className="text-[#555]">Pool does not exist or has been liquidated.</span></p>
+            <p><span className="text-[#CCFF00]">&gt;</span> <span className="text-[#CCFF00]">Redirecting to market index...</span></p>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Link
+            to="/markets"
+            className="btn-acid inline-flex h-11 items-center px-6 font-technical text-[12px] no-underline"
+          >
+            <ArrowLeft className="mr-2 size-4" strokeWidth={2.5} />
+            Market Index
+          </Link>
+          <Link
+            to="/create"
+            className="inline-flex h-11 items-center px-6 border-2 border-[#333] font-technical text-[12px] font-bold uppercase tracking-widest text-[#888] hover:border-[#CCFF00] hover:text-[#CCFF00] transition-all no-underline"
+          >
+            Create Market
+          </Link>
+        </div>
       </div>
     )
   }
@@ -74,6 +154,8 @@ export function MarketDetailPage() {
               <Users className="size-3.5" strokeWidth={2.5} />
               {market.bettorCount} BETTORS
             </span>
+            <span className="text-[#333]">&middot;</span>
+            <ShareButton question={market.question} />
           </div>
         </div>
       </FadeIn>
@@ -90,7 +172,7 @@ export function MarketDetailPage() {
               </h2>
 
               <div className="mb-8">
-                <BrutalistSparkline data={[40, 42, 45, 38, 50, 60, 58, 65, 70, 68, 75, 80, 78, 85, 90, 88, 85, 87, 89, 92]} height={120} />
+                <BrutalistSparkline data={generateSparkline(market.id)} height={120} />
               </div>
 
               <PoolBar yesPool={market.totalYesPool} noPool={market.totalNoPool} size="md" />

@@ -21,6 +21,7 @@ const MarketDetailPage = lazy(() => import("@/pages/MarketDetailPage").then(m =>
 const CreateMarketPage = lazy(() => import("@/pages/CreateMarketPage").then(m => ({ default: m.CreateMarketPage })))
 const PortfolioPage = lazy(() => import("@/pages/PortfolioPage").then(m => ({ default: m.PortfolioPage })))
 const DocsPage = lazy(() => import("@/pages/DocsPage").then(m => ({ default: m.DocsPage })))
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })))
 
 const wagmiConfig = createConfig({
   connectors: [initiaPrivyWalletConnector],
@@ -34,7 +35,10 @@ function RouteLoader() {
   return (
     <div className="flex min-h-[50vh] items-center justify-center">
       <div className="flex flex-col items-center gap-4">
-        <div className="size-3 bg-[#CCFF00] animate-pulse" />
+        <div className="relative flex size-12 items-center justify-center border-2 border-[#CCFF00]">
+          <div className="size-3 bg-[#CCFF00] animate-pulse" />
+          <div className="absolute inset-0 border-2 border-[#CCFF00] animate-ping opacity-20" />
+        </div>
         <p className="font-technical text-[12px] font-bold uppercase tracking-widest text-[#888]">
           LOADING MODULE...
         </p>
@@ -89,6 +93,7 @@ export default function App() {
                     <Route path="/create" element={<CreateMarketPage />} />
                     <Route path="/portfolio" element={<PortfolioPage />} />
                     <Route path="/docs" element={<DocsPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Routes>
               </Suspense>

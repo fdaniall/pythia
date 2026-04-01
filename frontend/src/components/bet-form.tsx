@@ -8,6 +8,7 @@ import {
   TrendingUp, TrendingDown, Info, TerminalSquare, Wallet, Zap
 } from "lucide-react"
 import { toast } from "sonner"
+import { fireBrutalistConfetti } from "@/lib/confetti"
 import type { Market } from "@/types/market"
 
 interface BetFormProps {
@@ -197,6 +198,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                   description: `${amount} INIT on ${position ? "YES" : "NO"} — your position is now active.`,
                   duration: 5000,
                 })
+                fireBrutalistConfetti()
                 setAmount("")
               } finally {
                 setIsSubmitting(false)
