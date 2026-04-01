@@ -7,7 +7,6 @@ import { Eye, Search, TrendingUp, Users, Coins, Plus } from "lucide-react"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { formatEther } from "viem"
-import type { Market } from "@/types/market"
 import { getMarketStatus } from "@/types/market"
 import { MOCK_MARKETS } from "@/lib/mock-data"
 
