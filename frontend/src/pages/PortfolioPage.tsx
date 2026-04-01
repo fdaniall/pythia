@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom"
 import { FadeIn } from "@/components/FadeIn"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import {
   BarChart3, Wallet, Trophy, TrendingUp, TrendingDown,
@@ -56,9 +55,9 @@ const MOCK_BETS = [
 ]
 
 const statusConfig = {
-  active: { label: "Active", color: "text-oracle", bg: "bg-oracle/10", icon: Clock },
-  won: { label: "Won", color: "text-yes", bg: "bg-yes/10", icon: Trophy },
-  lost: { label: "Lost", color: "text-no", bg: "bg-no/10", icon: TrendingDown },
+  active: { label: "ACTIVE", color: "text-[#CCFF00]", icon: Clock },
+  won: { label: "WON", color: "text-white", icon: Trophy },
+  lost: { label: "LOST", color: "text-[#FF2A2A]", icon: TrendingDown },
 }
 
 export function PortfolioPage() {
@@ -74,66 +73,63 @@ export function PortfolioPage() {
     <div className="space-y-8">
       {/* Header */}
       <FadeIn>
-      <div className="space-y-2">
-        <div className="flex items-center gap-2.5">
-          <BarChart3 className="size-5 text-oracle" />
-          <h1 className="font-oracle text-oracle-gradient text-3xl italic">
-            Portfolio
+        <div className="space-y-3 mb-4">
+          <div className="inline-flex items-center gap-2 border border-[#333] bg-black px-3 py-1">
+            <BarChart3 className="size-3 text-[#CCFF00]" />
+            <span className="font-technical text-[10px] font-bold uppercase tracking-[0.2em] text-[#CCFF00]">
+              User Portfolio
+            </span>
+          </div>
+          <h1 className="font-sans text-[clamp(40px,6vw,72px)] font-black uppercase leading-[0.9] tracking-tighter text-white">
+            YOUR <span className="text-[#CCFF00]">POSITIONS.</span>
           </h1>
+          <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase max-w-[500px]">
+            Track active bets and historical performance on-chain.
+          </p>
         </div>
-        <p className="text-muted-foreground">
-          Your bets and winnings across all markets.
-        </p>
-      </div>
       </FadeIn>
 
       {/* Stats overview */}
       <FadeIn delay={0.1}>
       <div className="grid gap-4 sm:grid-cols-4">
-        <div className="glass-card flex items-center gap-3 rounded-xl p-4">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-oracle/10">
-            <TrendingUp className="size-4 text-oracle" />
+        <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="size-4 text-[#888]" strokeWidth={2.5} />
+            <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">ACTIVE BETS</p>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Active Bets</p>
-            <p className="text-lg font-semibold text-foreground">{activeBets.length}</p>
-          </div>
+          <p className="font-sans text-3xl font-black text-white">{activeBets.length}</p>
         </div>
-        <div className="glass-card flex items-center gap-3 rounded-xl p-4">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-gold/10">
-            <Trophy className="size-4 text-gold" />
+        <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Trophy className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+            <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">TOTAL WINNINGS</p>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Total Winnings</p>
-            <p className="text-lg font-semibold text-gold">{totalWinnings} ETH</p>
-          </div>
+          <p className="font-sans text-3xl font-black text-[#CCFF00]">{totalWinnings} <span className="text-xl text-black">ETH</span></p>
         </div>
-        <div className="glass-card flex items-center gap-3 rounded-xl p-4">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-yes/10">
-            <CheckCircle className="size-4 text-yes" />
+        <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <CheckCircle className="size-4 text-white" strokeWidth={2.5} />
+            <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">WIN RATE</p>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Win Rate</p>
-            <p className="text-lg font-semibold text-yes">{winRate}%</p>
-          </div>
+          <p className="font-sans text-3xl font-black text-white">{winRate}%</p>
         </div>
-        <div className="glass-card flex items-center gap-3 rounded-xl p-4">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-oracle-soft/10">
-            <Wallet className="size-4 text-oracle-soft" />
+        <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Wallet className="size-4 text-[#888]" strokeWidth={2.5} />
+            <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">TOTAL WAGERED</p>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Total Wagered</p>
-            <p className="text-lg font-semibold text-foreground">5.8 ETH</p>
-          </div>
+          <p className="font-sans text-3xl font-black text-white">5.8 <span className="text-xl text-[#555]">ETH</span></p>
         </div>
       </div>
       </FadeIn>
 
       {/* Bets list */}
       <FadeIn delay={0.15}>
-      <div className="glass-card rounded-xl p-6">
-        <h2 className="mb-4 text-sm font-semibold text-foreground">Your Bets</h2>
-        <div className="space-y-3">
+      <div className="brutalist-card bg-black p-6">
+        <div className="mb-6 flex items-center justify-between border-b border-[#333] pb-4 bg-black">
+          <h2 className="font-technical text-[14px] font-bold tracking-widest uppercase text-white">Execution Log</h2>
+        </div>
+        <div className="space-y-4">
           {MOCK_BETS.map((bet) => {
             const config = statusConfig[bet.status]
             const StatusIcon = config.icon
@@ -141,38 +137,38 @@ export function PortfolioPage() {
               <Link
                 key={`${bet.id}-${bet.position}`}
                 to={`/markets/${bet.id}`}
-                className="group flex items-center justify-between rounded-lg bg-[rgba(155,109,255,0.03)] px-4 py-3 transition-all hover:bg-[rgba(155,109,255,0.06)]"
+                className="group flex flex-col md:flex-row md:items-center justify-between gap-4 border border-[#333] bg-[#050505] p-4 transition-all hover:border-[#CCFF00] hover:bg-[#111]"
               >
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-medium text-foreground group-hover:text-oracle-soft">
-                      {bet.question}
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Badge
-                      variant={bet.position === "Yes" ? "success" : "destructive"}
-                      className="text-[10px]"
-                    >
+                <div className="flex-1 space-y-2">
+                  <h3 className="font-sans text-[18px] font-black uppercase leading-tight text-white group-hover:text-[#CCFF00]">
+                    {bet.question}
+                  </h3>
+                  <div className="flex items-center gap-3 font-technical text-[11px] font-bold uppercase tracking-widest text-[#888]">
+                    <span className={cn(
+                      "px-2 py-0.5 border", 
+                      bet.position === "Yes" ? "bg-[#CCFF00] text-black border-[#CCFF00]" : "bg-[#FF2A2A] text-white border-[#FF2A2A]"
+                    )}>
                       {bet.position}
-                    </Badge>
-                    <span>{bet.amount}</span>
-                    <span className="text-dim">&middot;</span>
+                    </span>
+                    <span className="text-white">{bet.amount}</span>
+                    <span className="text-[#333]">&middot;</span>
                     <span>{bet.deadline}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <p className={cn("text-sm font-semibold", config.color)}>
+                <div className="flex items-center gap-4">
+                  <div className="text-right flex flex-col gap-1">
+                    <p className={cn("font-sans text-[18px] font-black uppercase text-white")}>
                       {bet.status === "won" ? `+${bet.potentialPayout}` : bet.status === "lost" ? `-${bet.amount}` : bet.potentialPayout}
                     </p>
-                    <div className="flex items-center justify-end gap-1">
-                      <StatusIcon className={cn("size-3", config.color)} />
-                      <span className={cn("text-[10px] font-medium", config.color)}>{config.label}</span>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <StatusIcon className={cn("size-3", config.color)} strokeWidth={3} />
+                      <span className={cn("font-technical text-[10px] font-bold tracking-widest uppercase", config.color)}>
+                        {config.label}
+                      </span>
                     </div>
                   </div>
-                  <ArrowRight className="size-3.5 text-dim transition-colors group-hover:text-oracle" />
+                  <ArrowRight className="size-5 text-[#555] transition-colors group-hover:text-[#CCFF00] hidden md:block" strokeWidth={2.5} />
                 </div>
               </Link>
             )

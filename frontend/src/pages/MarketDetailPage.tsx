@@ -2,8 +2,6 @@ import { useState, useMemo } from "react"
 import { useParams, Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { PoolBar } from "@/components/PoolBar"
 import { cn } from "@/lib/utils"
 import { useCountdown } from "@/hooks/useCountdown"
@@ -11,7 +9,7 @@ import { formatEther } from "viem"
 import { FadeIn } from "@/components/FadeIn"
 import {
   ArrowLeft, Clock, Trophy, TrendingUp, TrendingDown,
-  Users, Zap, Info,
+  Users, Zap, Info, TerminalSquare
 } from "lucide-react"
 
 // Mock — will be replaced with on-chain read
@@ -80,32 +78,32 @@ export function MarketDetailPage() {
       <FadeIn>
       <Link
         to="/markets"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-oracle-soft"
+        className="inline-flex items-center gap-2 font-technical text-[10px] font-bold uppercase tracking-widest text-[#888] transition-colors hover:text-white"
       >
-        <ArrowLeft className="size-3.5" />
-        Back to Markets
+        <ArrowLeft className="size-4" strokeWidth={2.5} />
+        BACK_TO_MARKET_INDEX
       </Link>
 
       {/* Market title + countdown */}
-      <div>
-        <h1 className="font-oracle text-oracle-gradient text-2xl italic leading-snug md:text-3xl">
+      <div className="mt-8 border-l-4 border-[#CCFF00] pl-6 py-2">
+        <h1 className="font-sans text-[clamp(32px,4vw,48px)] font-black uppercase leading-[1.1] tracking-tighter text-white">
           {market.question}
         </h1>
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-          <Badge variant="success" className="gap-1">
-            <span className="animate-oracle-pulse size-1.5 rounded-full bg-yes" />
-            Live
-          </Badge>
-          <span>Market #{id}</span>
-          <span className="text-dim">&middot;</span>
-          <span className="flex items-center gap-1">
-            <Clock className="size-3" />
-            {countdown.expired ? "Expired" : countdown.label + " left"}
+        <div className="mt-6 flex flex-wrap items-center gap-3 font-technical text-[11px] font-bold uppercase tracking-widest text-[#888]">
+          <div className="flex items-center justify-center gap-1.5 border-2 border-transparent bg-[#CCFF00] px-2.5 py-1 text-[10px] text-black">
+            <span className="size-1.5 bg-black animate-pulse" />
+            LIVE
+          </div>
+          <span className="text-white">MARKET #{id}</span>
+          <span className="text-[#333]">&middot;</span>
+          <span className="flex items-center gap-1.5">
+            <Clock className="size-3.5 text-[#CCFF00]" strokeWidth={2.5} />
+            {countdown.expired ? "EXPIRED" : countdown.label + " LEFT"}
           </span>
-          <span className="text-dim">&middot;</span>
-          <span className="flex items-center gap-1">
-            <Users className="size-3" />
-            {market.bettorCount} bettors
+          <span className="text-[#333]">&middot;</span>
+          <span className="flex items-center gap-1.5">
+            <Users className="size-3.5" strokeWidth={2.5} />
+            {market.bettorCount} BETTORS
           </span>
         </div>
       </div>
@@ -114,160 +112,161 @@ export function MarketDetailPage() {
       <FadeIn delay={0.15}>
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Left column: pool + activity */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-8 lg:col-span-2">
           {/* Pool visualization */}
-          <div className="glass-card rounded-xl p-6">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
-              <TrendingUp className="size-4 text-oracle" />
-              Pool Distribution
+          <div className="brutalist-card bg-black p-8">
+            <h2 className="mb-6 flex items-center gap-2 font-technical text-[14px] font-bold uppercase tracking-widest text-white border-b border-[#333] pb-4">
+              <TerminalSquare className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+              POOL DISTRIBUTION
             </h2>
             <PoolBar yesPool={market.totalYesPool} noPool={market.totalNoPool} size="md" />
 
-            <div className="mt-6 grid grid-cols-3 gap-4">
-              <div className="rounded-lg bg-[rgba(155,109,255,0.06)] p-3 text-center">
-                <p className="text-xs text-muted-foreground">Total Pool</p>
-                <p className="font-oracle mt-0.5 text-lg italic text-gold">
-                  {parseFloat(formatEther(total)).toFixed(1)} ETH
+            <div className="mt-8 grid grid-cols-3 gap-6">
+              <div className="border border-[#333] bg-[#050505] p-4 flex flex-col items-center justify-center text-center">
+                <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]">TOTAL POOL</p>
+                <p className="mt-2 font-sans text-2xl font-black text-white">
+                  {parseFloat(formatEther(total)).toFixed(1)} <span className="text-sm text-[#555]">ETH</span>
                 </p>
               </div>
-              <div className="rounded-lg bg-[rgba(34,197,94,0.06)] p-3 text-center">
-                <p className="text-xs text-muted-foreground">Yes Pool</p>
-                <p className="mt-0.5 text-lg font-semibold text-yes">
-                  {parseFloat(formatEther(market.totalYesPool)).toFixed(1)} ETH
+              <div className="border border-[#CCFF00]/30 bg-[#CCFF00]/5 p-4 flex flex-col items-center justify-center text-center">
+                <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">YES POOL</p>
+                <p className="mt-2 font-sans text-2xl font-black text-[#CCFF00]">
+                  {parseFloat(formatEther(market.totalYesPool)).toFixed(1)} <span className="text-sm text-[#CCFF00]/50">ETH</span>
                 </p>
               </div>
-              <div className="rounded-lg bg-[rgba(239,68,68,0.06)] p-3 text-center">
-                <p className="text-xs text-muted-foreground">No Pool</p>
-                <p className="mt-0.5 text-lg font-semibold text-no">
-                  {parseFloat(formatEther(market.totalNoPool)).toFixed(1)} ETH
+              <div className="border border-[#FF2A2A]/30 bg-[#FF2A2A]/5 p-4 flex flex-col items-center justify-center text-center">
+                <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#FF2A2A]">NO POOL</p>
+                <p className="mt-2 font-sans text-2xl font-black text-[#FF2A2A]">
+                  {parseFloat(formatEther(market.totalNoPool)).toFixed(1)} <span className="text-sm text-[#FF2A2A]/50">ETH</span>
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Recent activity */}
-          <div className="glass-card rounded-xl p-6">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Zap className="size-4 text-gold" />
-              Recent Activity
-            </h2>
-            <div className="space-y-3">
-              {MOCK_ACTIVITY.map((a, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between rounded-lg bg-[rgba(155,109,255,0.03)] px-3 py-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="flex size-6 items-center justify-center rounded-full bg-oracle/10 text-[10px] font-bold text-oracle">
-                      {a.name.charAt(0).toUpperCase()}
+          <div className="grid gap-8 md:grid-cols-2">
+            {/* Recent activity */}
+            <div className="brutalist-card bg-black p-6">
+              <h2 className="mb-4 flex items-center gap-2 font-technical text-[12px] font-bold uppercase tracking-widest text-white border-b border-[#333] pb-3">
+                <Zap className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+                LATEST ACTIVITY
+              </h2>
+              <div className="space-y-3">
+                {MOCK_ACTIVITY.map((a, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2"
+                  >
+                    <div className="flex flex-col gap-1">
+                      <span className="font-technical text-[11px] font-bold tracking-widest text-white">[{a.name}]</span>
+                      <span className={cn(
+                        "font-technical text-[10px] font-bold uppercase tracking-widest",
+                        a.action.includes("Yes") ? "text-[#CCFF00]" : "text-[#FF2A2A]"
+                      )}>
+                        {a.action}
+                      </span>
                     </div>
-                    <span className="text-sm text-foreground">{a.name}</span>
-                    <span className={cn(
-                      "text-xs font-medium",
-                      a.action.includes("Yes") ? "text-yes" : "text-no"
-                    )}>
-                      {a.action}
-                    </span>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="font-sans text-[14px] font-black text-white">{a.amount}</span>
+                      <span className="font-technical text-[9px] uppercase tracking-widest text-[#555]">{a.time}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-foreground">{a.amount}</span>
-                    <span className="text-xs text-dim">{a.time}</span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Leaderboard */}
-          <div className="glass-card rounded-xl p-6">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Trophy className="size-4 text-gold" />
-              Leaderboard
-            </h2>
-            <div className="space-y-2">
-              {MOCK_LEADERBOARD.map((entry) => (
-                <div
-                  key={entry.rank}
-                  className="flex items-center justify-between rounded-lg bg-[rgba(155,109,255,0.03)] px-3 py-2.5"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className={cn(
-                      "flex size-6 items-center justify-center rounded-full text-xs font-bold",
-                      entry.rank === 1 && "bg-gold/15 text-gold",
-                      entry.rank === 2 && "bg-[#C0C0C0]/15 text-[#C0C0C0]",
-                      entry.rank === 3 && "bg-[#CD7F32]/15 text-[#CD7F32]",
-                      entry.rank > 3 && "bg-oracle/10 text-muted-foreground",
-                    )}>
-                      {entry.rank}
-                    </span>
-                    <span className="text-sm font-medium text-foreground">{entry.name}</span>
+            {/* Leaderboard */}
+            <div className="brutalist-card bg-black p-6">
+              <h2 className="mb-4 flex items-center gap-2 font-technical text-[12px] font-bold uppercase tracking-widest text-white border-b border-[#333] pb-3">
+                <Trophy className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+                LEADERBOARD
+              </h2>
+              <div className="space-y-2">
+                {MOCK_LEADERBOARD.map((entry) => (
+                  <div
+                    key={entry.rank}
+                    className="flex items-center justify-between border-b border-[#111] py-2"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={cn(
+                        "font-technical text-[14px] font-black",
+                        entry.rank === 1 ? "text-[#CCFF00]" : "text-[#555]"
+                      )}>
+                        #{entry.rank}
+                      </span>
+                      <span className="font-technical text-[11px] font-bold tracking-widest text-white truncate max-w-[80px]">{entry.name}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={cn(
+                        "border px-1.5 py-0.5 font-technical text-[9px] font-bold uppercase",
+                        entry.position === "Yes" ? "bg-[#CCFF00] text-black border-[#CCFF00]" : "bg-[#FF2A2A] text-white border-[#FF2A2A]"
+                      )}>
+                        {entry.position}
+                      </span>
+                      <span className="font-sans text-[14px] font-black text-white">
+                        {parseFloat(formatEther(entry.amount)).toFixed(1)} ETH
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge
-                      variant={entry.position === "Yes" ? "success" : "destructive"}
-                      className="text-[10px]"
-                    >
-                      {entry.position}
-                    </Badge>
-                    <span className="text-sm font-medium text-foreground">
-                      {parseFloat(formatEther(entry.amount)).toFixed(1)} ETH
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Right column: bet form */}
         <div className="space-y-6">
-          <div className="glass-card sticky top-20 rounded-xl p-6">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Trophy className="size-4 text-gold" />
-              Place Your Bet
+          <div className="brutalist-card bg-black p-6 sticky top-24">
+            <h2 className="mb-6 flex items-center gap-2 font-technical text-[14px] font-bold uppercase tracking-widest text-white border-b border-[#333] pb-4">
+              <TerminalSquare className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+              TRANSACTION INTERFACE
             </h2>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Position buttons */}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setPosition(true)}
-                  aria-pressed={position}
-                  className={cn(
-                    "flex flex-col items-center gap-0.5 rounded-lg border px-4 py-3 transition-all",
-                    position
-                      ? "border-yes/30 bg-yes/10 glow-yes"
-                      : "border-[rgba(155,109,255,0.1)] bg-transparent hover:border-yes/20"
-                  )}
-                >
-                  <TrendingUp className={cn("size-4", position ? "text-yes" : "text-muted-foreground")} />
-                  <span className={cn("text-sm font-semibold", position ? "text-yes" : "text-muted-foreground")}>Yes</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {total > 0n ? Number((market.totalYesPool * 100n) / total) : 50}%
-                  </span>
-                </button>
-                <button
-                  onClick={() => setPosition(false)}
-                  aria-pressed={!position}
-                  className={cn(
-                    "flex flex-col items-center gap-0.5 rounded-lg border px-4 py-3 transition-all",
-                    !position
-                      ? "border-no/30 bg-no/10 glow-no"
-                      : "border-[rgba(155,109,255,0.1)] bg-transparent hover:border-no/20"
-                  )}
-                >
-                  <TrendingDown className={cn("size-4", !position ? "text-no" : "text-muted-foreground")} />
-                  <span className={cn("text-sm font-semibold", !position ? "text-no" : "text-muted-foreground")}>No</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {total > 0n ? Number((market.totalNoPool * 100n) / total) : 50}%
-                  </span>
-                </button>
+              <div className="space-y-2">
+                <label className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]">
+                  SELECT POSITION
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setPosition(true)}
+                    aria-pressed={position}
+                    className={cn(
+                      "flex flex-col items-center gap-1 border-[2px] p-4 transition-all",
+                      position
+                        ? "border-[#CCFF00] bg-[#CCFF00] text-black"
+                        : "border-[#333] bg-transparent text-[#555] hover:border-[#CCFF00] hover:text-[#CCFF00]"
+                    )}
+                  >
+                    <TrendingUp className="size-5 mb-1" strokeWidth={2.5} />
+                    <span className="font-technical text-[14px] font-black uppercase tracking-widest">YES</span>
+                    <span className="font-technical text-[10px] font-bold opacity-70">
+                      {total > 0n ? Number((market.totalYesPool * 100n) / total) : 50}%
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setPosition(false)}
+                    aria-pressed={!position}
+                    className={cn(
+                      "flex flex-col items-center gap-1 border-[2px] p-4 transition-all",
+                      !position
+                        ? "border-[#FF2A2A] bg-[#FF2A2A] text-white"
+                        : "border-[#333] bg-transparent text-[#555] hover:border-[#FF2A2A] hover:text-[#FF2A2A]"
+                    )}
+                  >
+                    <TrendingDown className="size-5 mb-1" strokeWidth={2.5} />
+                    <span className="font-technical text-[14px] font-black uppercase tracking-widest">NO</span>
+                    <span className="font-technical text-[10px] font-bold opacity-70">
+                      {total > 0n ? Number((market.totalNoPool * 100n) / total) : 50}%
+                    </span>
+                  </button>
+                </div>
               </div>
 
               {/* Amount input */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground" htmlFor="bet-amount">
-                  Amount (ETH)
+              <div className="space-y-3">
+                <label className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]" htmlFor="bet-amount">
+                  INPUT LIQUIDITY (ETH)
                 </label>
                 <Input
                   id="bet-amount"
@@ -277,19 +276,19 @@ export function MarketDetailPage() {
                   min="0"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="border-oracle/10 bg-[rgba(155,109,255,0.04)] text-foreground placeholder:text-dim focus-visible:ring-oracle/30"
+                  className="h-12 rounded-none border-[2px] border-[#333] bg-black px-4 font-sans text-xl font-black text-white placeholder:text-[#333] focus-visible:border-[#CCFF00] focus-visible:ring-0"
                 />
                 {/* Quick amount buttons */}
-                <div className="flex gap-1.5">
-                  {["0.1", "0.5", "1.0", "2.0"].map((v) => (
+                <div className="flex gap-2">
+                  {["0.1", "0.5", "1.0", "MAX"].map((v) => (
                     <button
                       key={v}
-                      onClick={() => setAmount(v)}
+                      onClick={() => setAmount(v === "MAX" ? "10.0" : v)}
                       className={cn(
-                        "flex-1 rounded-md border py-1 text-xs font-medium transition-all",
-                        amount === v
-                          ? "border-oracle/30 bg-oracle/10 text-oracle"
-                          : "border-oracle/8 text-muted-foreground hover:border-oracle/20 hover:text-foreground"
+                        "flex-1 border-[1.5px] py-1.5 font-technical text-[11px] font-bold uppercase tracking-widest transition-all",
+                        amount === (v === "MAX" ? "10.0" : v)
+                          ? "border-[#CCFF00] bg-[#CCFF00] text-black"
+                          : "border-[#333] text-[#888] hover:border-[#CCFF00] hover:text-[#CCFF00]"
                       )}
                     >
                       {v}
@@ -298,38 +297,38 @@ export function MarketDetailPage() {
                 </div>
               </div>
 
-              <Separator className="bg-oracle/10" />
+              <div className="h-px w-full bg-[#333]" />
 
               {/* Payout calculator */}
-              <div className="space-y-2 text-sm">
+              <div className="space-y-3 font-technical text-[11px] font-bold uppercase tracking-widest">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Position</span>
-                  <span className={cn("font-medium", position ? "text-yes" : "text-no")}>
-                    {position ? "Yes" : "No"}
+                  <span className="text-[#888]">POSITION</span>
+                  <span className={cn(position ? "text-[#CCFF00]" : "text-[#FF2A2A]")}>
+                    {position ? "LONG YES" : "SHORT NO"}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Platform fee</span>
-                  <span className="text-gold">2%</span>
+                  <span className="text-[#888]">NETWORK FEE</span>
+                  <span className="text-white">2.0%</span>
                 </div>
 
                 {payout && (
                   <>
-                    <Separator className="bg-oracle/10" />
+                    <div className="h-px w-full bg-[#333] my-2" />
                     <div className="flex justify-between">
-                      <span className="flex items-center gap-1 text-muted-foreground">
+                      <span className="flex items-center gap-1.5 text-[#888]">
                         <Info className="size-3" />
-                        Potential payout
+                        EST. RETURN
                       </span>
-                      <span className="font-semibold text-gold">{payout.net} ETH</span>
+                      <span className="text-[#CCFF00]">{payout.net} ETH</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Profit</span>
-                      <span className="font-medium text-yes">+{payout.profit} ETH</span>
+                      <span className="text-[#888]">PROFIT</span>
+                      <span className="text-white">+{payout.profit} ETH</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Multiplier</span>
-                      <span className="font-medium text-oracle">{payout.multiplier}x</span>
+                      <span className="text-[#888]">MULTIPLIER</span>
+                      <span className="text-white">{payout.multiplier}X</span>
                     </div>
                   </>
                 )}
@@ -337,20 +336,20 @@ export function MarketDetailPage() {
 
               {/* Submit */}
               <Button
-                className="btn-shimmer w-full bg-gradient-to-r from-oracle to-oracle-deep text-white hover:shadow-[0_0_20px_rgba(155,109,255,0.3)] disabled:opacity-40"
+                className="btn-acid h-14 w-full font-technical text-[14px]"
                 disabled={!amount || Number(amount) <= 0}
               >
                 {payout
-                  ? `Bet ${amount} ETH on ${position ? "Yes" : "No"}`
-                  : "Place Bet"
+                  ? `EXECUTE [ ${amount} ETH -> ${position ? "YES" : "NO"} ]`
+                  : "AWAITING VALUE..."
                 }
               </Button>
 
               {/* Auto-sign hint */}
-              <div className="flex items-start gap-2 rounded-lg bg-oracle/[0.04] p-3">
-                <Zap className="mt-0.5 size-3.5 shrink-0 text-oracle" />
-                <p className="text-[12px] leading-relaxed text-muted-foreground">
-                  Enable <span className="font-medium text-oracle">auto-signing</span> for instant bets without wallet popups.
+              <div className="flex items-start gap-3 border border-[#333] bg-[#050505] p-4">
+                <Zap className="mt-0.5 size-4 shrink-0 text-[#CCFF00]" />
+                <p className="font-technical text-[10px] uppercase leading-relaxed text-[#888]">
+                  <span className="text-[#CCFF00] font-bold">1-TAP SIGNING</span> available. Enable in settings to execute transactions without RPC popup interruptions.
                 </p>
               </div>
             </div>

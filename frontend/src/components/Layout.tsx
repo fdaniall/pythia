@@ -2,12 +2,12 @@ import { Link, Outlet, useLocation } from "react-router-dom"
 import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Eye, Plus, BarChart3, Wallet } from "lucide-react"
+import { TerminalSquare, Plus, BarChart3, Wallet } from "lucide-react"
 
 const navItems = [
-  { path: "/markets", label: "Markets", icon: Eye },
-  { path: "/create", label: "Create", icon: Plus },
-  { path: "/portfolio", label: "Portfolio", icon: BarChart3 },
+  { path: "/markets", label: "MARKETS", icon: TerminalSquare },
+  { path: "/create", label: "INITIALIZE", icon: Plus },
+  { path: "/portfolio", label: "PORTFOLIO", icon: BarChart3 },
 ]
 
 function truncateAddress(addr: string) {
@@ -15,86 +15,44 @@ function truncateAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`
 }
 
-const STARS = Array.from({ length: 30 }, (_, i) => ({
-  id: i,
-  left: `${Math.random() * 100}%`,
-  top: `${Math.random() * 100}%`,
-  delay: `${Math.random() * 5}s`,
-  duration: `${2 + Math.random() * 4}s`,
-  size: Math.random() > 0.7 ? 3 : 2,
-}))
-
-function StarField() {
-
-  return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      {STARS.map((star) => (
-        <div
-          key={star.id}
-          className="star"
-          style={{
-            left: star.left,
-            top: star.top,
-            width: star.size,
-            height: star.size,
-            ["--delay" as string]: star.delay,
-            ["--duration" as string]: star.duration,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
 export function Layout() {
   const location = useLocation()
   const { address, username, isConnected, openConnect, openWallet, disconnect } = useInterwovenKit()
 
   return (
-    <div className="bg-oracle-glow relative min-h-screen">
-      {/* Noise texture */}
-      <div className="noise-overlay" />
-
-      {/* Ambient glow orbs */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
-        <div className="ambient-orb-purple absolute -left-[5%] -top-[10%] size-[500px] rounded-full bg-[radial-gradient(circle,rgba(155,109,255,0.1)_0%,transparent_70%)] blur-[80px] md:size-[700px] md:blur-[120px]" />
-        <div className="ambient-orb-gold absolute -bottom-[5%] -right-[5%] size-[400px] rounded-full bg-[radial-gradient(circle,rgba(255,215,0,0.06)_0%,transparent_70%)] blur-[80px] md:size-[550px] md:blur-[120px]" />
-      </div>
-
-      {/* Star particles */}
-      <StarField />
+    <div className="bg-technical-grid relative min-h-screen text-white pb-32">
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-[rgba(155,109,255,0.08)] bg-[rgba(7,5,15,0.8)] backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+      <header className="sticky top-0 z-50 border-b-2 border-[#333] bg-black">
+        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-oracle/10">
-              <Eye className="size-4 text-oracle" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="flex size-8 items-center justify-center bg-[#CCFF00] border border-[#CCFF00] transition-transform group-hover:rotate-12 group-hover:bg-white">
+              <TerminalSquare className="size-5 text-black" strokeWidth={2.5} />
             </div>
-            <span className="font-oracle text-oracle-gradient text-xl italic">
-              Pythia
+            <span className="font-technical text-2xl font-black uppercase tracking-widest text-white group-hover:text-[#CCFF00] transition-colors">
+              PYTHIA
             </span>
           </Link>
 
           {/* Nav */}
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-2">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path
               const Icon = item.icon
               return (
                 <Link key={item.path} to={item.path}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <button
                     className={cn(
-                      "gap-1.5 text-muted-foreground transition-all",
-                      isActive && "bg-oracle/10 text-oracle font-semibold"
+                      "flex items-center justify-center gap-2 px-4 py-2 font-technical text-[13px] font-bold tracking-widest uppercase transition-all border-[1.5px]",
+                      isActive
+                        ? "bg-[#CCFF00] text-black border-[#CCFF00]"
+                        : "bg-transparent text-[#888] border-transparent hover:border-[#333] hover:text-white"
                     )}
                   >
-                    <Icon className="size-3.5" />
+                    <Icon className="size-4" strokeWidth={2.5} />
                     {item.label}
-                  </Button>
+                  </button>
                 </Link>
               )
             })}
@@ -102,40 +60,35 @@ export function Layout() {
 
           {/* Wallet */}
           {isConnected ? (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
+            <div className="flex items-center gap-3">
+              <button
                 onClick={openWallet}
-                className="gap-1.5 text-oracle-soft"
+                className="flex items-center gap-2 border-[2px] border-[#333] px-4 py-2 font-technical text-[13px] font-bold uppercase transition-all hover:border-[#CCFF00] hover:text-[#CCFF00]"
               >
-                <Wallet className="size-3.5" />
+                <Wallet className="size-4" strokeWidth={2.5} />
                 {username ? `${username}.init` : truncateAddress(address)}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
+              </button>
+              <button
                 onClick={disconnect}
-                className="border-oracle/20 text-muted-foreground hover:border-oracle/40 hover:text-foreground"
+                className="font-technical text-[12px] font-bold uppercase text-[#888] hover:text-[#FF2A2A] underline decoration-transparent hover:decoration-current transition-all"
               >
-                Disconnect
-              </Button>
+                [DISCONNECT]
+              </button>
             </div>
           ) : (
             <Button
-              size="sm"
-              className="btn-shimmer bg-gradient-to-r from-oracle to-oracle-deep text-white hover:shadow-[0_0_20px_rgba(155,109,255,0.3)]"
+              className="btn-acid h-10 px-6 font-technical text-[13px]"
               onClick={openConnect}
             >
-              <Wallet className="size-3.5" />
-              Connect Wallet
+              <Wallet className="size-4 mr-2" strokeWidth={2.5} />
+              CONNECT_NODE
             </Button>
           )}
         </div>
       </header>
 
       {/* Main */}
-      <main className="relative z-10 mx-auto max-w-6xl px-4 py-10">
+      <main className="relative z-10 mx-auto max-w-[1400px] px-6 py-12">
         <Outlet />
       </main>
     </div>

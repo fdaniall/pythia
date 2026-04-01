@@ -139,12 +139,18 @@ export function MarketsPage() {
     <div className="space-y-8">
       {/* Page header */}
       <FadeIn>
-        <div className="space-y-2">
-          <h1 className="font-oracle text-oracle-gradient text-3xl italic">
-            Explore Markets
+        <div className="space-y-3 mb-4">
+          <div className="inline-flex items-center gap-2 border border-[#333] bg-black px-3 py-1">
+            <Eye className="size-3 text-[#CCFF00]" />
+            <span className="font-technical text-[10px] font-bold uppercase tracking-[0.2em] text-[#CCFF00]">
+              Market Index
+            </span>
+          </div>
+          <h1 className="font-sans text-[clamp(40px,6vw,72px)] font-black uppercase leading-[0.9] tracking-tighter text-white">
+            GLOBAL <span className="text-[#CCFF00]">LIQUIDITY.</span>
           </h1>
-          <p className="text-muted-foreground">
-            Discover predictions and bet on what comes next.
+          <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase max-w-[500px]">
+            Execute trades across isolated pools. All positions settled on-chain via Initia MiniEVM.
           </p>
         </div>
       </FadeIn>
@@ -152,49 +158,41 @@ export function MarketsPage() {
       {/* Stats banner */}
       <FadeIn delay={0.05}>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="glass-card flex items-center gap-3 rounded-xl p-4">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-oracle/10">
-            <Eye className="size-4 text-oracle" />
+        <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Eye className="size-4 text-[#888]" strokeWidth={2.5} />
+            <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">TOTAL MARKETS</p>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Total Markets</p>
-            <p className="text-lg font-semibold text-foreground">{MOCK_MARKETS.length}</p>
-          </div>
+          <p className="font-sans text-3xl font-black text-white">{MOCK_MARKETS.length}</p>
         </div>
-        <div className="glass-card flex items-center gap-3 rounded-xl p-4">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-yes/10">
-            <TrendingUp className="size-4 text-yes" />
+        <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+            <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">LIVE NOW</p>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Live Now</p>
-            <p className="text-lg font-semibold text-yes">{openCount}</p>
-          </div>
+          <p className="font-sans text-3xl font-black text-[#CCFF00]">{openCount}</p>
         </div>
-        <div className="glass-card flex items-center gap-3 rounded-xl p-4">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-gold/10">
-            <Coins className="size-4 text-gold" />
+        <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Coins className="size-4 text-white" strokeWidth={2.5} />
+            <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">VOLUME</p>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Total Volume</p>
-            <p className="text-lg font-semibold text-gold">{parseFloat(formatEther(totalVolume)).toFixed(0)} ETH</p>
-          </div>
+          <p className="font-sans text-3xl font-black text-white">{parseFloat(formatEther(totalVolume)).toFixed(0)} <span className="text-xl text-[#555]">ETH</span></p>
         </div>
-        <div className="glass-card flex items-center gap-3 rounded-xl p-4">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-oracle-soft/10">
-            <Users className="size-4 text-oracle-soft" />
+        <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="size-4 text-[#888]" strokeWidth={2.5} />
+            <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">TOTAL BETTORS</p>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Total Bettors</p>
-            <p className="text-lg font-semibold text-foreground">{totalBettors}</p>
-          </div>
+          <p className="font-sans text-3xl font-black text-white">{totalBettors}</p>
         </div>
       </div>
       </FadeIn>
 
       {/* Search + Filter + Create */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-y border-[#333] py-4 bg-black/50">
         {/* Tabs */}
-        <div role="tablist" className="flex gap-1 rounded-xl bg-[rgba(155,109,255,0.04)] p-1">
+        <div role="tablist" className="flex flex-wrap gap-2">
           {tabs.map((tab) => (
             <button
               key={tab.value}
@@ -202,10 +200,10 @@ export function MarketsPage() {
               aria-selected={activeTab === tab.value}
               onClick={() => setActiveTab(tab.value)}
               className={cn(
-                "rounded-lg px-3 py-1.5 text-sm font-medium transition-all",
+                "border-[2px] px-4 py-1.5 font-technical text-[12px] font-bold uppercase tracking-wider transition-all",
                 activeTab === tab.value
-                  ? "bg-oracle/15 text-oracle"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "border-[#CCFF00] bg-[#CCFF00] text-black"
+                  : "border-[#333] bg-transparent text-[#888] hover:border-[#CCFF00] hover:text-[#CCFF00]"
               )}
             >
               {tab.label}
@@ -213,48 +211,51 @@ export function MarketsPage() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
           {/* Search */}
           <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-dim" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#888]" strokeWidth={2.5} />
             <Input
-              placeholder="Search markets..."
+              placeholder="SEARCH_MARKETS..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-8 w-52 border-oracle/10 bg-[rgba(155,109,255,0.04)] pl-8 text-sm placeholder:text-dim focus-visible:ring-oracle/30"
+              className="h-10 w-full sm:w-64 rounded-none border-[2px] border-[#333] bg-black pl-10 font-technical text-[12px] font-bold uppercase text-white placeholder:text-[#555] focus-visible:border-[#CCFF00] focus-visible:ring-0"
             />
           </div>
 
           {/* Create CTA */}
           <Link to="/create">
             <Button
-              size="sm"
-              className="btn-shimmer gap-1.5 bg-gradient-to-r from-oracle to-oracle-deep text-white hover:shadow-[0_0_20px_rgba(155,109,255,0.3)]"
+              className="btn-acid h-10 px-5 font-technical text-[12px]"
             >
-              <Plus className="size-3.5" />
-              Create
+              <Plus className="mr-2 size-4" strokeWidth={2.5} />
+              INITIALIZE_POOL
             </Button>
           </Link>
         </div>
       </div>
 
       {/* Market grid */}
-      {filtered.length > 0 ? (
-        <div className="grid gap-5 sm:grid-cols-2">
-          {filtered.map((market, i) => (
-            <FadeIn key={market.id} delay={Math.min(i * 0.05, 0.3)}>
-              <MarketCard market={market} />
-            </FadeIn>
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-oracle/10">
-            <Search className="size-5 text-oracle" />
+      <div className="min-h-[400px]">
+        {filtered.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((market, i) => (
+              <FadeIn key={market.id} delay={Math.min(i * 0.05, 0.3)}>
+                <MarketCard market={market} />
+              </FadeIn>
+            ))}
           </div>
-          <p className="text-sm text-muted-foreground">No markets found. Try a different filter or search.</p>
-        </div>
-      )}
+        ) : (
+          <div className="brutalist-card col-span-full flex flex-col items-center justify-center bg-black py-24 text-center">
+            <div className="mb-4 flex size-16 items-center justify-center border-2 border-[#333] bg-black">
+              <Search className="size-6 text-[#555]" />
+            </div>
+            <p className="font-technical text-[14px] font-bold uppercase tracking-widest text-[#888]">
+              ERR 404: NO MARKETS DETECTED.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
