@@ -20,6 +20,7 @@ const MarketsPage = lazy(() => import("@/pages/MarketsPage").then(m => ({ defaul
 const MarketDetailPage = lazy(() => import("@/pages/MarketDetailPage").then(m => ({ default: m.MarketDetailPage })))
 const CreateMarketPage = lazy(() => import("@/pages/CreateMarketPage").then(m => ({ default: m.CreateMarketPage })))
 const PortfolioPage = lazy(() => import("@/pages/PortfolioPage").then(m => ({ default: m.PortfolioPage })))
+const DocsPage = lazy(() => import("@/pages/DocsPage").then(m => ({ default: m.DocsPage })))
 
 const wagmiConfig = createConfig({
   connectors: [initiaPrivyWalletConnector],
@@ -87,6 +88,7 @@ export default function App() {
                     <Route path="/markets/:id" element={<MarketDetailPage />} />
                     <Route path="/create" element={<CreateMarketPage />} />
                     <Route path="/portfolio" element={<PortfolioPage />} />
+                    <Route path="/docs" element={<DocsPage />} />
                   </Route>
                 </Routes>
               </Suspense>

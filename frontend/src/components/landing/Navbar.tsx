@@ -3,9 +3,9 @@ import { ArrowRight, Menu, X } from "lucide-react"
 import { Link } from "react-router-dom"
 
 const navLinks = [
-  { href: "#how-it-works", label: "Protocol" },
-  { href: "#features", label: "Features" },
-  { href: "#cta", label: "Initialize" },
+  { href: "/docs", label: "Docs", isRoute: true },
+  { href: "#features", label: "Features", isRoute: false },
+  { href: "#cta", label: "Initialize", isRoute: false },
 ]
 
 export function Navbar() {
@@ -50,15 +50,25 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-8 md:flex">
-            {navLinks.map((link) => (
-              <button
-                key={link.href}
-                onClick={() => scrollTo(link.href)}
-                className="font-technical text-[13px] font-medium tracking-widest text-[#888] uppercase transition-colors hover:text-[#CCFF00]"
-              >
-                {link.label}
-              </button>
-            ))}
+            {navLinks.map((link) =>
+              link.isRoute ? (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className="font-technical text-[13px] font-medium tracking-widest text-[#888] uppercase transition-colors hover:text-[#CCFF00] no-underline"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <button
+                  key={link.href}
+                  onClick={() => scrollTo(link.href)}
+                  className="font-technical text-[13px] font-medium tracking-widest text-[#888] uppercase transition-colors hover:text-[#CCFF00]"
+                >
+                  {link.label}
+                </button>
+              )
+            )}
           </nav>
 
           {/* Desktop CTA */}
@@ -84,15 +94,26 @@ export function Navbar() {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 bg-[#000] border-t border-[#333] md:hidden pt-16">
-          {navLinks.map((link) => (
-            <button
-              key={link.href}
-              onClick={() => scrollTo(link.href)}
-              className="font-technical text-3xl font-bold uppercase text-white transition-colors hover:text-[#CCFF00]"
-            >
-              {link.label}
-            </button>
-          ))}
+          {navLinks.map((link) =>
+            link.isRoute ? (
+              <Link
+                key={link.href}
+                to={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="font-technical text-3xl font-bold uppercase text-white transition-colors hover:text-[#CCFF00] no-underline"
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <button
+                key={link.href}
+                onClick={() => scrollTo(link.href)}
+                className="font-technical text-3xl font-bold uppercase text-white transition-colors hover:text-[#CCFF00]"
+              >
+                {link.label}
+              </button>
+            )
+          )}
           <Link
             to="/markets"
             onClick={() => setMobileOpen(false)}

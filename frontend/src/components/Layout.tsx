@@ -3,13 +3,14 @@ import { Link, Outlet, useLocation } from "react-router-dom"
 import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { TerminalSquare, Plus, BarChart3, Wallet, Menu, X } from "lucide-react"
+import { TerminalSquare, Plus, BarChart3, Wallet, Menu, X, BookOpen } from "lucide-react"
 import { TerminalStream } from "@/components/TerminalStream"
 
 const navItems = [
   { path: "/markets", label: "MARKETS", icon: TerminalSquare },
   { path: "/create", label: "INITIALIZE", icon: Plus },
   { path: "/portfolio", label: "PORTFOLIO", icon: BarChart3 },
+  { path: "/docs", label: "DOCS", icon: BookOpen },
 ]
 
 function truncateAddress(addr: string) {

@@ -46,12 +46,12 @@ export function Hero() {
                   Enter Oracle
                   <ArrowRight className="ml-3 size-5" strokeWidth={3} />
                 </Link>
-                <a
-                  href="#how-it-works"
-                  className="flex h-14 items-center px-8 border border-[#333] bg-transparent font-technical text-[15px] font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#333] transition-all hover:border-white hover:shadow-[2px_2px_0px_0px_#fff] hover:translate-x-[2px] hover:translate-y-[2px]"
+                <Link
+                  to="/docs"
+                  className="flex h-14 items-center px-8 border border-[#333] bg-transparent font-technical text-[15px] font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#333] transition-all hover:border-white hover:shadow-[2px_2px_0px_0px_#fff] hover:translate-x-[2px] hover:translate-y-[2px] no-underline"
                 >
-                  How It Works
-                </a>
+                  Read Docs
+                </Link>
               </div>
             </FadeIn>
           </div>
