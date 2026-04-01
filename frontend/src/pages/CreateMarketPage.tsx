@@ -13,14 +13,23 @@ export function CreateMarketPage() {
   const { isConnected, openConnect } = useInterwovenKit()
   const [question, setQuestion] = useState("")
   const [deadline, setDeadline] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: call contract createMarket
-    toast.success("Market Created Successfully", {
-      description: "Your prediction market is now live and accepting bets.",
-      duration: 5000,
-    })
+    setIsSubmitting(true)
+    try {
+      // TODO: call contract createMarket
+      await new Promise((r) => setTimeout(r, 1500))
+      toast.success("Market Created Successfully", {
+        description: "Your prediction market is now live and accepting bets.",
+        duration: 5000,
+      })
+      setQuestion("")
+      setDeadline("")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const deadlineDate = deadline ? new Date(deadline) : null
@@ -121,10 +130,10 @@ export function CreateMarketPage() {
             <Button
               type="submit"
               className="btn-acid h-14 w-full font-technical text-[14px] mt-4"
-              disabled={!isValid}
+              disabled={!isValid || isSubmitting}
             >
               <Sparkles className="mr-2 size-4" strokeWidth={2.5} />
-              CREATE MARKET
+              {isSubmitting ? "DEPLOYING..." : "CREATE MARKET"}
             </Button>
           </form>
         </div>

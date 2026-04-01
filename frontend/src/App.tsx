@@ -1,6 +1,5 @@
-import { useState, useEffect, lazy, Suspense } from "react"
-import { BootLoader } from "@/components/BootLoader"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { useEffect, lazy, Suspense } from "react"
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createConfig, http, WagmiProvider } from "wagmi"
 import { mainnet } from "wagmi/chains"
@@ -47,22 +46,19 @@ function RouteLoader() {
   )
 }
 
-export default function App() {
-  const [booting, setBooting] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !sessionStorage.getItem("pythia_booted")
-    }
-    return true
-  })
+// Scroll to top on every route change
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
 
+export default function App() {
   useEffect(() => {
     injectStyles(InterwovenKitStyles)
   }, [])
-
-  const handleBootComplete = () => {
-    sessionStorage.setItem("pythia_booted", "true")
-    setBooting(false)
-  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -79,26 +75,24 @@ export default function App() {
           vipUrl={TESTNET.vipUrl}
           theme="dark"
         >
-          {booting && <BootLoader onComplete={handleBootComplete} />}
-          {!booting && (
-            <BrowserRouter>
-              <BrutalistModalHacker />
-              <Toaster position="bottom-right" />
-              <Suspense fallback={<RouteLoader />}>
-                <Routes>
-                  <Route index element={<LandingPage />} />
-                  <Route element={<Layout />}>
-                    <Route path="/markets" element={<MarketsPage />} />
-                    <Route path="/markets/:id" element={<MarketDetailPage />} />
-                    <Route path="/create" element={<CreateMarketPage />} />
-                    <Route path="/portfolio" element={<PortfolioPage />} />
-                    <Route path="/docs" element={<DocsPage />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                  </Route>
-                </Routes>
-              </Suspense>
-            </BrowserRouter>
-          )}
+          <BrowserRouter>
+            <ScrollToTop />
+            <BrutalistModalHacker />
+            <Toaster position="bottom-right" />
+            <Suspense fallback={<RouteLoader />}>
+              <Routes>
+                <Route index element={<LandingPage />} />
+                <Route element={<Layout />}>
+                  <Route path="/markets" element={<MarketsPage />} />
+                  <Route path="/markets/:id" element={<MarketDetailPage />} />
+                  <Route path="/create" element={<CreateMarketPage />} />
+                  <Route path="/portfolio" element={<PortfolioPage />} />
+                  <Route path="/docs" element={<DocsPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Route>
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
         </InterwovenKitProvider>
       </WagmiProvider>
     </QueryClientProvider>
