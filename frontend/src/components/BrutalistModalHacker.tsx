@@ -2,118 +2,203 @@ import { useEffect } from "react"
 
 export function BrutalistModalHacker() {
   useEffect(() => {
-    // We observe the body for the privy modal or interwoven modal injection
-    const observer = new MutationObserver(() => {
-      // Find the #privy-dialog or interwoven dialog
-      // Interwovenkit injects a modal with various IDs, but Privy specifically uses #privy-dialog 
-      // with a shadowRoot.
+    let privyShadowObserver: MutationObserver | null = null
+    let iwkShadowObserver: MutationObserver | null = null
+
+    // Check if a shadow root has any visible fixed-position element (modal/drawer open signal)
+    const hasShadowModalOpen = (shadowRoot: ShadowRoot) => {
+      const els = Array.from(shadowRoot.querySelectorAll('*')) as HTMLElement[]
+      return els.some(el => {
+        const s = window.getComputedStyle(el)
+        return s.position === 'fixed' && el.offsetWidth > 50
+      })
+    }
+
+    // Checks if Privy's shadow root currently has a visible dialog
+    const isPrivyOpen = () => {
       const privyDialog = document.querySelector("#privy-dialog") as HTMLElement
-      
-      if (privyDialog && privyDialog.shadowRoot) {
-        // Only inject once
-        if (privyDialog.shadowRoot.querySelector("#brutalist-hack")) return
+      if (!privyDialog?.shadowRoot) return false
+      return hasShadowModalOpen(privyDialog.shadowRoot)
+    }
 
-        const style = document.createElement("style")
-        style.id = "brutalist-hack"
-        style.textContent = `
-          /* OVERRIDE PRIVY SHADOW DOM */
-          * {
-            border-radius: 0px !important;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-          }
-          
-          .privy-modal-content, [role="dialog"], [part="content"] {
-            border-radius: 0px !important;
-            border: 2px solid #333 !important;
-            box-shadow: 8px 8px 0px 0px #CCFF00 !important;
-            background-color: #0A0A0A !important;
-            text-transform: uppercase !important;
-          }
-          
-          button, input {
-            border-radius: 0px !important;
-            text-transform: uppercase !important;
-            transition: all 0.1s !important;
-          }
-          
-          button:hover {
-            background-color: #CCFF00 !important;
-            color: #000 !important;
-            border-color: #CCFF00 !important;
-          }
+    // Checks if InterwovenKit's shadow root currently has a visible drawer/modal
+    const isInterwovenOpen = () => {
+      const iwk = document.querySelector('interwoven-kit') as HTMLElement
+      if (!iwk?.shadowRoot) return false
+      return hasShadowModalOpen(iwk.shadowRoot)
+    }
 
-          button:hover * {
-            color: #000 !important;
-          }
-        `
-        privyDialog.shadowRoot.appendChild(style)
-      }
+    // Injects brutalist styles into Privy shadow root (idempotent)
+    const injectPrivyStyles = (shadowRoot: ShadowRoot) => {
+      if (shadowRoot.querySelector("#brutalist-hack")) return
+      const style = document.createElement("style")
+      style.id = "brutalist-hack"
+      style.textContent = `
+        * {
+          border-radius: 0px !important;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+        }
+        .privy-modal-content, [role="dialog"], [part="content"] {
+          border-radius: 0px !important;
+          border: 2px solid #333 !important;
+          box-shadow: 8px 8px 0px 0px #CCFF00 !important;
+          background-color: #0A0A0A !important;
+          text-transform: uppercase !important;
+        }
+        button, input {
+          border-radius: 0px !important;
+          text-transform: uppercase !important;
+          transition: all 0.1s !important;
+        }
+        button:hover {
+          background-color: #CCFF00 !important;
+          color: #000 !important;
+          border-color: #CCFF00 !important;
+        }
+        button:hover * {
+          color: #000 !important;
+        }
+      `
+      shadowRoot.appendChild(style)
+    }
 
-      // Also let's hunt for any non-shadow DOM interwoven kit modals
-      // based on the hashed classes that I found in styles.css
-      const interwovenModals = document.querySelectorAll('[class*="_modal_"], [role="dialog"], #privy-dialog, [id^="headlessui-portal"]')
-      
-      let modalFound = false;
-      let targetZIndex = "99998";
+    const isElementVisible = (el: Element) => {
+      const style = window.getComputedStyle(el as HTMLElement)
+      return style.display !== "none" && style.visibility !== "hidden" && (el as HTMLElement).offsetWidth > 0
+    }
+
+    // Single source of truth: compute modal state and apply overlay
+    const updateOverlayState = () => {
+      const privyOpen = isPrivyOpen()
+
+      // Check InterwovenKit backdrop/overlay elements in regular DOM
+      const backdropEl = document.querySelector('[class*="_backdrop_"], [class*="_overlay_"]')
+      const hasVisibleBackdrop = !!backdropEl && isElementVisible(backdropEl)
+
+      // Detect InterwovenKit drawer: it renders as <interwoven-kit> custom element on body.
+      // Its height is 0 because all content inside is position:fixed — so check children's dimensions.
+      const IGNORED_IDS = new Set(["root", "brutalist-mega-overlay"])
+      const IGNORED_TAGS = new Set(["script", "style", "link", "noscript", "meta"])
+      const hasPortal = Array.from(document.body.children).some((el) => {
+        if (IGNORED_TAGS.has(el.tagName.toLowerCase())) return false
+        if (el.id && IGNORED_IDS.has(el.id)) return false
+        // Normal portal: has height itself
+        if ((el as HTMLElement).offsetHeight > 0) return true
+        // Fixed-position portal (e.g. <interwoven-kit>): h=0 but children have dimensions
+        return Array.from(el.children).some((child) => {
+          const c = child as HTMLElement
+          return c.offsetWidth > 0 || c.offsetHeight > 0
+        })
+      })
+
+      const interwovenModals = document.querySelectorAll('[class*="_modal_"], [role="dialog"]')
+      let hasVisibleModal = false
+      let targetZIndex = "9998"
 
       interwovenModals.forEach((modal) => {
-        if (modal.id.includes("headlessui") && !modal.querySelector('[role="dialog"]')) return;
-        
-        // Skip our own overlay
-        if (modal.id === "brutalist-mega-overlay") return;
-        
-        modalFound = true;
-        
-        // Find the z-index of the modal
-        const computedZ = window.getComputedStyle(modal).zIndex;
+        if (modal.id === "brutalist-mega-overlay") return
+        if (!isElementVisible(modal)) return
+        hasVisibleModal = true
+        const computedZ = window.getComputedStyle(modal as HTMLElement).zIndex
         if (computedZ && computedZ !== "auto") {
-           // We want to be just below the modal
-           targetZIndex = (parseInt(computedZ) - 1).toString();
+          targetZIndex = (parseInt(computedZ) - 1).toString()
         }
-        
-        // Apply our hacked class
-        if (modal.classList.contains("brutalist-hacked")) return
-        modal.classList.add("brutalist-hacked")
-        
-        const el = modal as HTMLElement
-        el.style.setProperty("border-radius", "0px", "important")
-        if (modal.getAttribute("role") === "dialog" || modal.className.includes("_modal_")) {
+        if (!modal.classList.contains("brutalist-hacked")) {
+          modal.classList.add("brutalist-hacked")
+          const el = modal as HTMLElement
+          el.style.setProperty("border-radius", "0px", "important")
           el.style.setProperty("border", "2px solid #333", "important")
           el.style.setProperty("box-shadow", "8px 8px 0px 0px #CCFF00", "important")
         }
       })
 
-      // Explicitly inject a mega overlay to the body to block everything!
-      let overlay = document.getElementById("brutalist-mega-overlay");
-      if (modalFound) {
+
+      const iwkOpen = isInterwovenOpen()
+      const modalOpen = privyOpen || iwkOpen || hasVisibleBackdrop || hasPortal || hasVisibleModal
+
+      let overlay = document.getElementById("brutalist-mega-overlay")
+      if (modalOpen) {
         if (!overlay) {
-          overlay = document.createElement("div");
-          overlay.id = "brutalist-mega-overlay";
-          overlay.style.position = "fixed";
-          overlay.style.inset = "0";
-          overlay.style.width = "100vw";
-          overlay.style.height = "100vh";
-          overlay.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
-          overlay.style.backdropFilter = "blur(8px) grayscale(100%)";
-          overlay.style.pointerEvents = "auto";
-          overlay.style.transition = "all 0.3s ease";
-          document.body.appendChild(overlay);
+          overlay = document.createElement("div")
+          overlay.id = "brutalist-mega-overlay"
+          overlay.style.position = "fixed"
+          overlay.style.inset = "0"
+          overlay.style.width = "100vw"
+          overlay.style.height = "100vh"
+          overlay.style.backgroundColor = "rgba(0, 0, 0, 0.75)"
+          overlay.style.backdropFilter = "blur(8px) grayscale(100%)"
+          overlay.style.pointerEvents = "auto"
+          overlay.style.transition = "all 0.3s ease"
+          overlay.style.cursor = "pointer"
+          overlay.addEventListener("click", () => {
+            // Try clicking IWK's own internal overlay (its built-in close handler)
+            const iwk = document.querySelector("interwoven-kit") as HTMLElement
+            const iwkOverlay = iwk?.shadowRoot?.querySelector('[class*="_overlay_"]') as HTMLElement
+            if (iwkOverlay) {
+              iwkOverlay.click()
+              return
+            }
+            // Fallback: send Escape key (works with most modal libraries)
+            document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }))
+          })
+          document.body.appendChild(overlay)
         }
-        overlay.style.zIndex = targetZIndex;
-        document.body.style.overflow = "hidden";
+        overlay.style.zIndex = targetZIndex
+        document.body.style.overflow = "hidden"
+        document.body.classList.add("modal-open-brutalist")
       } else {
-        if (overlay) {
-          overlay.remove();
-        }
-        document.body.style.overflow = "auto";
+        overlay?.remove()
+        document.body.style.overflow = "auto"
+        document.body.classList.remove("modal-open-brutalist")
       }
+    }
+
+    const setupPrivyShadowObserver = (shadowRoot: ShadowRoot) => {
+      if (privyShadowObserver) return
+      privyShadowObserver = new MutationObserver(updateOverlayState)
+      privyShadowObserver.observe(shadowRoot, { childList: true, subtree: true, attributes: true })
+    }
+
+    const setupIwkShadowObserver = (shadowRoot: ShadowRoot) => {
+      if (iwkShadowObserver) return
+      iwkShadowObserver = new MutationObserver(updateOverlayState)
+      iwkShadowObserver.observe(shadowRoot, { childList: true, subtree: true, attributes: true })
+    }
+
+    // Run immediately on mount in case elements are already in DOM
+    const existingPrivy = document.querySelector("#privy-dialog") as HTMLElement
+    if (existingPrivy?.shadowRoot) {
+      injectPrivyStyles(existingPrivy.shadowRoot)
+      setupPrivyShadowObserver(existingPrivy.shadowRoot)
+    }
+    const existingIwk = document.querySelector("interwoven-kit") as HTMLElement
+    if (existingIwk?.shadowRoot) {
+      setupIwkShadowObserver(existingIwk.shadowRoot)
+    }
+
+    // Main body observer — detects new shadow host elements appearing
+    const observer = new MutationObserver(() => {
+      const privyDialog = document.querySelector("#privy-dialog") as HTMLElement
+      if (privyDialog?.shadowRoot) {
+        injectPrivyStyles(privyDialog.shadowRoot)
+        setupPrivyShadowObserver(privyDialog.shadowRoot)
+      }
+      const iwk = document.querySelector("interwoven-kit") as HTMLElement
+      if (iwk?.shadowRoot) {
+        setupIwkShadowObserver(iwk.shadowRoot)
+      }
+      updateOverlayState()
     })
 
     observer.observe(document.body, { childList: true, subtree: true })
 
-    // Also forcefully overwrite any privy css variables that might be attached to html/body
+    // Polling fallback — catches cases where shadow DOM changes don't trigger body observer
+    const pollInterval = window.setInterval(updateOverlayState, 300)
+
+    // CSS variable overrides
     document.documentElement.style.setProperty("--privy-border-radius-md", "0px", "important")
     document.documentElement.style.setProperty("--privy-border-radius-lg", "0px", "important")
+
     const headStyle = document.createElement("style")
     headStyle.id = "brutalist-max-override"
     headStyle.textContent = `
@@ -139,9 +224,8 @@ export function BrutalistModalHacker() {
         --success: #CCFF00 !important;
         --info: #CCFF00 !important;
       }
-      
-      /* Target the modal inner classes directly and FORCE them to change */
-      [class*="_modal_"] {
+
+      [class*="_modal_"], [class*="_panel_"] {
         border-radius: 0px !important;
         border: 2px solid #333 !important;
         box-shadow: 8px 8px 0px 0px #CCFF00 !important;
@@ -150,8 +234,7 @@ export function BrutalistModalHacker() {
         font-family: var(--font-mono) !important;
       }
 
-      /* Brutalist intense backdrop and unfocus effect */
-      [class*="_overlay_"], 
+      [class*="_overlay_"],
       [class*="_backdrop_"],
       [id^="headlessui-portal"] > div > div:first-child,
       body > [role="dialog"] > div:first-child {
@@ -159,23 +242,36 @@ export function BrutalistModalHacker() {
         backdrop-filter: blur(8px) grayscale(100%) !important;
       }
 
-      /* Dim and disable entire app background when modal is open */
+      /* CSS :has() — zero-JS fallback for InterwovenKit (not Privy, which is shadow DOM) */
+      body:has([class*="_backdrop_"]) #root,
+      body:has([class*="_overlay_"]) #root,
+      body:has([class*="_modal_"]) #root {
+        filter: blur(8px) grayscale(100%) !important;
+        pointer-events: none !important;
+        user-select: none !important;
+      }
+
+      body:has([class*="_backdrop_"]),
+      body:has([class*="_overlay_"]),
+      body:has([class*="_modal_"]) {
+        overflow: hidden !important;
+      }
+
+      /* JS-driven fallback (covers Privy) */
       body.modal-open-brutalist #root {
         filter: blur(8px) grayscale(100%) !important;
         pointer-events: none !important;
         user-select: none !important;
-        transition: filter 0.3s ease !important;
       }
-      
+
       body.modal-open-brutalist {
         overflow: hidden !important;
       }
 
       #root {
-        transition: all 0.3s ease;
+        transition: filter 0.3s ease;
       }
 
-      /* Connect wallet button overrides */
       [class*="_modal_"] *, [role="dialog"] * {
         border-radius: 0px !important;
       }
@@ -208,8 +304,10 @@ export function BrutalistModalHacker() {
 
     return () => {
       observer.disconnect()
-      const el = document.getElementById("brutalist-max-override")
-      if (el) el.remove()
+      privyShadowObserver?.disconnect()
+      iwkShadowObserver?.disconnect()
+      window.clearInterval(pollInterval)
+      document.getElementById("brutalist-max-override")?.remove()
     }
   }, [])
 
