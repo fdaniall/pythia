@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from "react-router-dom"
 import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { TerminalSquare, Plus, BarChart3, Wallet, Menu, X, BookOpen } from "lucide-react"
+import { TerminalSquare, Plus, BarChart3, Wallet, Menu, X, BookOpen, ArrowUp } from "lucide-react"
 import { TerminalStream } from "@/components/TerminalStream"
 
 const navItems = [
@@ -24,7 +24,7 @@ export function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="bg-technical-grid relative min-h-screen text-white pb-32 overflow-hidden">
+    <div className="bg-technical-grid relative flex min-h-screen flex-col text-white overflow-hidden">
       <TerminalStream />
 
       {/* Header */}
@@ -160,9 +160,61 @@ export function Layout() {
       </header>
 
       {/* Main */}
-      <main className="relative z-10 mx-auto max-w-[1400px] px-4 sm:px-6 py-8 sm:py-12">
+      <main className="relative z-10 mx-auto w-full max-w-[1400px] flex-1 px-4 sm:px-6 py-8 sm:py-12">
         <Outlet />
       </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 border-t-2 border-[#333] bg-black mt-auto">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-8">
+            <div>
+              <Link to="/" className="mb-3 flex items-center gap-3 group">
+                <div className="flex size-7 items-center justify-center border border-[#CCFF00] p-1 bg-black transition-transform group-hover:rotate-12">
+                  <img src="/pythia-logo.svg" alt="" className="size-full object-contain" />
+                </div>
+                <span className="font-technical text-xl font-black uppercase tracking-widest text-white group-hover:text-[#CCFF00] transition-colors">
+                  PYTHIA
+                </span>
+              </Link>
+              <p className="font-technical text-[12px] leading-[1.6] text-[#555] uppercase max-w-sm">
+                Zero-BS prediction markets. Native on Initia.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="font-technical text-[11px] font-bold uppercase tracking-widest text-[#555] hover:text-[#CCFF00] transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#333] pt-6 gap-3">
+            <p className="font-technical text-[10px] uppercase tracking-widest text-[#444]">
+              &copy; 2026 Pythia Protocol v1
+            </p>
+            <div className="flex items-center gap-4">
+              <span className="font-technical text-[10px] uppercase tracking-widest text-[#444]">
+                Secured by Initia
+              </span>
+              <button
+                type="button"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                className="flex size-8 items-center justify-center border border-[#333] text-[#555] hover:border-[#CCFF00] hover:text-[#CCFF00] transition-all"
+                aria-label="Scroll to top"
+              >
+                <ArrowUp className="size-3.5" strokeWidth={2.5} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
