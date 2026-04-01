@@ -137,7 +137,7 @@ export function PortfolioPage() {
               <Link
                 key={`${bet.id}-${bet.position}`}
                 to={`/markets/${bet.id}`}
-                className="group flex flex-col md:flex-row md:items-center justify-between gap-4 border border-[#333] bg-[#050505] p-4 transition-all hover:border-[#CCFF00] hover:bg-[#111]"
+                className="group flex flex-col md:flex-row md:items-center justify-between gap-4 border-2 border-[#333] bg-[#050505] p-4 transition-all hover:border-[#CCFF00] hover:bg-[#111]"
               >
                 <div className="flex-1 space-y-2">
                   <h3 className="font-sans text-[18px] font-black uppercase leading-tight text-white group-hover:text-[#CCFF00]">
@@ -145,30 +145,51 @@ export function PortfolioPage() {
                   </h3>
                   <div className="flex items-center gap-3 font-technical text-[11px] font-bold uppercase tracking-widest text-[#888]">
                     <span className={cn(
-                      "px-2 py-0.5 border", 
+                      "px-2 py-0.5 border-2", 
                       bet.position === "Yes" ? "bg-[#CCFF00] text-black border-[#CCFF00]" : "bg-[#FF2A2A] text-white border-[#FF2A2A]"
                     )}>
                       {bet.position}
                     </span>
-                    <span className="text-white">{bet.amount}</span>
+                    <span className="text-white">WAGER: {bet.amount}</span>
                     <span className="text-[#333]">&middot;</span>
-                    <span>{bet.deadline}</span>
+                    <span className="flex items-center gap-1.5"><Clock className="size-3" /> {bet.deadline}</span>
+                    <span className="text-[#333]">&middot;</span>
+                    <span className="text-[#555] font-mono">TX: 0X{Math.random().toString(16).slice(2, 8).toUpperCase()}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="text-right flex flex-col gap-1">
-                    <p className={cn("font-sans text-[18px] font-black uppercase text-white")}>
-                      {bet.status === "won" ? `+${bet.potentialPayout}` : bet.status === "lost" ? `-${bet.amount}` : bet.potentialPayout}
+                  <div className="text-right flex flex-col gap-1 items-end">
+                    <p className={cn(
+                      "font-sans text-[18px] font-black uppercase",
+                      bet.status === "won" ? "text-[#CCFF00]" : bet.status === "lost" ? "text-[#FF2A2A]" : "text-white"
+                    )}>
+                      {bet.status === "won" ? `+ ${bet.potentialPayout}` : bet.status === "lost" ? `- ${bet.amount}` : bet.potentialPayout}
                     </p>
-                    <div className="flex items-center justify-end gap-1.5">
+                    <div className="flex items-center gap-1.5">
                       <StatusIcon className={cn("size-3", config.color)} strokeWidth={3} />
                       <span className={cn("font-technical text-[10px] font-bold tracking-widest uppercase", config.color)}>
                         {config.label}
                       </span>
                     </div>
                   </div>
-                  <ArrowRight className="size-5 text-[#555] transition-colors group-hover:text-[#CCFF00] hidden md:block" strokeWidth={2.5} />
+                  
+                  {/* Brutalist Button replacement for arrow */}
+                  {bet.status === "won" ? (
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      className="ml-2 bg-[#CCFF00] text-black px-4 py-2 font-technical text-[12px] font-black uppercase tracking-widest hover:bg-white transition-colors"
+                    >
+                      [ CLAIM ]
+                    </button>
+                  ) : (
+                    <div className="ml-2 border border-[#333] p-2 bg-black group-hover:border-[#CCFF00] transition-colors">
+                      <ArrowRight className="size-4 text-[#555] group-hover:text-[#CCFF00]" strokeWidth={3} />
+                    </div>
+                  )}
                 </div>
               </Link>
             )

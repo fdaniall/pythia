@@ -14,19 +14,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 
-// Mock — will be replaced with on-chain read
-const MOCK_MARKET = {
-  id: 0,
-  question: "Will BTC hit $100K by April 10?",
-  deadline: BigInt(Math.floor(Date.now() / 1000) + 86400 * 3),
-  totalYesPool: 5000000000000000000n,
-  totalNoPool: 3000000000000000000n,
-  resolved: false,
-  outcome: false,
-  creator: "0x1234567890abcdef1234567890abcdef12345678",
-  createdAt: BigInt(Math.floor(Date.now() / 1000) - 86400),
-  bettorCount: 24,
-}
+import { MOCK_MARKETS } from "@/lib/mock-data"
 
 const MOCK_LEADERBOARD = [
   { rank: 1, name: "oracle.init", position: "Yes", amount: 2000000000000000000n },
@@ -46,16 +34,7 @@ const MOCK_ACTIVITY = [
 
 export function MarketDetailPage() {
   const { id } = useParams()
-  
-  // Dynamic mock: If ID is odd, treat as RESOLVED/EXPIRED
-  const isOdd = parseInt(id || "0") % 2 !== 0
-  
-  const market = {
-    ...MOCK_MARKET,
-    deadline: isOdd ? BigInt(Math.floor(Date.now() / 1000) - 86400) : MOCK_MARKET.deadline,
-    resolved: isOdd,
-    outcome: isOdd ? "YES" : null,
-  }
+  const market = MOCK_MARKETS.find((m) => m.id === parseInt(id || "0")) || MOCK_MARKETS[0]
 
   const [amount, setAmount] = useState("")
   const [position, setPosition] = useState<boolean>(true)
