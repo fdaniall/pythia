@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useDocTitle } from "@/hooks/useDocTitle"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PoolBar } from "@/components/PoolBar"
@@ -8,6 +9,7 @@ import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { toast } from "sonner"
 
 export function CreateMarketPage() {
+  useDocTitle("Create Market")
   const { isConnected, openConnect } = useInterwovenKit()
   const [question, setQuestion] = useState("")
   const [deadline, setDeadline] = useState("")

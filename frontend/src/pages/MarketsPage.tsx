@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react"
+import { useDocTitle } from "@/hooks/useDocTitle"
 import { MarketCard } from "@/components/MarketCard"
 import { FadeIn } from "@/components/FadeIn"
 import { Button } from "@/components/ui/button"
@@ -20,6 +21,7 @@ const tabs: { value: FilterTab; label: string }[] = [
 ]
 
 export function MarketsPage() {
+  useDocTitle("Markets")
   const [activeTab, setActiveTab] = useState<FilterTab>("all")
   const [search, setSearch] = useState("")
 
@@ -118,6 +120,7 @@ export function MarketsPage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#888]" strokeWidth={2.5} />
             <Input
               placeholder="SEARCH_MARKETS..."
+              aria-label="Search markets"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-10 w-full sm:w-64 rounded-none border-[2px] border-[#333] bg-black pl-10 font-technical text-[12px] font-bold uppercase text-white placeholder:text-[#555] focus-visible:border-[#CCFF00] focus-visible:ring-0"

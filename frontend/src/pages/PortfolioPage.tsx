@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { useDocTitle } from "@/hooks/useDocTitle"
 import { FadeIn } from "@/components/FadeIn"
 import { cn } from "@/lib/utils"
 import {
@@ -63,6 +64,7 @@ const statusConfig = {
 }
 
 export function PortfolioPage() {
+  useDocTitle("Portfolio")
   const { isConnected, openConnect } = useInterwovenKit()
 
   const activeBets = MOCK_BETS.filter((b) => b.status === "active")
@@ -133,7 +135,7 @@ export function PortfolioPage() {
             <Trophy className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
             <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">TOTAL WINNINGS</p>
           </div>
-          <p className="font-sans text-3xl font-black text-[#CCFF00]">{totalWinnings} <span className="text-xl text-black">ETH</span></p>
+          <p className="font-sans text-3xl font-black text-[#CCFF00]">{totalWinnings} <span className="text-xl text-[#555]">ETH</span></p>
         </div>
         <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
           <div className="flex items-center gap-2 mb-2">
@@ -172,7 +174,7 @@ export function PortfolioPage() {
                   <h3 className="font-sans text-[18px] font-black uppercase leading-tight text-white group-hover:text-[#CCFF00]">
                     {bet.question}
                   </h3>
-                  <div className="flex items-center gap-3 font-technical text-[11px] font-bold uppercase tracking-widest text-[#888]">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-technical text-[11px] font-bold uppercase tracking-widest text-[#888]">
                     <span className={cn(
                       "px-2 py-0.5 border-2", 
                       bet.position === "Yes" ? "bg-[#CCFF00] text-black border-[#CCFF00]" : "bg-[#FF2A2A] text-white border-[#FF2A2A]"

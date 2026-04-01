@@ -1,5 +1,4 @@
 import { FadeIn } from "@/components/FadeIn"
-import { Button } from "@/components/ui/button"
 import { ArrowRight, TerminalSquare } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -43,20 +42,15 @@ export function Hero() {
 
             <FadeIn delay={0.35}>
               <div className="mt-10 flex flex-wrap items-center gap-6">
-                <Link to="/markets">
-                  <Button
-                    className="btn-acid h-14 px-8 font-technical text-[15px]"
-                  >
-                    Enter Oracle
-                    <ArrowRight className="ml-3 size-5" strokeWidth={3} />
-                  </Button>
+                <Link to="/markets" className="btn-acid inline-flex h-14 items-center px-8 font-technical text-[15px] no-underline">
+                  Enter Oracle
+                  <ArrowRight className="ml-3 size-5" strokeWidth={3} />
                 </Link>
-                <a href="#how-it-works">
-                  <Button
-                    className="btn-outline-sharp h-14 px-8 font-technical text-[15px]"
-                  >
-                    Read Docs
-                  </Button>
+                <a
+                  href="#how-it-works"
+                  className="flex h-14 items-center px-8 border border-[#333] bg-transparent font-technical text-[15px] font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#333] transition-all hover:border-white hover:shadow-[2px_2px_0px_0px_#fff] hover:translate-x-[2px] hover:translate-y-[2px]"
+                >
+                  Read Docs
                 </a>
               </div>
             </FadeIn>

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
-import { Button } from "@/components/ui/button"
 import { ArrowRight, Menu, X } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -64,13 +63,9 @@ export function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden md:block">
-            <Link to="/markets">
-              <Button
-                className="btn-acid h-10 px-6 font-technical text-[13px]"
-              >
-                Launch dApp
-                <ArrowRight className="ml-2 size-4" strokeWidth={3} />
-              </Button>
+            <Link to="/markets" className="btn-acid inline-flex h-10 items-center px-6 font-technical text-[13px] no-underline">
+              Launch dApp
+              <ArrowRight className="ml-2 size-4" strokeWidth={3} />
             </Link>
           </div>
 
@@ -97,13 +92,13 @@ export function Navbar() {
               {link.label}
             </button>
           ))}
-          <Link to="/markets" onClick={() => setMobileOpen(false)} className="mt-8 w-full max-w-xs">
-            <Button
-              className="btn-acid w-full h-14 font-technical text-lg"
-            >
-              Launch dApp
-              <ArrowRight className="ml-2 size-5" strokeWidth={3} />
-            </Button>
+          <Link
+            to="/markets"
+            onClick={() => setMobileOpen(false)}
+            className="btn-acid mt-8 inline-flex w-full max-w-xs h-14 items-center justify-center font-technical text-lg no-underline"
+          >
+            Launch dApp
+            <ArrowRight className="ml-2 size-5" strokeWidth={3} />
           </Link>
         </div>
       )}

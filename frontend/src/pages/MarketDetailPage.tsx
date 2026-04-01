@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom"
+import { useDocTitle } from "@/hooks/useDocTitle"
 import { PoolBar } from "@/components/PoolBar"
 import { BrutalistSparkline } from "@/components/BrutalistSparkline"
 import { BetForm } from "@/components/bet-form"
@@ -14,6 +15,8 @@ import { MOCK_MARKETS, MOCK_LEADERBOARD, MOCK_ACTIVITY } from "@/lib/mock-data"
 export function MarketDetailPage() {
   const { id } = useParams()
   const market = MOCK_MARKETS.find((m) => m.id === parseInt(id || "0"))
+
+  useDocTitle(market?.question ?? "Market Not Found")
 
   if (!market) {
     return (
@@ -93,7 +96,7 @@ export function MarketDetailPage() {
 
               <PoolBar yesPool={market.totalYesPool} noPool={market.totalNoPool} size="md" />
 
-              <div className="mt-8 grid grid-cols-3 gap-6">
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                 <div className="border border-[#333] bg-[#050505] p-4 flex flex-col items-center justify-center text-center">
                   <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]">TOTAL POOL</p>
                   <p className="mt-2 font-sans text-2xl font-black text-white">

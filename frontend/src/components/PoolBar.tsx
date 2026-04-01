@@ -14,7 +14,7 @@ export function PoolBar({ yesPool, noPool, className, size = "sm" }: PoolBarProp
   const noPercent = total > 0n ? 100 - yesPercent : 50
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("space-y-3", className)} role="group" aria-label="Pool distribution">
       <div className="flex justify-between font-technical text-[12px] font-bold uppercase tracking-widest">
         <span className="text-[#CCFF00]">
           YES_ {yesPercent}%
@@ -26,7 +26,7 @@ export function PoolBar({ yesPool, noPool, className, size = "sm" }: PoolBarProp
       <div className={cn(
         "flex bg-[#111] overflow-hidden",
         size === "md" ? "h-4" : "h-3"
-      )}>
+      )} role="progressbar" aria-label={`Yes ${yesPercent}%, No ${noPercent}%`} aria-valuenow={yesPercent} aria-valuemin={0} aria-valuemax={100}>
         <div
           className="bg-[#CCFF00] transition-all duration-500"
           style={{ width: `${yesPercent}%` }}

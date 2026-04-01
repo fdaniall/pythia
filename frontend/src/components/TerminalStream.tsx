@@ -21,22 +21,19 @@ export function TerminalStream() {
 
   useEffect(() => {
     const interval = setInterval(() => {
+      if (document.hidden) return
       setLogs((prev) => {
         const next = [...prev, `[${new Date().toISOString().split("T")[1].slice(0, 12)}] ${randomLog()}`]
-        // Keep only last 8 logs
-        if (next.length > 8) {
-          return next.slice(next.length - 8)
-        }
-        return next
+        return next.length > 8 ? next.slice(-8) : next
       })
-    }, 2500) // fake log every 2.5s
+    }, 2500)
 
     return () => clearInterval(interval)
   }, [])
 
   return (
     <FadeIn delay={1}>
-      <div className="fixed bottom-0 left-0 z-0 flex w-[320px] flex-col font-technical text-[10px] uppercase text-[#CCFF00] opacity-30 pointer-events-none mix-blend-screen px-6 pb-6">
+      <div className="fixed bottom-0 left-0 z-0 hidden lg:flex w-[320px] flex-col font-technical text-[10px] uppercase text-[#CCFF00] opacity-30 pointer-events-none mix-blend-screen px-6 pb-6">
         <div className="mb-2 border-b border-[#CCFF00]/30 pb-2 font-bold tracking-widest text-[#CCFF00]/60">
           :: PYTHIA_NODE_STREAM
         </div>

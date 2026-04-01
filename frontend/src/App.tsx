@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, lazy, Suspense } from "react"
 import { BootLoader } from "@/components/BootLoader"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -13,12 +13,13 @@ import {
 import InterwovenKitStyles from "@initia/interwovenkit-react/styles.js"
 import { Layout } from "@/components/Layout"
 import { BrutalistModalHacker } from "@/components/BrutalistModalHacker"
-import { LandingPage } from "@/pages/LandingPage"
-import { MarketsPage } from "@/pages/MarketsPage"
-import { MarketDetailPage } from "@/pages/MarketDetailPage"
-import { CreateMarketPage } from "@/pages/CreateMarketPage"
-import { PortfolioPage } from "@/pages/PortfolioPage"
 import { Toaster } from "@/components/Toaster"
+
+const LandingPage = lazy(() => import("@/pages/LandingPage").then(m => ({ default: m.LandingPage })))
+const MarketsPage = lazy(() => import("@/pages/MarketsPage").then(m => ({ default: m.MarketsPage })))
+const MarketDetailPage = lazy(() => import("@/pages/MarketDetailPage").then(m => ({ default: m.MarketDetailPage })))
+const CreateMarketPage = lazy(() => import("@/pages/CreateMarketPage").then(m => ({ default: m.CreateMarketPage })))
+const PortfolioPage = lazy(() => import("@/pages/PortfolioPage").then(m => ({ default: m.PortfolioPage })))
 
 const wagmiConfig = createConfig({
   connectors: [initiaPrivyWalletConnector],
@@ -28,9 +29,21 @@ const wagmiConfig = createConfig({
 
 const queryClient = new QueryClient()
 
+function RouteLoader() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="size-3 bg-[#CCFF00] animate-pulse" />
+        <p className="font-technical text-[12px] font-bold uppercase tracking-widest text-[#888]">
+          LOADING MODULE...
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const [booting, setBooting] = useState(() => {
-    // Only boot once per tab session
     if (typeof window !== "undefined") {
       return !sessionStorage.getItem("pythia_booted")
     }
@@ -66,18 +79,17 @@ export default function App() {
             <BrowserRouter>
               <BrutalistModalHacker />
               <Toaster position="bottom-right" />
-              <Routes>
-                {/* Landing page — no layout chrome */}
-                <Route index element={<LandingPage />} />
-
-                {/* App pages — with nav header */}
-                <Route element={<Layout />}>
-                  <Route path="/markets" element={<MarketsPage />} />
-                  <Route path="/markets/:id" element={<MarketDetailPage />} />
-                  <Route path="/create" element={<CreateMarketPage />} />
-                  <Route path="/portfolio" element={<PortfolioPage />} />
-                </Route>
-              </Routes>
+              <Suspense fallback={<RouteLoader />}>
+                <Routes>
+                  <Route index element={<LandingPage />} />
+                  <Route element={<Layout />}>
+                    <Route path="/markets" element={<MarketsPage />} />
+                    <Route path="/markets/:id" element={<MarketDetailPage />} />
+                    <Route path="/create" element={<CreateMarketPage />} />
+                    <Route path="/portfolio" element={<PortfolioPage />} />
+                  </Route>
+                </Routes>
+              </Suspense>
             </BrowserRouter>
           )}
         </InterwovenKitProvider>
@@ -85,4 +97,3 @@ export default function App() {
     </QueryClientProvider>
   )
 }
-
