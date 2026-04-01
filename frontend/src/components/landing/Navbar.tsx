@@ -5,9 +5,9 @@ import { Eye, ArrowRight, Menu, X } from "lucide-react"
 import { Link } from "react-router-dom"
 
 const navLinks = [
-  { href: "#how-it-works", label: "How It Works" },
+  { href: "#how-it-works", label: "Protocol" },
   { href: "#features", label: "Features" },
-  { href: "#cta", label: "Get Started" },
+  { href: "#cta", label: "Initialize" },
 ]
 
 export function Navbar() {
@@ -32,29 +32,28 @@ export function Navbar() {
   return (
     <>
       <motion.header
-        className="fixed top-0 z-50 w-full transition-colors duration-300"
+        className="fixed top-0 z-50 w-full transition-colors duration-200"
         style={{
-          backgroundColor: scrolled ? "rgba(7,5,15,0.85)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(155,109,255,0.08)" : "1px solid transparent",
+          backgroundColor: scrolled ? "#000000" : "transparent",
+          borderBottom: scrolled ? "1px solid #333333" : "1px solid transparent",
         }}
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6">
           {/* Logo */}
-          <a href="#hero" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-2.5">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-oracle/10">
-              <Eye className="size-4 text-oracle" />
+          <a href="#hero" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="group flex items-center gap-3">
+            <div className="flex size-8 items-center justify-center bg-[#CCFF00] border border-[#CCFF00] transition-transform group-hover:rotate-12">
+              <Eye className="size-5 text-black" strokeWidth={2.5} />
             </div>
-            <span className="font-oracle text-oracle-gradient text-xl italic">Pythia</span>
+            <span className="font-technical text-xl font-bold tracking-widest text-white uppercase">PYTHIA</span>
           </a>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-6 md:flex">
+          <nav className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => (
               <button
                 key={link.href}
                 onClick={() => scrollTo(link.href)}
-                className="text-[14px] text-muted-foreground transition-colors hover:text-foreground"
+                className="font-technical text-[13px] font-medium tracking-widest text-[#888] uppercase transition-colors hover:text-[#CCFF00]"
               >
                 {link.label}
               </button>
@@ -65,11 +64,10 @@ export function Navbar() {
           <div className="hidden md:block">
             <Link to="/markets">
               <Button
-                size="sm"
-                className="btn-shimmer gap-1.5 bg-gradient-to-r from-oracle to-oracle-deep text-white hover:shadow-[0_0_20px_rgba(155,109,255,0.3)]"
+                className="btn-acid h-10 px-6 font-technical text-[13px]"
               >
-                Launch App
-                <ArrowRight className="size-3.5" />
+                Launch dApp
+                <ArrowRight className="ml-2 size-4" strokeWidth={3} />
               </Button>
             </Link>
           </div>
@@ -77,7 +75,7 @@ export function Navbar() {
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:hidden"
+            className="flex size-10 items-center justify-center border border-[#333] text-white transition-colors hover:bg-[#111] md:hidden"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -87,23 +85,22 @@ export function Navbar() {
 
       {/* Mobile overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-[rgba(7,5,15,0.95)] backdrop-blur-xl md:hidden">
+        <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 bg-[#000] border-t border-[#333] md:hidden pt-16">
           {navLinks.map((link) => (
             <button
               key={link.href}
               onClick={() => scrollTo(link.href)}
-              className="font-oracle text-2xl italic text-muted-foreground transition-colors hover:text-foreground"
+              className="font-technical text-3xl font-bold uppercase text-white transition-colors hover:text-[#CCFF00]"
             >
               {link.label}
             </button>
           ))}
-          <Link to="/markets" onClick={() => setMobileOpen(false)}>
+          <Link to="/markets" onClick={() => setMobileOpen(false)} className="mt-8 w-full max-w-xs">
             <Button
-              className="btn-shimmer mt-4 gap-2 bg-gradient-to-r from-oracle to-oracle-deep px-8 py-3 text-white"
-              size="lg"
+              className="btn-acid w-full h-14 font-technical text-lg"
             >
-              Launch App
-              <ArrowRight className="size-4" />
+              Launch dApp
+              <ArrowRight className="ml-2 size-5" strokeWidth={3} />
             </Button>
           </Link>
         </div>

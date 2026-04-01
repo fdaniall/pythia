@@ -1,115 +1,127 @@
-import { useEffect, useRef, useState } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { FadeIn } from "@/components/FadeIn"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Eye } from "lucide-react"
+import { ArrowRight, TerminalSquare } from "lucide-react"
 import { Link } from "react-router-dom"
-
-function AutoplayVideo({ src, className, poster }: { src: string; className: string; poster: string }) {
-  const ref = useRef<HTMLVideoElement>(null)
-  const [blocked, setBlocked] = useState(false)
-
-  useEffect(() => {
-    const video = ref.current
-    if (!video) return
-    video.play().catch(() => setBlocked(true))
-  }, [])
-
-  if (blocked) {
-    return <img src={poster} alt="" className={className} />
-  }
-
-  return (
-    <video ref={ref} loop muted playsInline preload="metadata" poster={poster} className={className}>
-      <source src={src} type="video/mp4" />
-    </video>
-  )
-}
 
 export function Hero() {
   const { scrollY } = useScroll()
-  const scrollOpacity = useTransform(scrollY, [0, 100], [1, 0])
+  const yOffset = useTransform(scrollY, [0, 500], [0, 100])
 
   return (
     <section
-      className="relative flex min-h-[100svh] w-full flex-col items-center justify-center overflow-hidden pb-10"
+      className="relative flex min-h-[100svh] w-full flex-col bg-technical-grid pt-24"
       id="hero"
     >
-      {/* Video background */}
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_50%_60%,#1a0840_0%,#0a0520_40%,#07050F_100%)]">
-        <AutoplayVideo
-          src="/hero-video.mp4"
-          poster="/hero-poster.jpg"
-          className="hidden h-full w-full object-cover object-center md:block"
-        />
-        <AutoplayVideo
-          src="/hero-video-mobile.mp4"
-          poster="/hero-poster.jpg"
-          className="h-full w-full object-cover object-center md:hidden"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(7,5,15,0.3)_0%,rgba(7,5,15,0.7)_70%,rgba(7,5,15,0.95)_100%),linear-gradient(to_bottom,transparent_0%,transparent_60%,#07050F_100%)]" />
-      </div>
+      {/* Brutalist Gradient Overlay to fade grid at edges */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000000_100%)] opacity-80" />
 
-      {/* Content */}
-      <div className="relative z-[2] flex max-w-[800px] flex-col items-center px-4 text-center sm:px-6">
-        <FadeIn>
-          <div className="mb-6 flex size-16 items-center justify-center rounded-2xl border border-oracle/20 bg-oracle/5 backdrop-blur-sm">
-            <Eye className="size-8 text-oracle" strokeWidth={1.5} />
+      {/* Main Content */}
+      <motion.div 
+        style={{ y: yOffset }}
+        className="relative z-[2] mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center px-6 pb-16 pt-8 lg:px-12"
+      >
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+          
+          <div className="lg:col-span-8 flex flex-col items-start text-left">
+            <FadeIn>
+              <div className="mb-6 inline-flex items-center gap-2 border border-[#333] bg-black px-4 py-2">
+                <TerminalSquare className="size-4 text-[#CCFF00]" />
+                <span className="font-technical text-[11px] font-bold uppercase tracking-[0.2em] text-[#CCFF00]">
+                  System Protocol v1.0.0
+                </span>
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.1}>
+              <h1 className="font-sans text-[clamp(64px,10vw,140px)] font-black uppercase leading-[0.95] tracking-tighter text-white">
+                Hack <br />
+                <span className="text-[#CCFF00]">The Future.</span>
+              </h1>
+            </FadeIn>
+
+            <FadeIn delay={0.2}>
+              <p className="mt-8 max-w-[600px] font-technical text-[clamp(15px,1.5vw,18px)] leading-[1.6] text-[#888]">
+                ZERO-BULLSHIT PREDICTION MARKETS. NATIVE ON INITIA. CREATE POOLS, SET ODDS, TAKE POSITIONS, EXTRACT LIQUIDITY. ALL ON-CHAIN.
+              </p>
+            </FadeIn>
+
+            <FadeIn delay={0.35}>
+              <div className="mt-10 flex flex-wrap items-center gap-6">
+                <Link to="/markets">
+                  <Button
+                    className="btn-acid h-14 px-8 font-technical text-[15px]"
+                  >
+                    Enter Oracle
+                    <ArrowRight className="ml-3 size-5" strokeWidth={3} />
+                  </Button>
+                </Link>
+                <a href="#how-it-works">
+                  <Button
+                    className="btn-outline-sharp h-14 px-8 font-technical text-[15px]"
+                  >
+                    Read Docs
+                  </Button>
+                </a>
+              </div>
+            </FadeIn>
           </div>
-        </FadeIn>
-
-        <FadeIn delay={0.1}>
-          <h1 className="font-oracle text-oracle-shimmer text-[clamp(48px,12vw,120px)] font-normal italic leading-none tracking-tight [text-shadow:0_0_80px_rgba(155,109,255,0.35),0_0_160px_rgba(155,109,255,0.1)]">
-            Pythia
-          </h1>
-        </FadeIn>
-
-        <FadeIn delay={0.2}>
-          <p className="font-oracle mt-5 text-[clamp(18px,3vw,28px)] italic leading-[1.4] text-white/85">
-            See the future. Bet on it.
-          </p>
-        </FadeIn>
-
-        <FadeIn delay={0.35}>
-          <p className="mt-4 max-w-[520px] text-[clamp(14px,1.5vw,18px)] leading-[1.7] text-muted-foreground">
-            The prediction market on Initia. Create markets, bet on outcomes
-            with dynamic odds, and claim winnings — all on-chain, from any chain.
-          </p>
-        </FadeIn>
-
-        <FadeIn delay={0.5}>
-          <div className="mt-10 flex items-center gap-4 max-[768px]:w-full max-[768px]:max-w-[280px] max-[768px]:flex-col">
-            <Link to="/markets">
-              <Button
-                className="btn-shimmer gap-2 bg-gradient-to-r from-oracle to-oracle-deep px-6 py-2.5 text-white shadow-[0_0_30px_rgba(155,109,255,0.25)] hover:shadow-[0_0_40px_rgba(155,109,255,0.4)]"
-                size="lg"
-              >
-                Launch App
-                <ArrowRight className="size-4" />
-              </Button>
-            </Link>
-            <a href="#how-it-works">
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white/[0.1] bg-white/[0.03] text-muted-foreground backdrop-blur-sm hover:border-oracle/30 hover:text-foreground"
-              >
-                How It Works
-              </Button>
-            </a>
+          
+          <div className="lg:col-span-4 hidden lg:block">
+            {/* Brutalist Data Widget */}
+            <FadeIn delay={0.5}>
+              <div className="brutalist-card p-6">
+                <div className="border-b border-[#333] pb-4 mb-4 flex justify-between items-center">
+                  <span className="font-technical text-[12px] text-[#888] uppercase">Live Market Data</span>
+                  <div className="size-2 bg-[#CCFF00] animate-pulse"></div>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-white font-bold text-lg mb-2 leading-tight">Will ETH surpass $5k by end of Q2?</h3>
+                    <div className="flex justify-between font-technical text-sm mb-1">
+                      <span className="text-[#CCFF00]">YES 65%</span>
+                      <span className="text-[#FF2A2A]">NO 35%</span>
+                    </div>
+                    <div className="h-2 w-full bg-[#111] flex">
+                      <div className="h-full bg-[#CCFF00] w-[65%]"></div>
+                      <div className="h-full bg-[#FF2A2A] w-[35%]"></div>
+                    </div>
+                  </div>
+                  <div>
+                  <h3 className="text-white font-bold text-lg mb-2 leading-tight">Initia Mainnet Launch this month?</h3>
+                    <div className="flex justify-between font-technical text-sm mb-1">
+                      <span className="text-[#CCFF00]">YES 82%</span>
+                      <span className="text-[#FF2A2A]">NO 18%</span>
+                    </div>
+                    <div className="h-2 w-full bg-[#111] flex">
+                      <div className="h-full bg-[#CCFF00] w-[82%]"></div>
+                      <div className="h-full bg-[#FF2A2A] w-[18%]"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
           </div>
-        </FadeIn>
-      </div>
+        </div>
+      </motion.div>
 
-      {/* Scroll indicator */}
-      <FadeIn delay={0.8} className="absolute bottom-4 z-[2] md:bottom-12">
-        <motion.div style={{ opacity: scrollOpacity }} className="flex flex-col items-center gap-3">
-          <span className="text-[10px] font-semibold uppercase tracking-[4px] text-dim">
-            Scroll
-          </span>
-          <div className="scroll-line" />
-        </motion.div>
-      </FadeIn>
+      {/* Marquee Banner */}
+      <div className="w-full mt-auto marquee-container z-10">
+        <div className="marquee-content">
+          <span className="mx-8">SYSTEM ONLINE</span> ✦ 
+          <span className="mx-8 text-black">NO WALLET POPUPS</span> ✦ 
+          <span className="mx-8">CROSS-CHAIN DEPOSITS</span> ✦ 
+          <span className="mx-8 text-black">PERMISSIONLESS POOLS</span> ✦ 
+          <span className="mx-8">DYNAMIC ODDS</span> ✦ 
+          <span className="mx-8 text-black">INITIA NATIVE</span> ✦ 
+          <span className="mx-8">SYSTEM ONLINE</span> ✦ 
+          <span className="mx-8 text-black">NO WALLET POPUPS</span> ✦ 
+          <span className="mx-8">CROSS-CHAIN DEPOSITS</span> ✦ 
+          <span className="mx-8 text-black">PERMISSIONLESS POOLS</span> ✦ 
+          <span className="mx-8">DYNAMIC ODDS</span> ✦ 
+          <span className="mx-8 text-black">INITIA NATIVE</span> ✦ 
+        </div>
+      </div>
     </section>
   )
 }
