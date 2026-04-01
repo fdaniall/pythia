@@ -82,7 +82,7 @@ export function PortfolioPage() {
           <div className="brutalist-card bg-black p-12 text-center max-w-[600px] mx-auto border-dashed">
             <Lock className="size-12 text-[#CCFF00] mx-auto mb-6 opacity-80" strokeWidth={1.5} />
             <h1 className="font-sans text-[clamp(24px,4vw,36px)] font-black uppercase leading-[1.1] tracking-tighter text-white mb-4">
-              NODE NOT SECURED
+              CONNECT TO VIEW
             </h1>
             <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase mb-8">
               Personal portfolio and execution logs are encrypted on-chain. Authenticate your node to decrypt your data.
@@ -92,7 +92,7 @@ export function PortfolioPage() {
               onClick={openConnect}
             >
               <Wallet className="mr-2 size-4" strokeWidth={2.5} />
-              AUTHENTICATE_NODE
+              CONNECT WALLET
             </Button>
           </div>
         </FadeIn>
@@ -205,17 +205,11 @@ export function PortfolioPage() {
                     </div>
                   </div>
                   
-                  {/* Brutalist Button replacement for arrow */}
+                  {/* Action indicator */}
                   {bet.status === "won" ? (
-                    <button 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                      className="ml-2 bg-[#CCFF00] text-black px-4 py-2 font-technical text-[12px] font-black uppercase tracking-widest hover:bg-white transition-colors"
-                    >
-                      [ CLAIM ]
-                    </button>
+                    <span className="ml-2 bg-[#CCFF00] text-black px-4 py-2 font-technical text-[12px] font-black uppercase tracking-widest group-hover:bg-white transition-colors">
+                      CLAIM
+                    </span>
                   ) : (
                     <div className="ml-2 border border-[#333] p-2 bg-black group-hover:border-[#CCFF00] transition-colors">
                       <ArrowRight className="size-4 text-[#555] group-hover:text-[#CCFF00]" strokeWidth={3} />

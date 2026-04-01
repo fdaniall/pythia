@@ -17,8 +17,8 @@ export function CreateMarketPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: call contract createMarket
-    toast.success("CONTRACT_DEPLOYED_SUCCESSFULLY", {
-      description: "-> Address: 0x8F9B...2A1C\n-> Block: 829104\n-> Initialized: YES",
+    toast.success("Market Created Successfully", {
+      description: "Your prediction market is now live and accepting bets.",
       duration: 5000,
     })
   }
@@ -33,7 +33,7 @@ export function CreateMarketPage() {
           <div className="brutalist-card bg-black p-12 text-center max-w-[600px] mx-auto border-dashed">
             <Lock className="size-12 text-[#FF2A2A] mx-auto mb-6 opacity-80" strokeWidth={1.5} />
             <h1 className="font-sans text-[clamp(24px,4vw,36px)] font-black uppercase leading-[1.1] tracking-tighter text-white mb-4">
-              UNAUTHORIZED ACCESS
+              CONNECT TO CONTINUE
             </h1>
             <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase mb-8">
               System deployment protocol requires an authenticated wallet node. Please secure a connection before initializing a new prediction market.
@@ -43,7 +43,7 @@ export function CreateMarketPage() {
               onClick={openConnect}
             >
               <Wallet className="mr-2 size-4" strokeWidth={2.5} />
-              AUTHENTICATE_NODE
+              CONNECT WALLET
             </Button>
           </div>
         </FadeIn>
@@ -124,7 +124,7 @@ export function CreateMarketPage() {
               disabled={!isValid}
             >
               <Sparkles className="mr-2 size-4" strokeWidth={2.5} />
-              COMPILE & DEPLOY
+              CREATE MARKET
             </Button>
           </form>
         </div>

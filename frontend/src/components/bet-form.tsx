@@ -20,6 +20,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
   const { isConnected, openConnect } = useInterwovenKit()
   const [amount, setAmount] = useState("")
   const [position, setPosition] = useState<boolean>(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const payout = useMemo(() => {
     const betAmount = parseFloat(amount)
@@ -97,7 +98,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
         {/* Amount input */}
         <div className="space-y-3">
           <label className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]" htmlFor="bet-amount">
-            INPUT LIQUIDITY (ETH)
+            BET AMOUNT (ETH)
           </label>
           <Input
             id="bet-amount"
@@ -117,6 +118,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
             {["0.1", "0.5", "1.0", "MAX"].map((v) => (
               <button
                 key={v}
+                type="button"
                 disabled={expired}
                 onClick={() => setAmount(v === "MAX" ? "10.0" : v)}
                 className={cn(
@@ -140,7 +142,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
           <div className="flex justify-between">
             <span className="text-[#888]">POSITION</span>
             <span className={cn(position ? "text-[#CCFF00]" : "text-[#FF2A2A]")}>
-              {position ? "LONG YES" : "SHORT NO"}
+              {position ? "YES" : "NO"}
             </span>
           </div>
           <div className="flex justify-between">
@@ -177,7 +179,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
             onClick={openConnect}
           >
             <Wallet className="mr-2 size-4" />
-            AUTHENTICATE_NODE
+            CONNECT WALLET
           </Button>
         ) : (
           <Button
@@ -185,19 +187,29 @@ export function BetForm({ market, total, expired }: BetFormProps) {
               "h-14 w-full font-technical text-[14px]",
               expired ? "bg-[#333] text-[#888] cursor-not-allowed border-[2px] border-[#333] rounded-none hover:bg-[#333]" : "btn-acid"
             )}
-            disabled={expired || !amount || Number(amount) <= 0}
-            onClick={() => {
-              toast.success("TX_EXECUTED_SUCCESSFULLY", {
-                description: `-> Dest: ${position ? "YES_POOL" : "NO_POOL"}\n-> Value: ${amount} ETH\n-> Block: 13,094,882`,
-                duration: 5000,
-              })
+            disabled={expired || !amount || Number(amount) <= 0 || isSubmitting}
+            onClick={async () => {
+              setIsSubmitting(true)
+              try {
+                // TODO: call contract placeBet
+                await new Promise((r) => setTimeout(r, 1000))
+                toast.success("Bet Placed Successfully", {
+                  description: `${amount} ETH on ${position ? "YES" : "NO"} — your position is now active.`,
+                  duration: 5000,
+                })
+                setAmount("")
+              } finally {
+                setIsSubmitting(false)
+              }
             }}
           >
-            {expired
-              ? "SYSTEM_HALTED[RESOLVED]"
-              : payout
-                ? `EXECUTE [ ${amount} ETH -> ${position ? "YES" : "NO"} ]`
-                : "AWAITING VALUE..."
+            {isSubmitting
+              ? "EXECUTING..."
+              : expired
+                ? "MARKET CLOSED"
+                : payout
+                  ? `PLACE BET [ ${amount} ETH -> ${position ? "YES" : "NO"} ]`
+                  : "ENTER AMOUNT..."
             }
           </Button>
         )}

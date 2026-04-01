@@ -11,8 +11,16 @@ interface FadeInProps {
 export function FadeIn({ children, delay = 0, className, direction = "up" }: FadeInProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
+  const prefersReducedMotion = useRef(
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  )
 
   useEffect(() => {
+    if (prefersReducedMotion.current) {
+      setVisible(true)
+      return
+    }
+
     const el = ref.current
     if (!el) return
 
@@ -31,13 +39,16 @@ export function FadeIn({ children, delay = 0, className, direction = "up" }: Fad
   }, [])
 
   const y = direction === "up" ? 30 : direction === "down" ? -30 : 0
+  const noMotion = prefersReducedMotion.current
 
-  const style: CSSProperties = {
-    opacity: visible ? 1 : 0,
-    transform: visible ? "translateY(0)" : `translateY(${y}px)`,
-    transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
-    willChange: visible ? "auto" : "opacity, transform",
-  }
+  const style: CSSProperties = noMotion
+    ? {}
+    : {
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : `translateY(${y}px)`,
+        transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
+        willChange: visible ? "auto" : "opacity, transform",
+      }
 
   return (
     <div ref={ref} style={style} className={className}>

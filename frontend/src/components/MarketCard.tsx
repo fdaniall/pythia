@@ -8,7 +8,7 @@ import { formatEther } from "viem"
 
 const statusConfig: Record<MarketStatus, { label: string; bg: string; text: string; icon: typeof Clock }> = {
   open: { label: "LIVE", bg: "bg-[#CCFF00]", text: "text-black", icon: Clock },
-  closed: { label: "CLOSED", bg: "bg-[#FF2A2A]", text: "text-white", icon: XCircle },
+  closed: { label: "CLOSED", bg: "bg-[#CC0000]", text: "text-white", icon: XCircle },
   resolved: { label: "RESOLVED", bg: "bg-[#333]", text: "text-white", icon: CheckCircle },
 }
 

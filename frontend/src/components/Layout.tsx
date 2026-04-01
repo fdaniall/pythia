@@ -86,7 +86,7 @@ export function Layout() {
                 onClick={openConnect}
               >
                 <Wallet className="size-4 mr-2" strokeWidth={2.5} />
-                CONNECT_NODE
+                CONNECT WALLET
               </Button>
             )}
 
@@ -94,7 +94,8 @@ export function Layout() {
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="flex size-10 items-center justify-center border border-[#333] text-white transition-colors hover:bg-[#111] md:hidden"
-              aria-label="Toggle navigation menu"
+              aria-label="Navigation menu"
+              aria-expanded={mobileOpen}
             >
               {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
             </button>
@@ -149,7 +150,7 @@ export function Layout() {
                   onClick={() => { openConnect(); setMobileOpen(false) }}
                 >
                   <Wallet className="size-4 mr-2" strokeWidth={2.5} />
-                  CONNECT_NODE
+                  CONNECT WALLET
                 </Button>
               )}
             </div>

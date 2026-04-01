@@ -17,6 +17,8 @@ export function MarketDetailPage() {
   const market = MOCK_MARKETS.find((m) => m.id === parseInt(id || "0"))
 
   useDocTitle(market?.question ?? "Market Not Found")
+  const countdown = useCountdown(market?.deadline ?? 0n)
+  const total = (market?.totalYesPool ?? 0n) + (market?.totalNoPool ?? 0n)
 
   if (!market) {
     return (
@@ -25,14 +27,11 @@ export function MarketDetailPage() {
           ERR 404: MARKET NOT FOUND.
         </p>
         <Link to="/markets" className="mt-4 font-technical text-[12px] text-[#CCFF00] underline uppercase">
-          BACK_TO_INDEX
+          Back to Markets
         </Link>
       </div>
     )
   }
-
-  const countdown = useCountdown(market.deadline)
-  const total = market.totalYesPool + market.totalNoPool
 
   return (
     <div className="space-y-8">

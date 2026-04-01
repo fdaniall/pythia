@@ -133,7 +133,7 @@ export function MarketsPage() {
               className="btn-acid h-10 px-5 font-technical text-[12px]"
             >
               <Plus className="mr-2 size-4" strokeWidth={2.5} />
-              INITIALIZE_POOL
+              CREATE MARKET
             </Button>
           </Link>
         </div>
@@ -155,7 +155,11 @@ export function MarketsPage() {
               <Search className="size-6 text-[#555]" />
             </div>
             <p className="font-technical text-[14px] font-bold uppercase tracking-widest text-[#888]">
-              ERR 404: NO MARKETS DETECTED.
+              NO MARKETS FOUND.
+            </p>
+            <p className="mt-2 font-technical text-[12px] uppercase tracking-widest text-[#555]">
+              Try a different filter or{" "}
+              <Link to="/create" className="text-[#CCFF00] underline">create a new market</Link>.
             </p>
           </div>
         )}

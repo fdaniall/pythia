@@ -40,10 +40,12 @@ export function BrutalistSparkline({ data, height = 100 }: { data: number[]; hei
       
       {/* Render SVG Sparkline Container */}
       <div className="relative z-10 w-full h-full">
-        <svg 
-          className="absolute inset-0 w-full h-full overflow-visible" 
-          viewBox={`0 0 100 ${height}`} 
+        <svg
+          className="absolute inset-0 w-full h-full overflow-visible"
+          viewBox={`0 0 100 ${height}`}
           preserveAspectRatio="none"
+          role="img"
+          aria-label="Pool volatility trend chart"
         >
           {/* Glow behind the line to make it neo-brutalist */}
           <path

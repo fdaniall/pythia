@@ -73,7 +73,8 @@ export function Navbar() {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="flex size-10 items-center justify-center border border-[#333] text-white transition-colors hover:bg-[#111] md:hidden"
-            aria-label="Toggle menu"
+            aria-label="Navigation menu"
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
