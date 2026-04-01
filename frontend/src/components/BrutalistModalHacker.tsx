@@ -176,7 +176,7 @@ export function BrutalistModalHacker() {
       setupIwkShadowObserver(existingIwk.shadowRoot)
     }
 
-    // Main body observer — detects new shadow host elements appearing
+    // Main body observer — detects new shadow host elements appearing (childList only, no subtree)
     const observer = new MutationObserver(() => {
       const privyDialog = document.querySelector("#privy-dialog") as HTMLElement
       if (privyDialog?.shadowRoot) {
@@ -190,10 +190,36 @@ export function BrutalistModalHacker() {
       updateOverlayState()
     })
 
-    observer.observe(document.body, { childList: true, subtree: true })
+    observer.observe(document.body, { childList: true })
 
-    // Polling fallback — catches cases where shadow DOM changes don't trigger body observer
-    const pollInterval = window.setInterval(updateOverlayState, 1000)
+    // Polling fallback — only active when a modal overlay is present
+    let pollInterval: number | null = null
+    const originalUpdate = updateOverlayState
+    const wrappedUpdate = () => {
+      originalUpdate()
+      const overlayExists = !!document.getElementById("brutalist-mega-overlay")
+      if (overlayExists && !pollInterval) {
+        pollInterval = window.setInterval(originalUpdate, 500)
+      } else if (!overlayExists && pollInterval) {
+        window.clearInterval(pollInterval)
+        pollInterval = null
+      }
+    }
+    // Replace calls to use wrapped version for body observer
+    observer.disconnect()
+    const observer2 = new MutationObserver(() => {
+      const privyDialog = document.querySelector("#privy-dialog") as HTMLElement
+      if (privyDialog?.shadowRoot) {
+        injectPrivyStyles(privyDialog.shadowRoot)
+        setupPrivyShadowObserver(privyDialog.shadowRoot)
+      }
+      const iwk = document.querySelector("interwoven-kit") as HTMLElement
+      if (iwk?.shadowRoot) {
+        setupIwkShadowObserver(iwk.shadowRoot)
+      }
+      wrappedUpdate()
+    })
+    observer2.observe(document.body, { childList: true })
 
     // CSS variable overrides
     document.documentElement.style.setProperty("--privy-border-radius-md", "0px", "important")
@@ -303,10 +329,10 @@ export function BrutalistModalHacker() {
     }
 
     return () => {
-      observer.disconnect()
+      observer2.disconnect()
       privyShadowObserver?.disconnect()
       iwkShadowObserver?.disconnect()
-      window.clearInterval(pollInterval)
+      if (pollInterval !== null) window.clearInterval(pollInterval)
       document.getElementById("brutalist-max-override")?.remove()
     }
   }, [])

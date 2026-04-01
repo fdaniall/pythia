@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useSyncExternalStore } from "react"
 
 interface Countdown {
   days: number
@@ -9,13 +9,46 @@ interface Countdown {
   label: string
 }
 
-export function useCountdown(deadline: bigint): Countdown {
-  const [now, setNow] = useState(Date.now())
+// Single shared timer — all useCountdown instances share one setInterval
+let listeners = new Set<() => void>()
+let currentTime = Date.now()
 
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000)
-    return () => clearInterval(id)
-  }, [])
+function subscribe(cb: () => void) {
+  if (listeners.size === 0) {
+    // First subscriber starts the interval
+    startTick()
+  }
+  listeners.add(cb)
+  return () => {
+    listeners.delete(cb)
+    if (listeners.size === 0) {
+      stopTick()
+    }
+  }
+}
+
+let intervalId: ReturnType<typeof setInterval> | null = null
+
+function startTick() {
+  intervalId = setInterval(() => {
+    currentTime = Date.now()
+    listeners.forEach((cb) => cb())
+  }, 1000)
+}
+
+function stopTick() {
+  if (intervalId !== null) {
+    clearInterval(intervalId)
+    intervalId = null
+  }
+}
+
+function getSnapshot() {
+  return currentTime
+}
+
+export function useCountdown(deadline: bigint): Countdown {
+  const now = useSyncExternalStore(subscribe, getSnapshot)
 
   const target = Number(deadline) * 1000
   const diff = target - now

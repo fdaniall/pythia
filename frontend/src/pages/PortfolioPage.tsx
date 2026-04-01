@@ -14,8 +14,8 @@ const MOCK_BETS = [
     id: 0,
     question: "Will BTC hit $100K by April 10?",
     position: "Yes" as const,
-    amount: "1.5 ETH",
-    potentialPayout: "2.4 ETH",
+    amount: "1.5 INIT",
+    potentialPayout: "2.4 INIT",
     status: "active" as const,
     deadline: "3d 12h left",
   },
@@ -23,8 +23,8 @@ const MOCK_BETS = [
     id: 4,
     question: "Will the US approve a spot ETH ETF by Q2 2026?",
     position: "Yes" as const,
-    amount: "2.0 ETH",
-    potentialPayout: "3.1 ETH",
+    amount: "2.0 INIT",
+    potentialPayout: "3.1 INIT",
     status: "active" as const,
     deadline: "45d left",
   },
@@ -32,8 +32,8 @@ const MOCK_BETS = [
     id: 7,
     question: "Will Initia mainnet launch before April 15?",
     position: "No" as const,
-    amount: "0.5 ETH",
-    potentialPayout: "2.0 ETH",
+    amount: "0.5 INIT",
+    potentialPayout: "2.0 INIT",
     status: "active" as const,
     deadline: "14d left",
   },
@@ -41,8 +41,8 @@ const MOCK_BETS = [
     id: 2,
     question: "Will Initia reach 1M daily transactions by May?",
     position: "Yes" as const,
-    amount: "0.8 ETH",
-    potentialPayout: "1.6 ETH",
+    amount: "0.8 INIT",
+    potentialPayout: "1.6 INIT",
     status: "won" as const,
     deadline: "Resolved",
   },
@@ -50,8 +50,8 @@ const MOCK_BETS = [
     id: 6,
     question: "Will total crypto market cap exceed $5T by year end?",
     position: "Yes" as const,
-    amount: "1.0 ETH",
-    potentialPayout: "0 ETH",
+    amount: "1.0 INIT",
+    potentialPayout: "0 INIT",
     status: "lost" as const,
     deadline: "Resolved",
   },
@@ -135,7 +135,7 @@ export function PortfolioPage() {
             <Trophy className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
             <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">TOTAL WINNINGS</p>
           </div>
-          <p className="font-sans text-3xl font-black text-[#CCFF00]">{totalWinnings} <span className="text-xl text-[#555]">ETH</span></p>
+          <p className="font-sans text-3xl font-black text-[#CCFF00]">{totalWinnings} <span className="text-xl text-[#555]">INIT</span></p>
         </div>
         <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
           <div className="flex items-center gap-2 mb-2">
@@ -149,7 +149,7 @@ export function PortfolioPage() {
             <Wallet className="size-4 text-[#888]" strokeWidth={2.5} />
             <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">TOTAL WAGERED</p>
           </div>
-          <p className="font-sans text-3xl font-black text-white">5.8 <span className="text-xl text-[#555]">ETH</span></p>
+          <p className="font-sans text-3xl font-black text-white">5.8 <span className="text-xl text-[#555]">INIT</span></p>
         </div>
       </div>
       </FadeIn>

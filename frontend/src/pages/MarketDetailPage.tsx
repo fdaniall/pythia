@@ -81,7 +81,7 @@ export function MarketDetailPage() {
       <FadeIn delay={0.15}>
         <div className="grid gap-8 lg:grid-cols-3 relative z-20 mt-8">
           {/* Left column: pool + activity */}
-          <div className="space-y-8 lg:col-span-2">
+          <div className="space-y-8 lg:col-span-2 order-2 lg:order-1">
             {/* Pool visualization */}
             <div className="brutalist-card bg-black p-8">
               <h2 className="mb-6 flex items-center gap-2 font-technical text-[14px] font-bold uppercase tracking-widest text-white border-b border-[#333] pb-4">
@@ -99,19 +99,19 @@ export function MarketDetailPage() {
                 <div className="border border-[#333] bg-[#050505] p-4 flex flex-col items-center justify-center text-center">
                   <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]">TOTAL POOL</p>
                   <p className="mt-2 font-sans text-2xl font-black text-white">
-                    {parseFloat(formatEther(total)).toFixed(1)} <span className="text-sm text-[#555]">ETH</span>
+                    {parseFloat(formatEther(total)).toFixed(1)} <span className="text-sm text-[#555]">INIT</span>
                   </p>
                 </div>
                 <div className="border border-[#CCFF00]/30 bg-[#CCFF00]/5 p-4 flex flex-col items-center justify-center text-center">
                   <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">YES POOL</p>
                   <p className="mt-2 font-sans text-2xl font-black text-[#CCFF00]">
-                    {parseFloat(formatEther(market.totalYesPool)).toFixed(1)} <span className="text-sm text-[#CCFF00]/50">ETH</span>
+                    {parseFloat(formatEther(market.totalYesPool)).toFixed(1)} <span className="text-sm text-[#CCFF00]/50">INIT</span>
                   </p>
                 </div>
                 <div className="border border-[#FF2A2A]/30 bg-[#FF2A2A]/5 p-4 flex flex-col items-center justify-center text-center">
                   <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#FF2A2A]">NO POOL</p>
                   <p className="mt-2 font-sans text-2xl font-black text-[#FF2A2A]">
-                    {parseFloat(formatEther(market.totalNoPool)).toFixed(1)} <span className="text-sm text-[#FF2A2A]/50">ETH</span>
+                    {parseFloat(formatEther(market.totalNoPool)).toFixed(1)} <span className="text-sm text-[#FF2A2A]/50">INIT</span>
                   </p>
                 </div>
               </div>
@@ -177,7 +177,7 @@ export function MarketDetailPage() {
                           {entry.position}
                         </span>
                         <span className="font-sans text-[14px] font-black text-white">
-                          {parseFloat(formatEther(entry.amount)).toFixed(1)} ETH
+                          {parseFloat(formatEther(entry.amount)).toFixed(1)} INIT
                         </span>
                       </div>
                     </div>
@@ -187,8 +187,8 @@ export function MarketDetailPage() {
             </div>
           </div>
 
-          {/* Right column: bet form */}
-          <div className="space-y-6">
+          {/* Right column: bet form — shown first on mobile */}
+          <div className="space-y-6 order-1 lg:order-2">
             <BetForm market={market} total={total} expired={countdown.expired} />
           </div>
         </div>

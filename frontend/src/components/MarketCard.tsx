@@ -53,7 +53,7 @@ export function MarketCard({ market }: MarketCardProps) {
           </span>
           <span className="text-[#333]">&middot;</span>
           <span className="text-white">
-            {parseFloat(formatEther(total)).toFixed(1)} ETH
+            {parseFloat(formatEther(total)).toFixed(1)} INIT
           </span>
         </div>
 

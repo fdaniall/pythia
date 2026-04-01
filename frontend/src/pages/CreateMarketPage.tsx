@@ -158,7 +158,7 @@ export function CreateMarketPage() {
               <span className="text-[#333]">&middot;</span>
               <span>0 BETTORS</span>
               <span className="text-[#333]">&middot;</span>
-              <span className="text-white">0.0 ETH</span>
+              <span className="text-white">0.0 INIT</span>
             </div>
 
             <PoolBar yesPool={0n} noPool={0n} />

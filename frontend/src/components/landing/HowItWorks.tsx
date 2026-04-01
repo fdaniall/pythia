@@ -14,14 +14,14 @@ const steps = [
     icon: Coins,
     title: "TAKE POSITION",
     description: "Pick Yes or No. Deposit tokens from any chain. Enable auto-signing — bet freely without wallet popups.",
-    preview: { label: "Your position", value: "1.5 ETH / YES" },
+    preview: { label: "Your position", value: "1.5 INIT / YES" },
   },
   {
     number: "03",
     icon: Trophy,
     title: "EXTRACT",
     description: "When the market resolves, winners claim proportional payouts from the total pool. Your conviction, rewarded.",
-    preview: { label: "Est. Payout", value: "+2.8 ETH" },
+    preview: { label: "Est. Payout", value: "+2.8 INIT" },
   },
 ]
 

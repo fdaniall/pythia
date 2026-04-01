@@ -98,7 +98,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
         {/* Amount input */}
         <div className="space-y-3">
           <label className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]" htmlFor="bet-amount">
-            BET AMOUNT (ETH)
+            BET AMOUNT (INIT)
           </label>
           <Input
             id="bet-amount"
@@ -158,11 +158,11 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                   <Info className="size-3" />
                   EST. RETURN
                 </span>
-                <span className="text-[#CCFF00]">{payout.net} ETH</span>
+                <span className="text-[#CCFF00]">{payout.net} INIT</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#888]">PROFIT</span>
-                <span className="text-white">+{payout.profit} ETH</span>
+                <span className="text-white">+{payout.profit} INIT</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#888]">MULTIPLIER</span>
@@ -194,7 +194,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                 // TODO: call contract placeBet
                 await new Promise((r) => setTimeout(r, 1000))
                 toast.success("Bet Placed Successfully", {
-                  description: `${amount} ETH on ${position ? "YES" : "NO"} — your position is now active.`,
+                  description: `${amount} INIT on ${position ? "YES" : "NO"} — your position is now active.`,
                   duration: 5000,
                 })
                 setAmount("")
@@ -208,7 +208,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
               : expired
                 ? "MARKET CLOSED"
                 : payout
-                  ? `PLACE BET [ ${amount} ETH -> ${position ? "YES" : "NO"} ]`
+                  ? `PLACE BET [ ${amount} INIT -> ${position ? "YES" : "NO"} ]`
                   : "ENTER AMOUNT..."
             }
           </Button>

@@ -9,11 +9,11 @@ export const MOCK_LEADERBOARD = [
 ]
 
 export const MOCK_ACTIVITY = [
-  { name: "delphi.init", action: "bet Yes", amount: "0.5 ETH", time: "2m ago" },
-  { name: "pythia.init", action: "bet No", amount: "0.3 ETH", time: "8m ago" },
-  { name: "oracle.init", action: "bet Yes", amount: "1.0 ETH", time: "23m ago" },
-  { name: "alice.init", action: "bet Yes", amount: "0.2 ETH", time: "1h ago" },
-  { name: "bob.init", action: "bet No", amount: "0.5 ETH", time: "2h ago" },
+  { name: "delphi.init", action: "bet Yes", amount: "0.5 INIT", time: "2m ago" },
+  { name: "pythia.init", action: "bet No", amount: "0.3 INIT", time: "8m ago" },
+  { name: "oracle.init", action: "bet Yes", amount: "1.0 INIT", time: "23m ago" },
+  { name: "alice.init", action: "bet Yes", amount: "0.2 INIT", time: "1h ago" },
+  { name: "bob.init", action: "bet No", amount: "0.5 INIT", time: "2h ago" },
 ]
 
 export const MOCK_MARKETS: Market[] = [

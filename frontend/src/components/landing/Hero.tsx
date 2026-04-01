@@ -50,7 +50,7 @@ export function Hero() {
                   href="#how-it-works"
                   className="flex h-14 items-center px-8 border border-[#333] bg-transparent font-technical text-[15px] font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#333] transition-all hover:border-white hover:shadow-[2px_2px_0px_0px_#fff] hover:translate-x-[2px] hover:translate-y-[2px]"
                 >
-                  Read Docs
+                  How It Works
                 </a>
               </div>
             </FadeIn>

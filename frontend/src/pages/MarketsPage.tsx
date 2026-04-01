@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useDocTitle } from "@/hooks/useDocTitle"
 import { MarketCard } from "@/components/MarketCard"
 import { FadeIn } from "@/components/FadeIn"
@@ -20,18 +20,28 @@ const tabs: { value: FilterTab; label: string }[] = [
   { value: "resolved", label: "Resolved" },
 ]
 
+function useDebouncedValue<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value)
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay)
+    return () => clearTimeout(id)
+  }, [value, delay])
+  return debounced
+}
+
 export function MarketsPage() {
   useDocTitle("Markets")
   const [activeTab, setActiveTab] = useState<FilterTab>("all")
   const [search, setSearch] = useState("")
+  const debouncedSearch = useDebouncedValue(search, 300)
 
   const filtered = useMemo(() => {
     return MOCK_MARKETS.filter((m) => {
       if (activeTab !== "all" && getMarketStatus(m) !== activeTab) return false
-      if (search && !m.question.toLowerCase().includes(search.toLowerCase())) return false
+      if (debouncedSearch && !m.question.toLowerCase().includes(debouncedSearch.toLowerCase())) return false
       return true
     })
-  }, [activeTab, search])
+  }, [activeTab, debouncedSearch])
 
   // Aggregate stats
   const totalVolume = MOCK_MARKETS.reduce((acc, m) => acc + m.totalYesPool + m.totalNoPool, 0n)
@@ -80,7 +90,7 @@ export function MarketsPage() {
             <Coins className="size-4 text-white" strokeWidth={2.5} />
             <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">VOLUME</p>
           </div>
-          <p className="font-sans text-3xl font-black text-white">{parseFloat(formatEther(totalVolume)).toFixed(0)} <span className="text-xl text-[#555]">ETH</span></p>
+          <p className="font-sans text-3xl font-black text-white">{parseFloat(formatEther(totalVolume)).toFixed(0)} <span className="text-xl text-[#555]">INIT</span></p>
         </div>
         <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
           <div className="flex items-center gap-2 mb-2">

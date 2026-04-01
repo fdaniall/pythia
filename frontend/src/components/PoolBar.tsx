@@ -37,8 +37,8 @@ export function PoolBar({ yesPool, noPool, className, size = "sm" }: PoolBarProp
         />
       </div>
       <div className="flex justify-between font-technical text-[10px] uppercase tracking-widest text-[#888]">
-        <span>{formatEther(yesPool)} ETH</span>
-        <span>{formatEther(noPool)} ETH</span>
+        <span>{formatEther(yesPool)} INIT</span>
+        <span>{formatEther(noPool)} INIT</span>
       </div>
     </div>
   )
