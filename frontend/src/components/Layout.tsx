@@ -30,8 +30,8 @@ export function Layout() {
         <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="flex size-8 items-center justify-center bg-[#CCFF00] border border-[#CCFF00] transition-transform group-hover:rotate-12 group-hover:bg-white glitch-hover">
-              <TerminalSquare className="size-5 text-black" strokeWidth={2.5} />
+            <div className="flex size-8 items-center justify-center border border-[#CCFF00] transition-transform group-hover:rotate-12 group-hover:bg-[#CCFF00] glitch-hover p-1 bg-black">
+              <img src="/pythia-logo.svg" alt="Pythia Logo" className="size-full object-contain" />
             </div>
             <span className="font-technical text-2xl font-black uppercase tracking-widest text-white group-hover:text-[#CCFF00] transition-colors glitch-hover">
               PYTHIA

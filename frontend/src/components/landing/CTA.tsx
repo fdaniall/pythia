@@ -1,6 +1,6 @@
 import { FadeIn } from "@/components/FadeIn"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Terminal } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Link } from "react-router-dom"
 
 const TRUST_BADGES = ["BUILT ON INITIA", "MINIEVM ARCHITECTURE", "PERMISSIONLESS"]
@@ -13,8 +13,8 @@ export function CTA() {
     >
       <FadeIn>
         <div className="mb-8 flex justify-center">
-          <div className="flex size-16 items-center justify-center bg-black border-[2px] border-black">
-            <Terminal className="size-8 text-[#CCFF00]" strokeWidth={2.5} />
+          <div className="flex size-16 items-center justify-center border-[2px] border-black p-2 bg-black">
+            <img src="/pythia-logo.svg" alt="Pythia Logo" className="size-full object-contain" />
           </div>
         </div>
       </FadeIn>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Eye, ArrowRight, Menu, X } from "lucide-react"
+import { ArrowRight, Menu, X } from "lucide-react"
 import { Link } from "react-router-dom"
 
 const navLinks = [
@@ -41,10 +41,12 @@ export function Navbar() {
         <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6">
           {/* Logo */}
           <a href="#hero" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="group flex items-center gap-3">
-            <div className="flex size-8 items-center justify-center bg-[#CCFF00] border border-[#CCFF00] transition-transform group-hover:rotate-12">
-              <Eye className="size-5 text-black" strokeWidth={2.5} />
+            <div className="flex size-8 items-center justify-center border border-[#CCFF00] transition-transform group-hover:rotate-12 group-hover:bg-[#CCFF00] p-1 bg-black">
+              <img src="/pythia-logo.svg" alt="Pythia Logo" className="size-full object-contain" />
             </div>
-            <span className="font-technical text-xl font-bold tracking-widest text-white uppercase">PYTHIA</span>
+            <span className="font-technical text-2xl font-black uppercase tracking-widest text-white group-hover:text-[#CCFF00] transition-colors">
+              PYTHIA
+            </span>
           </a>
 
           {/* Desktop nav */}

@@ -1,5 +1,3 @@
-import { Eye } from "lucide-react"
-
 export function Footer() {
   return (
     <footer className="w-full bg-black border-t-2 border-[#333]">
@@ -8,10 +6,10 @@ export function Footer() {
         <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
           <div>
             <div className="mb-4 flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center bg-[#CCFF00] border border-[#CCFF00]">
-                <Eye className="size-5 text-black" strokeWidth={2.5} />
+              <div className="flex size-8 items-center justify-center border border-[#CCFF00] p-1 bg-black">
+                <img src="/pythia-logo.svg" alt="Pythia Logo" className="size-full object-contain" />
               </div>
-              <span className="font-technical text-2xl font-bold tracking-widest uppercase text-white">
+              <span className="font-technical text-2xl font-black tracking-widest uppercase text-white">
                 PYTHIA
               </span>
             </div>
