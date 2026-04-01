@@ -1,4 +1,5 @@
-import { useEffect } from "react"
+import { useState, useEffect } from "react"
+import { BootLoader } from "@/components/BootLoader"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createConfig, http, WagmiProvider } from "wagmi"
@@ -26,10 +27,23 @@ const wagmiConfig = createConfig({
 
 const queryClient = new QueryClient()
 
-function App() {
+export default function App() {
+  const [booting, setBooting] = useState(() => {
+    // Only boot once per tab session
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("pythia_booted")
+    }
+    return true
+  })
+
   useEffect(() => {
     injectStyles(InterwovenKitStyles)
   }, [])
+
+  const handleBootComplete = () => {
+    sessionStorage.setItem("pythia_booted", "true")
+    setBooting(false)
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -46,25 +60,27 @@ function App() {
           vipUrl={TESTNET.vipUrl}
           theme="dark"
         >
-          <BrowserRouter>
-            <Toaster position="bottom-right" />
-            <Routes>
-              {/* Landing page — no layout chrome */}
-              <Route index element={<LandingPage />} />
+          {booting && <BootLoader onComplete={handleBootComplete} />}
+          {!booting && (
+            <BrowserRouter>
+              <Toaster position="bottom-right" />
+              <Routes>
+                {/* Landing page — no layout chrome */}
+                <Route index element={<LandingPage />} />
 
-              {/* App pages — with nav header */}
-              <Route element={<Layout />}>
-                <Route path="/markets" element={<MarketsPage />} />
-                <Route path="/markets/:id" element={<MarketDetailPage />} />
-                <Route path="/create" element={<CreateMarketPage />} />
-                <Route path="/portfolio" element={<PortfolioPage />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
+                {/* App pages — with nav header */}
+                <Route element={<Layout />}>
+                  <Route path="/markets" element={<MarketsPage />} />
+                  <Route path="/markets/:id" element={<MarketDetailPage />} />
+                  <Route path="/create" element={<CreateMarketPage />} />
+                  <Route path="/portfolio" element={<PortfolioPage />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          )}
         </InterwovenKitProvider>
       </WagmiProvider>
     </QueryClientProvider>
   )
 }
 
-export default App
