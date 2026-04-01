@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PoolBar } from "@/components/PoolBar"
 import { FadeIn } from "@/components/FadeIn"
-import { Sparkles, TerminalSquare, Calendar, Eye, Clock } from "lucide-react"
+import { Sparkles, TerminalSquare, Calendar, Wallet, Lock, Clock, Eye } from "lucide-react"
+import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { toast } from "sonner"
 
 export function CreateMarketPage() {
+  const { isConnected, openConnect } = useInterwovenKit()
   const [question, setQuestion] = useState("")
   const [deadline, setDeadline] = useState("")
 
@@ -14,14 +16,39 @@ export function CreateMarketPage() {
     e.preventDefault()
     // TODO: call contract createMarket
     console.log("Creating market:", { question, deadline })
-    toast.success("TX_EXECUTED_SUCCESSFULLY", {
-      description: "-> Hash: 0x8F9B...2A1C\n-> Block: 829104",
+    toast.success("CONTRACT_DEPLOYED_SUCCESSFULLY", {
+      description: "-> Address: 0x8F9B...2A1C\n-> Block: 829104\n-> Initialized: YES",
       duration: 5000,
     })
   }
 
   const deadlineDate = deadline ? new Date(deadline) : null
   const isValid = question.trim().length > 0 && deadline.length > 0
+
+  if (!isConnected) {
+    return (
+      <div className="mx-auto max-w-[1200px] space-y-8 flex flex-col items-center justify-center min-h-[60vh]">
+        <FadeIn>
+          <div className="brutalist-card bg-black p-12 text-center max-w-[600px] mx-auto border-dashed">
+            <Lock className="size-12 text-[#FF2A2A] mx-auto mb-6 opacity-80" strokeWidth={1.5} />
+            <h1 className="font-sans text-[clamp(24px,4vw,36px)] font-black uppercase leading-[1.1] tracking-tighter text-white mb-4">
+              UNAUTHORIZED ACCESS
+            </h1>
+            <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase mb-8">
+              System deployment protocol requires an authenticated wallet node. Please secure a connection before initializing a new prediction market.
+            </p>
+            <Button
+              className="btn-acid h-14 w-full font-technical text-[14px]"
+              onClick={openConnect}
+            >
+              <Wallet className="mr-2 size-4" strokeWidth={2.5} />
+              AUTHENTICATE_NODE
+            </Button>
+          </div>
+        </FadeIn>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-[1200px] space-y-8">

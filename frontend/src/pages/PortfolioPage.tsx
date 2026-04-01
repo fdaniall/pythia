@@ -3,8 +3,10 @@ import { FadeIn } from "@/components/FadeIn"
 import { cn } from "@/lib/utils"
 import {
   BarChart3, Wallet, Trophy, TrendingUp, TrendingDown,
-  ArrowRight, Clock, CheckCircle,
+  ArrowRight, Clock, CheckCircle, Lock
 } from "lucide-react"
+import { useInterwovenKit } from "@initia/interwovenkit-react"
+import { Button } from "@/components/ui/button"
 
 const MOCK_BETS = [
   {
@@ -61,6 +63,8 @@ const statusConfig = {
 }
 
 export function PortfolioPage() {
+  const { isConnected, openConnect } = useInterwovenKit()
+
   const activeBets = MOCK_BETS.filter((b) => b.status === "active")
   const wonBets = MOCK_BETS.filter((b) => b.status === "won")
   const lostBets = MOCK_BETS.filter((b) => b.status === "lost")
@@ -68,6 +72,31 @@ export function PortfolioPage() {
   const winRate = wonBets.length > 0
     ? Math.round((wonBets.length / (wonBets.length + lostBets.length)) * 100)
     : 0
+
+  if (!isConnected) {
+    return (
+      <div className="mx-auto max-w-[1200px] space-y-8 flex flex-col items-center justify-center min-h-[60vh]">
+        <FadeIn>
+          <div className="brutalist-card bg-black p-12 text-center max-w-[600px] mx-auto border-dashed">
+            <Lock className="size-12 text-[#CCFF00] mx-auto mb-6 opacity-80" strokeWidth={1.5} />
+            <h1 className="font-sans text-[clamp(24px,4vw,36px)] font-black uppercase leading-[1.1] tracking-tighter text-white mb-4">
+              NODE NOT SECURED
+            </h1>
+            <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase mb-8">
+              Personal portfolio and execution logs are encrypted on-chain. Authenticate your node to decrypt your data.
+            </p>
+            <Button
+              className="btn-acid h-14 w-full font-technical text-[14px]"
+              onClick={openConnect}
+            >
+              <Wallet className="mr-2 size-4" strokeWidth={2.5} />
+              AUTHENTICATE_NODE
+            </Button>
+          </div>
+        </FadeIn>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react"
 import { useParams, Link } from "react-router-dom"
+import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PoolBar } from "@/components/PoolBar"
@@ -10,7 +11,7 @@ import { formatEther } from "viem"
 import { FadeIn } from "@/components/FadeIn"
 import {
   ArrowLeft, Clock, Trophy, TrendingUp, TrendingDown,
-  Users, Zap, Info, TerminalSquare
+  Users, Zap, Info, TerminalSquare, Wallet
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -34,6 +35,7 @@ const MOCK_ACTIVITY = [
 
 export function MarketDetailPage() {
   const { id } = useParams()
+  const { isConnected, openConnect } = useInterwovenKit()
   const market = MOCK_MARKETS.find((m) => m.id === parseInt(id || "0")) || MOCK_MARKETS[0]
 
   const [amount, setAmount] = useState("")
@@ -352,27 +354,37 @@ export function MarketDetailPage() {
                 )}
               </div>
 
-              {/* Submit */}
-              <Button
-                className={cn(
-                  "h-14 w-full font-technical text-[14px]",
-                  countdown.expired ? "bg-[#333] text-[#888] cursor-not-allowed border-[2px] border-[#333] rounded-none hover:bg-[#333]" : "btn-acid"
-                )}
-                disabled={countdown.expired || !amount || Number(amount) <= 0}
-                onClick={() => {
-                  toast.success("TX_EXECUTED_SUCCESSFULLY", {
-                    description: `-> Dest: ${position ? "YES_POOL" : "NO_POOL"}\n-> Value: ${amount} ETH\n-> Block: 13,094,882`,
-                    duration: 5000,
-                  })
-                }}
-              >
-                {countdown.expired 
-                  ? "SYSTEM_HALTED[RESOLVED]"
-                  : payout
-                    ? `EXECUTE [ ${amount} ETH -> ${position ? "YES" : "NO"} ]`
-                    : "AWAITING VALUE..."
-                }
-              </Button>
+              {/* Submit / Connect */}
+              {!isConnected ? (
+                <Button
+                  className="btn-acid h-14 w-full font-technical text-[14px]"
+                  onClick={openConnect}
+                >
+                  <Wallet className="mr-2 size-4" />
+                  AUTHENTICATE_NODE
+                </Button>
+              ) : (
+                <Button
+                  className={cn(
+                    "h-14 w-full font-technical text-[14px]",
+                    countdown.expired ? "bg-[#333] text-[#888] cursor-not-allowed border-[2px] border-[#333] rounded-none hover:bg-[#333]" : "btn-acid"
+                  )}
+                  disabled={countdown.expired || !amount || Number(amount) <= 0}
+                  onClick={() => {
+                    toast.success("TX_EXECUTED_SUCCESSFULLY", {
+                      description: `-> Dest: ${position ? "YES_POOL" : "NO_POOL"}\n-> Value: ${amount} ETH\n-> Block: 13,094,882`,
+                      duration: 5000,
+                    })
+                  }}
+                >
+                  {countdown.expired 
+                    ? "SYSTEM_HALTED[RESOLVED]"
+                    : payout
+                      ? `EXECUTE [ ${amount} ETH -> ${position ? "YES" : "NO"} ]`
+                      : "AWAITING VALUE..."
+                  }
+                </Button>
+              )}
 
               {/* Auto-sign hint */}
               <div className="flex items-start gap-3 border border-[#333] bg-[#050505] p-4">
