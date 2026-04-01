@@ -1,13 +1,9 @@
-import { motion, useScroll, useTransform } from "framer-motion"
 import { FadeIn } from "@/components/FadeIn"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, TerminalSquare } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export function Hero() {
-  const { scrollY } = useScroll()
-  const yOffset = useTransform(scrollY, [0, 500], [0, 100])
-
   return (
     <section
       className="relative flex min-h-[100svh] w-full flex-col bg-technical-grid pt-24"
@@ -17,9 +13,8 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000000_100%)] opacity-80" />
 
       {/* Main Content */}
-      <motion.div 
-        style={{ y: yOffset }}
-        className="relative z-[2] mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center px-6 pb-16 pt-8 lg:px-12"
+      <div 
+        className="relative z-[2] mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center px-6 pb-20 pt-12 lg:px-12"
       >
         <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
           
@@ -103,7 +98,7 @@ export function Hero() {
             </FadeIn>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Marquee Banner */}
       <div className="w-full mt-auto marquee-container z-10">
