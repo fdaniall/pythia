@@ -109,7 +109,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
             min="0"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            disabled={expired}
+            disabled={expired || isSubmitting}
             className={cn(
               "h-12 rounded-none border-[2px] bg-black px-4 font-sans text-xl font-black text-white placeholder:text-[#333] focus-visible:ring-0",
               expired ? "border-[#333] opacity-50 cursor-not-allowed" : "border-[#333] focus-visible:border-[#CCFF00]"
@@ -120,7 +120,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
               <button
                 key={v}
                 type="button"
-                disabled={expired}
+                disabled={expired || isSubmitting}
                 onClick={() => setAmount(v === "MAX" ? "10.0" : v)}
                 className={cn(
                   "flex-1 border-[1.5px] py-1.5 font-technical text-[11px] font-bold uppercase tracking-widest transition-all",
@@ -192,7 +192,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
             onClick={async () => {
               setIsSubmitting(true)
               try {
-                // TODO: call contract placeBet
+                // TODO: wire to real contract call
                 await new Promise((r) => setTimeout(r, 1000))
                 toast.success("Bet Placed Successfully", {
                   description: `${amount} INIT on ${position ? "YES" : "NO"} — your position is now active.`,

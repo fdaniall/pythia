@@ -22,5 +22,8 @@ frontend/dist/
 contracts/broadcast/
 contracts/lib/
 
+# Move
+move/build/
+
 # Misc
 ds

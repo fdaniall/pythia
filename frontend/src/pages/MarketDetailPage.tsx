@@ -11,14 +11,13 @@ import {
   ArrowLeft, Clock, Trophy, Users, Zap, TerminalSquare, Share2, Check
 } from "lucide-react"
 import { useState } from "react"
-import { MOCK_MARKETS, MOCK_LEADERBOARD, MOCK_ACTIVITY } from "@/lib/mock-data"
+import { MOCK_MARKETS } from "@/lib/mock-data"
 
 // Deterministic sparkline data per market (seeded by id)
 function generateSparkline(seed: number): number[] {
   let value = 30 + (seed * 17) % 40
   const points: number[] = [value]
   for (let i = 1; i < 20; i++) {
-    // Simple seeded pseudo-random walk
     const hash = Math.sin(seed * 1000 + i * 137.5) * 10000
     const delta = (hash - Math.floor(hash)) * 20 - 8
     value = Math.max(10, Math.min(95, value + delta))
@@ -62,21 +61,19 @@ export function MarketDetailPage() {
   const { id } = useParams()
   const market = MOCK_MARKETS.find((m) => m.id === parseInt(id || "0"))
 
-  useDocTitle(market?.question ?? "Market Not Found")
+  useDocTitle(market?.question ?? "Market")
   const countdown = useCountdown(market?.deadline ?? 0n)
   const total = (market?.totalYesPool ?? 0n) + (market?.totalNoPool ?? 0n)
 
   if (!market) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        {/* Glitch error code */}
         <div className="mb-6 border-2 border-[#FF2A2A] px-8 py-3">
           <span className="font-mono text-[clamp(40px,8vw,72px)] font-black text-[#FF2A2A] leading-none">
             404
           </span>
         </div>
 
-        {/* Terminal block */}
         <div className="w-full max-w-md border-2 border-[#333] bg-[#050505] mb-8">
           <div className="flex items-center gap-2 border-b border-[#333] px-3 py-2 bg-[#0a0a0a]">
             <div className="size-2 bg-[#FF2A2A]" />
@@ -93,7 +90,6 @@ export function MarketDetailPage() {
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
             to="/markets"
@@ -130,7 +126,7 @@ export function MarketDetailPage() {
           className="inline-flex items-center gap-2 font-technical text-[10px] font-bold uppercase tracking-widest text-[#888] transition-colors hover:text-white relative z-20"
         >
           <ArrowLeft className="size-4" strokeWidth={2.5} />
-          BACK_TO_MARKET_INDEX
+          BACK TO MARKETS
         </Link>
 
         {/* Market title + countdown */}
@@ -162,9 +158,8 @@ export function MarketDetailPage() {
 
       <FadeIn delay={0.15}>
         <div className="grid gap-8 lg:grid-cols-3 relative z-20 mt-8">
-          {/* Left column: pool + activity */}
+          {/* Left column: pool + info */}
           <div className="space-y-8 lg:col-span-2 order-2 lg:order-1">
-            {/* Pool visualization */}
             <div className="brutalist-card bg-black p-8">
               <h2 className="mb-6 flex items-center gap-2 font-technical text-[14px] font-bold uppercase tracking-widest text-white border-b border-[#333] pb-4">
                 <TerminalSquare className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
@@ -200,70 +195,60 @@ export function MarketDetailPage() {
             </div>
 
             <div className="grid gap-8 md:grid-cols-2">
-              {/* Recent activity */}
               <div className="brutalist-card bg-black p-6">
                 <h2 className="mb-4 flex items-center gap-2 font-technical text-[12px] font-bold uppercase tracking-widest text-white border-b border-[#333] pb-3">
                   <Zap className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
-                  LATEST ACTIVITY
+                  MARKET INFO
                 </h2>
-                <div className="space-y-3">
-                  {MOCK_ACTIVITY.map((a, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <span className="font-technical text-[11px] font-bold tracking-widest text-white">[{a.name}]</span>
-                        <span className={cn(
-                          "font-technical text-[10px] font-bold uppercase tracking-widest",
-                          a.action.includes("Yes") ? "text-[#CCFF00]" : "text-[#FF2A2A]"
-                        )}>
-                          {a.action}
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <span className="font-sans text-[14px] font-black text-white">{a.amount}</span>
-                        <span className="font-technical text-[9px] uppercase tracking-widest text-[#555]">{a.time}</span>
-                      </div>
+                <div className="space-y-3 font-technical text-[11px] uppercase tracking-widest">
+                  <div className="flex justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2">
+                    <span className="text-[#888]">Creator</span>
+                    <span className="text-white font-mono text-[10px]">{market.creator.slice(0, 6)}...{market.creator.slice(-4)}</span>
+                  </div>
+                  <div className="flex justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2">
+                    <span className="text-[#888]">Status</span>
+                    <span className={cn(market.resolved ? "text-[#FF2A2A]" : "text-[#CCFF00]")}>
+                      {market.resolved ? "RESOLVED" : countdown.expired ? "CLOSED" : "LIVE"}
+                    </span>
+                  </div>
+                  {market.resolved && (
+                    <div className="flex justify-between border-l-2 border-[#CCFF00] bg-[#0a0a0a] px-3 py-2">
+                      <span className="text-[#888]">Outcome</span>
+                      <span className={cn(market.outcome ? "text-[#CCFF00]" : "text-[#FF2A2A]", "font-black")}>
+                        {market.outcome ? "YES" : "NO"}
+                      </span>
                     </div>
-                  ))}
+                  )}
+                  <div className="flex justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2">
+                    <span className="text-[#888]">Platform Fee</span>
+                    <span className="text-white">2%</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Leaderboard */}
               <div className="brutalist-card bg-black p-6">
                 <h2 className="mb-4 flex items-center gap-2 font-technical text-[12px] font-bold uppercase tracking-widest text-white border-b border-[#333] pb-3">
                   <Trophy className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
-                  LEADERBOARD
+                  POOL BREAKDOWN
                 </h2>
                 <div className="space-y-2">
-                  {MOCK_LEADERBOARD.map((entry) => (
-                    <div
-                      key={entry.rank}
-                      className="flex items-center justify-between border-b border-[#111] py-2"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className={cn(
-                          "font-technical text-[14px] font-black",
-                          entry.rank === 1 ? "text-[#CCFF00]" : "text-[#555]"
-                        )}>
-                          #{entry.rank}
-                        </span>
-                        <span className="font-technical text-[11px] font-bold tracking-widest text-white truncate max-w-[80px]">{entry.name}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className={cn(
-                          "border px-1.5 py-0.5 font-technical text-[9px] font-bold uppercase",
-                          entry.position === "Yes" ? "bg-[#CCFF00] text-black border-[#CCFF00]" : "bg-[#FF2A2A] text-white border-[#FF2A2A]"
-                        )}>
-                          {entry.position}
-                        </span>
-                        <span className="font-sans text-[14px] font-black text-white">
-                          {parseFloat(formatEther(entry.amount)).toFixed(1)} INIT
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                  <div className="flex justify-between font-technical text-[11px] uppercase tracking-widest">
+                    <span className="text-[#CCFF00]">YES POOL</span>
+                    <span className="text-white font-black">{parseFloat(formatEther(market.totalYesPool)).toFixed(2)} INIT</span>
+                  </div>
+                  <div className="flex justify-between font-technical text-[11px] uppercase tracking-widest">
+                    <span className="text-[#FF2A2A]">NO POOL</span>
+                    <span className="text-white font-black">{parseFloat(formatEther(market.totalNoPool)).toFixed(2)} INIT</span>
+                  </div>
+                  <div className="h-px bg-[#333] my-2" />
+                  <div className="flex justify-between font-technical text-[11px] uppercase tracking-widest">
+                    <span className="text-[#888]">TOTAL</span>
+                    <span className="text-white font-black">{parseFloat(formatEther(total)).toFixed(2)} INIT</span>
+                  </div>
+                  <div className="flex justify-between font-technical text-[11px] uppercase tracking-widest">
+                    <span className="text-[#888]">BETTORS</span>
+                    <span className="text-white font-black">{market.bettorCount}</span>
+                  </div>
                 </div>
               </div>
             </div>

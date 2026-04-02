@@ -43,10 +43,9 @@ export function MarketsPage() {
     })
   }, [activeTab, debouncedSearch])
 
-  // Aggregate stats
-  const totalVolume = MOCK_MARKETS.reduce((acc, m) => acc + m.totalYesPool + m.totalNoPool, 0n)
-  const totalBettors = MOCK_MARKETS.reduce((acc, m) => acc + (m.bettorCount ?? 0), 0)
-  const openCount = MOCK_MARKETS.filter((m) => getMarketStatus(m) === "open").length
+  const totalVolume = useMemo(() => MOCK_MARKETS.reduce((acc, m) => acc + m.totalYesPool + m.totalNoPool, 0n), [])
+  const totalBettors = useMemo(() => MOCK_MARKETS.reduce((acc, m) => acc + (m.bettorCount ?? 0), 0), [])
+  const openCount = useMemo(() => MOCK_MARKETS.filter((m) => getMarketStatus(m) === "open").length, [])
 
   return (
     <div className="space-y-8">
@@ -104,7 +103,6 @@ export function MarketsPage() {
 
       {/* Search + Filter + Create */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-y border-[#333] py-4 bg-black/50">
-        {/* Tabs */}
         <div role="tablist" className="flex flex-wrap gap-2">
           {tabs.map((tab) => (
             <button
@@ -125,7 +123,6 @@ export function MarketsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Search */}
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#888]" strokeWidth={2.5} />
             <Input
@@ -136,12 +133,8 @@ export function MarketsPage() {
               className="h-10 w-full sm:w-64 rounded-none border-[2px] border-[#333] bg-black pl-10 font-technical text-[12px] font-bold uppercase text-white placeholder:text-[#555] focus-visible:border-[#CCFF00] focus-visible:ring-0"
             />
           </div>
-
-          {/* Create CTA */}
           <Link to="/create">
-            <Button
-              className="btn-acid h-10 px-5 font-technical text-[12px]"
-            >
+            <Button className="btn-acid h-10 px-5 font-technical text-[12px]">
               <Plus className="mr-2 size-4" strokeWidth={2.5} />
               CREATE MARKET
             </Button>

@@ -1,11 +1,31 @@
-export const PREDICTION_MARKET_ADDRESS = "0x" as `0x${string}` // TODO: set after deployment
+import { defineChain } from "viem"
 
+// ── Contract Address ────────────────────────────────────────────
+// TODO: Replace after deploying to your Initia MiniEVM appchain
+export const PREDICTION_MARKET_ADDRESS = "0x" as `0x${string}`
+
+// ── Initia Appchain Definition ──────────────────────────────────
+// TODO: Update chainId, name, and rpcUrls after spinning up your rollup
+export const initiaAppchain = defineChain({
+  id: 12345, // Replace with your appchain's chain ID
+  name: "Pythia Appchain",
+  nativeCurrency: { name: "INIT", symbol: "INIT", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["http://localhost:8545"] }, // Replace with your RPC
+  },
+  blockExplorers: {
+    default: { name: "Explorer", url: "https://scan.initia.xyz" },
+  },
+})
+
+// ── ABI ─────────────────────────────────────────────────────────
 export const PREDICTION_MARKET_ABI = [
   {
     type: "constructor",
     inputs: [],
     stateMutability: "nonpayable",
   },
+  // ── Write Functions ──
   {
     type: "function",
     name: "createMarket",
@@ -45,6 +65,7 @@ export const PREDICTION_MARKET_ABI = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  // ── Read Functions ──
   {
     type: "function",
     name: "getMarket",
@@ -133,6 +154,45 @@ export const PREDICTION_MARKET_ABI = [
     outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",
   },
+  {
+    type: "function",
+    name: "markets",
+    inputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    outputs: [
+      { name: "question", type: "string", internalType: "string" },
+      { name: "deadline", type: "uint256", internalType: "uint256" },
+      { name: "totalYesPool", type: "uint256", internalType: "uint256" },
+      { name: "totalNoPool", type: "uint256", internalType: "uint256" },
+      { name: "resolved", type: "bool", internalType: "bool" },
+      { name: "outcome", type: "bool", internalType: "bool" },
+      { name: "creator", type: "address", internalType: "address" },
+      { name: "createdAt", type: "uint256", internalType: "uint256" },
+    ],
+    stateMutability: "view",
+  },
+  // ── Admin Functions ──
+  {
+    type: "function",
+    name: "setPlatformFee",
+    inputs: [{ name: "newFeeBps", type: "uint256", internalType: "uint256" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "transferOwnership",
+    inputs: [{ name: "newOwner", type: "address", internalType: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "withdrawFees",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  // ── Events ──
   {
     type: "event",
     name: "MarketCreated",

@@ -85,7 +85,7 @@ export function PortfolioPage() {
               CONNECT TO VIEW
             </h1>
             <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase mb-8">
-              Personal portfolio and execution logs are encrypted on-chain. Authenticate your node to decrypt your data.
+              Connect your wallet to view your positions and claim winnings.
             </p>
             <Button
               className="btn-acid h-14 w-full font-technical text-[14px]"
@@ -176,7 +176,7 @@ export function PortfolioPage() {
                   </h3>
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-technical text-[11px] font-bold uppercase tracking-widest text-[#888]">
                     <span className={cn(
-                      "px-2 py-0.5 border-2", 
+                      "px-2 py-0.5 border-2",
                       bet.position === "Yes" ? "bg-[#CCFF00] text-black border-[#CCFF00]" : "bg-[#FF2A2A] text-white border-[#FF2A2A]"
                     )}>
                       {bet.position}
@@ -185,7 +185,7 @@ export function PortfolioPage() {
                     <span className="text-[#333]">&middot;</span>
                     <span className="flex items-center gap-1.5"><Clock className="size-3" /> {bet.deadline}</span>
                     <span className="text-[#333]">&middot;</span>
-                    <span className="text-[#555] font-mono">TX: 0X{bet.id.toString(16).padStart(6, '0').toUpperCase()}</span>
+                    <span className="text-[#555] font-mono">TX: 0x{bet.id.toString(16).padStart(6, '0').toUpperCase()}</span>
                   </div>
                 </div>
 
@@ -204,8 +204,7 @@ export function PortfolioPage() {
                       </span>
                     </div>
                   </div>
-                  
-                  {/* Action indicator */}
+
                   {bet.status === "won" ? (
                     <span className="ml-2 bg-[#CCFF00] text-black px-4 py-2 font-technical text-[12px] font-black uppercase tracking-widest group-hover:bg-white transition-colors">
                       CLAIM

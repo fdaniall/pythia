@@ -19,7 +19,7 @@ export function CreateMarketPage() {
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      // TODO: call contract createMarket
+      // TODO: wire to real contract call
       await new Promise((r) => setTimeout(r, 1500))
       toast.success("Market Created Successfully", {
         description: "Your prediction market is now live and accepting bets.",
