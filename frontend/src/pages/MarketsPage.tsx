@@ -62,7 +62,7 @@ export function MarketsPage() {
             GLOBAL <span className="text-[#CCFF00]">LIQUIDITY.</span>
           </h1>
           <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase max-w-[500px]">
-            Execute trades across isolated pools. All positions settled on-chain via Initia MiniEVM.
+            Execute trades across isolated pools. All positions settled on-chain via Initia L1.
           </p>
         </div>
       </FadeIn>

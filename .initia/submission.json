@@ -1,0 +1,28 @@
+{
+  "project_name": "Pythia",
+  "description": "Binary prediction market protocol on Initia L1. Bet on real-world outcomes with dynamic odds, auto-signing, cross-chain deposits, and .init usernames.",
+  "track": "Gaming & Consumer Applications",
+  "vm": "MoveVM",
+  "chain_id": "initiation-2",
+  "contract_address": "",
+  "frontend_url": "",
+  "demo_video_url": "",
+  "team": [
+    {
+      "name": "fdaniall",
+      "role": "Solo Developer",
+      "github": "fdaniall"
+    }
+  ],
+  "tech_stack": {
+    "smart_contract": "Move (Initia L1 MoveVM)",
+    "frontend": "React 19, Vite 8, TailwindCSS 4, InterwovenKit",
+    "wallet": "InterwovenKit (@initia/interwovenkit-react)"
+  },
+  "initia_features": [
+    "auto-signing",
+    "interwoven-bridge",
+    "init-usernames"
+  ],
+  "repository": "https://github.com/fdaniall/pythia"
+}

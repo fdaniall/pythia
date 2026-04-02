@@ -105,7 +105,7 @@ export function DocsPage() {
                 Named after the Oracle of Delphi, Pythia transforms collective conviction into price signals. Unlike traditional prediction markets that rely on centralized order books, Pythia uses a parimutuel pool model where odds are determined purely by the distribution of bets.
               </p>
               <p className="font-technical text-[14px] leading-[1.8] text-[#888]">
-                The protocol is designed for the Initia ecosystem — leveraging MiniEVM for smart contract execution and InterwovenKit for seamless cross-chain deposits. Users from any supported chain can participate without bridging.
+                The protocol is built natively on Initia L1 using Move smart contracts and InterwovenKit for seamless cross-chain deposits. Users from any supported chain can participate without bridging.
               </p>
             </div>
 
@@ -368,14 +368,14 @@ export function DocsPage() {
                 {
                   layer: "Smart Contract",
                   icon: TerminalSquare,
-                  tech: "Solidity on Initia MiniEVM",
-                  desc: "Single PredictionMarket contract handling market lifecycle — creation, betting, resolution, and payout claims. Parimutuel logic computed on-chain.",
+                  tech: "Move on Initia L1 (MoveVM)",
+                  desc: "prediction_market module handling full market lifecycle — creation, betting, resolution, and payout claims. Parimutuel logic computed on-chain with Fungible Asset model.",
                 },
                 {
                   layer: "Settlement",
                   icon: Layers,
-                  tech: "Initia L1 + MiniEVM Rollup",
-                  desc: "Contract deployed on an Initia MiniEVM appchain. Leverages Initia's interwoven rollup architecture for low fees and fast finality.",
+                  tech: "Initia L1",
+                  desc: "Contract deployed natively on Initia L1. Leverages Initia's interwoven architecture for cross-chain deposits and fast finality.",
                 },
               ].map((item) => (
                 <div key={item.layer} className="flex gap-4 border border-[#333] bg-[#050505] p-4 items-start">
@@ -401,12 +401,12 @@ export function DocsPage() {
             </h3>
             <div className="grid gap-3 sm:grid-cols-2">
               {[
-                { fn: "createMarket(question, deadline)", desc: "Deploy a new binary prediction pool" },
-                { fn: "placeBet(marketId, position)", desc: "Stake INIT on YES or NO (payable)" },
-                { fn: "resolveMarket(marketId, outcome)", desc: "Settle the market (creator only)" },
-                { fn: "claimWinnings(marketId)", desc: "Withdraw proportional payout" },
-                { fn: "getMarket(marketId)", desc: "Read market state (view)" },
-                { fn: "calculatePayout(marketId, bettor)", desc: "Preview potential payout (view)" },
+                { fn: "create_market(question, deadline)", desc: "Create a new binary prediction pool" },
+                { fn: "place_bet(market_id, outcome, amount)", desc: "Bet YES (0) or NO (1) with INIT" },
+                { fn: "resolve_market(market_id, winning_outcome)", desc: "Settle the market (admin only)" },
+                { fn: "claim_winnings(market_id)", desc: "Withdraw proportional payout" },
+                { fn: "get_market(market_id)", desc: "Read market state (view)" },
+                { fn: "calculate_payout(market_id, bettor)", desc: "Preview potential payout (view)" },
               ].map((item) => (
                 <div key={item.fn} className="border border-[#333] bg-[#050505] p-3">
                   <code className="font-mono text-[12px] text-[#CCFF00] break-all">{item.fn}</code>

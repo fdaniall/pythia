@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import { Link } from "react-router-dom"
 
-const TRUST_BADGES = ["BUILT ON INITIA", "MINIEVM ARCHITECTURE", "PERMISSIONLESS"]
+const TRUST_BADGES = ["BUILT ON INITIA", "MOVE NATIVE", "PERMISSIONLESS"]
 
 export function CTA() {
   return (
