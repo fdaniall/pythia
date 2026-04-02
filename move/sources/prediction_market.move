@@ -90,9 +90,10 @@ module pythia::prediction_market {
         market_count: u64,
         platform_fee_bps: u64,
         extend_ref: ExtendRef,
+        token_metadata: object::Object<Metadata>,
     }
 
-    //  Init Module 
+    //  Init Module
     fun init_module(admin: &signer) {
         let admin_addr = signer::address_of(admin);
 
@@ -100,21 +101,25 @@ module pythia::prediction_market {
         let constructor_ref = object::create_object(admin_addr, false);
         let extend_ref = object::generate_extend_ref(&constructor_ref);
 
+        // Use INIT native token
+        let token_metadata = coin::metadata(@initia_std, initia_string::utf8(b"uinit"));
+
         move_to(admin, State {
             admin: admin_addr,
             markets: table::new(),
             market_count: 0,
             platform_fee_bps: 200, // 2%
             extend_ref,
+            token_metadata,
         });
     }
 
-    //  Helper: INIT token metadata 
-    fun get_init_metadata(): object::Object<Metadata> {
-        coin::metadata(@initia_std, initia_string::utf8(b"uinit"))
+    //  Helper: Get token metadata from state
+    fun get_token_metadata(): object::Object<Metadata> acquires State {
+        borrow_global<State>(@pythia).token_metadata
     }
 
-    //  Helper: Contract vault address 
+    //  Helper: Contract vault address
     fun vault_address(state: &State): address {
         object::address_from_extend_ref(&state.extend_ref)
     }
@@ -173,6 +178,14 @@ module pythia::prediction_market {
         assert!(outcome == OUTCOME_YES || outcome == OUTCOME_NO, error::invalid_argument(EINVALID_OUTCOME));
         assert!(amount > 0, error::invalid_argument(EZERO_AMOUNT));
 
+        // Read token metadata + vault addr before mutable borrow
+        let metadata = get_token_metadata();
+        let vault_addr = vault_address(borrow_global<State>(@pythia));
+
+        // Transfer tokens from bettor to contract vault
+        let fa = primary_fungible_store::withdraw(bettor, metadata, amount);
+        primary_fungible_store::deposit(vault_addr, fa);
+
         let state = borrow_global_mut<State>(@pythia);
         assert!(table::contains(&state.markets, market_id), error::not_found(EMARKET_NOT_FOUND));
 
@@ -183,12 +196,6 @@ module pythia::prediction_market {
         assert!(now < market.deadline, error::invalid_state(EMARKET_EXPIRED));
 
         let bettor_addr = signer::address_of(bettor);
-
-        // Transfer INIT from bettor to contract vault
-        let metadata = get_init_metadata();
-        let fa = primary_fungible_store::withdraw(bettor, metadata, amount);
-        let vault_addr = object::address_from_extend_ref(&state.extend_ref);
-        primary_fungible_store::deposit(vault_addr, fa);
 
         // Record bet
         if (!table::contains(&market.bets, bettor_addr)) {
@@ -252,44 +259,56 @@ module pythia::prediction_market {
         bettor: &signer,
         market_id: u64,
     ) acquires State {
-        let state = borrow_global_mut<State>(@pythia);
-        assert!(table::contains(&state.markets, market_id), error::not_found(EMARKET_NOT_FOUND));
-
-        let market = table::borrow_mut(&mut state.markets, market_id);
-        assert!(market.resolved, error::invalid_state(EMARKET_NOT_RESOLVED));
-
         let bettor_addr = signer::address_of(bettor);
-        assert!(table::contains(&market.bets, bettor_addr), error::not_found(ENOTHING_TO_CLAIM));
 
-        let bet = table::borrow_mut(&mut market.bets, bettor_addr);
-        assert!(!bet.claimed, error::invalid_state(EALREADY_CLAIMED));
+        // Step 1: Read immutably to compute payout
+        let metadata = get_token_metadata();
+        let net_payout: u64;
+        {
+            let state = borrow_global<State>(@pythia);
+            assert!(table::contains(&state.markets, market_id), error::not_found(EMARKET_NOT_FOUND));
 
-        let winning_amount = if (market.winning_outcome == OUTCOME_YES) {
-            bet.yes_amount
-        } else {
-            bet.no_amount
+            let market = table::borrow(&state.markets, market_id);
+            assert!(market.resolved, error::invalid_state(EMARKET_NOT_RESOLVED));
+            assert!(table::contains(&market.bets, bettor_addr), error::not_found(ENOTHING_TO_CLAIM));
+
+            let bet = table::borrow(&market.bets, bettor_addr);
+            assert!(!bet.claimed, error::invalid_state(EALREADY_CLAIMED));
+
+            let winning_amount = if (market.winning_outcome == OUTCOME_YES) {
+                bet.yes_amount
+            } else {
+                bet.no_amount
+            };
+            assert!(winning_amount > 0, error::invalid_state(ENOTHING_TO_CLAIM));
+
+            let total_pool = market.total_yes_pool + market.total_no_pool;
+            let winning_pool = if (market.winning_outcome == OUTCOME_YES) {
+                market.total_yes_pool
+            } else {
+                market.total_no_pool
+            };
+
+            let gross_payout = (winning_amount as u128) * (total_pool as u128) / (winning_pool as u128);
+            let fee = gross_payout * (state.platform_fee_bps as u128) / 10000;
+            net_payout = ((gross_payout - fee) as u64);
         };
-        assert!(winning_amount > 0, error::invalid_state(ENOTHING_TO_CLAIM));
 
-        bet.claimed = true;
-
-        let total_pool = market.total_yes_pool + market.total_no_pool;
-        let winning_pool = if (market.winning_outcome == OUTCOME_YES) {
-            market.total_yes_pool
-        } else {
-            market.total_no_pool
+        // Step 2: Mark claimed (mutable borrow)
+        {
+            let state = borrow_global_mut<State>(@pythia);
+            let market = table::borrow_mut(&mut state.markets, market_id);
+            let bet = table::borrow_mut(&mut market.bets, bettor_addr);
+            bet.claimed = true;
         };
 
-        // payout = (winning_amount * total_pool) / winning_pool
-        let gross_payout = (winning_amount as u128) * (total_pool as u128) / (winning_pool as u128);
-        let fee = gross_payout * (state.platform_fee_bps as u128) / 10000;
-        let net_payout = ((gross_payout - fee) as u64);
-
-        // Transfer from vault to bettor
-        let metadata = get_init_metadata();
-        let obj_signer = object::generate_signer_for_extending(&state.extend_ref);
-        let fa = primary_fungible_store::withdraw(&obj_signer, metadata, net_payout);
-        primary_fungible_store::deposit(bettor_addr, fa);
+        // Step 3: Transfer from vault to bettor
+        {
+            let state = borrow_global<State>(@pythia);
+            let obj_signer = object::generate_signer_for_extending(&state.extend_ref);
+            let fa = primary_fungible_store::withdraw(&obj_signer, metadata, net_payout);
+            primary_fungible_store::deposit(bettor_addr, fa);
+        };
 
         event::emit(WinningsClaimed {
             market_id,
@@ -327,13 +346,17 @@ module pythia::prediction_market {
         admin: &signer,
         amount: u64,
     ) acquires State {
-        let state = borrow_global_mut<State>(@pythia);
-        assert!(signer::address_of(admin) == state.admin, error::permission_denied(EUNAUTHORIZED));
-
-        let metadata = get_init_metadata();
+        let admin_addr = signer::address_of(admin);
+        // Auth check + read metadata before transfer
+        let metadata = get_token_metadata();
+        {
+            let state = borrow_global<State>(@pythia);
+            assert!(admin_addr == state.admin, error::permission_denied(EUNAUTHORIZED));
+        };
+        let state = borrow_global<State>(@pythia);
         let obj_signer = object::generate_signer_for_extending(&state.extend_ref);
         let fa = primary_fungible_store::withdraw(&obj_signer, metadata, amount);
-        primary_fungible_store::deposit(signer::address_of(admin), fa);
+        primary_fungible_store::deposit(admin_addr, fa);
     }
 
     //  View Functions 
@@ -423,5 +446,29 @@ module pythia::prediction_market {
     #[view]
     public fun get_admin(): address acquires State {
         borrow_global<State>(@pythia).admin
+    }
+
+    // -- Test-only helpers --
+
+    #[test_only]
+    public fun init_module_for_test(admin: &signer, token_metadata: object::Object<Metadata>) {
+        let admin_addr = signer::address_of(admin);
+        let constructor_ref = object::create_object(admin_addr, false);
+        let extend_ref = object::generate_extend_ref(&constructor_ref);
+
+        move_to(admin, State {
+            admin: admin_addr,
+            markets: table::new(),
+            market_count: 0,
+            platform_fee_bps: 200,
+            extend_ref,
+            token_metadata,
+        });
+    }
+
+    #[test_only]
+    public fun test_get_balance(addr: address): u64 acquires State {
+        let metadata = get_token_metadata();
+        primary_fungible_store::balance(addr, metadata)
     }
 }
