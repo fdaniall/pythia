@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { useDocTitle } from "@/hooks/useDocTitle"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +11,7 @@ import { useMoveCreateMarket } from "@/hooks/useMoveContract"
 
 export function CreateMarketPage() {
   useDocTitle("Create Market")
+  const navigate = useNavigate()
   const { isConnected, openConnect } = useInterwovenKit()
   const [question, setQuestion] = useState("")
   const [deadline, setDeadline] = useState("")
@@ -27,6 +29,7 @@ export function CreateMarketPage() {
         onSuccess: () => {
           setQuestion("")
           setDeadline("")
+          setTimeout(() => navigate("/markets"), 1500)
         },
       },
     )
@@ -93,7 +96,7 @@ export function CreateMarketPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="font-technical text-[12px] font-bold uppercase tracking-widest text-[#888]" htmlFor="question">
-                  Condition String
+                  Market Question
                 </label>
                 <span className="font-technical text-[10px] text-[#555]">{question.length}/200</span>
               </div>
@@ -112,7 +115,7 @@ export function CreateMarketPage() {
             <div className="space-y-3">
               <label className="font-technical text-[12px] font-bold uppercase tracking-widest text-[#888] flex items-center gap-2" htmlFor="deadline">
                 <Calendar className="size-4" />
-                Expiration Timestamp
+                Betting Deadline
               </label>
               <Input
                 id="deadline"
@@ -123,7 +126,7 @@ export function CreateMarketPage() {
                 style={{ colorScheme: "dark" }}
               />
               <p className="font-technical text-[10px] uppercase text-[#555]">
-                // Contract settlement unlocked after threshold.
+                // Betting closes at this time. After expiry, market awaits resolution.
               </p>
             </div>
 

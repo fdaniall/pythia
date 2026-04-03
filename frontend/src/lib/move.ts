@@ -464,6 +464,20 @@ export async function fetchAdmin(restUrl: string): Promise<string> {
   })
 }
 
+// ── Balance fetcher ───────────────────────────────────────────────────────
+
+/**
+ * Fetches the uinit balance of an address on Initia L1.
+ * Uses the Cosmos bank module REST endpoint.
+ */
+export async function fetchBalance(restUrl: string, address: string): Promise<bigint> {
+  const url = `${restUrl.replace(/\/$/, "")}/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=${UINIT_DENOM}`
+  const response = await fetch(url)
+  if (!response.ok) return 0n
+  const json = await response.json()
+  return BigInt(json.balance?.amount ?? "0")
+}
+
 // ── Gas configuration ──────────────────────────────────────────────────────
 //
 // InterwovenKit's requestTxBlock accepts a TxRequest with optional gas fields.

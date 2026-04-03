@@ -9,7 +9,7 @@ import { CommandPalette } from "@/components/CommandPalette"
 
 const navItems = [
   { path: "/markets", label: "MARKETS", icon: TerminalSquare },
-  { path: "/create", label: "INITIALIZE", icon: Plus },
+  { path: "/create", label: "CREATE", icon: Plus },
   { path: "/portfolio", label: "PORTFOLIO", icon: BarChart3 },
   { path: "/docs", label: "DOCS", icon: BookOpen },
 ]

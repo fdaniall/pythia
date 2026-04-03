@@ -8,7 +8,8 @@ import {
 } from "lucide-react"
 import { fireBrutalistConfetti } from "@/lib/confetti"
 import { useMovePlaceBet, useMoveClaimWinnings, useMoveUserBet, useMoveCalculatePayout } from "@/hooks/useMoveContract"
-import { UINIT_DECIMALS } from "@/lib/move"
+import { UINIT_DECIMALS, INITIA_REST_URL, fetchBalance } from "@/lib/move"
+import { useQuery } from "@tanstack/react-query"
 import type { Market } from "@/types/market"
 
 interface BetFormProps {
@@ -44,6 +45,15 @@ export function BetForm({ market, total, expired }: BetFormProps) {
     market.id,
     market.resolved ? (initiaAddress || undefined) : undefined,
   )
+
+  // Fetch wallet balance
+  const { data: balanceUinit } = useQuery({
+    queryKey: ["balance", initiaAddress],
+    queryFn: () => fetchBalance(INITIA_REST_URL, initiaAddress!),
+    enabled: !!initiaAddress,
+    refetchInterval: 15_000,
+  })
+  const balanceInit = balanceUinit ? Number(balanceUinit) / 10 ** UINIT_DECIMALS : 0
 
   const isSubmitting = isBetting || isClaiming
 
@@ -150,8 +160,20 @@ export function BetForm({ market, total, expired }: BetFormProps) {
           </div>
         )}
 
+        {/* Expired but not resolved message */}
+        {expired && !market.resolved && (
+          <div className="border border-[#FF2A2A]/30 bg-[#FF2A2A]/5 p-4 text-center">
+            <p className="font-technical text-[12px] font-bold uppercase tracking-widest text-[#FF2A2A]">
+              BETTING CLOSED
+            </p>
+            <p className="mt-1 font-technical text-[10px] uppercase tracking-widest text-[#888]">
+              Awaiting resolution. Check back to claim winnings.
+            </p>
+          </div>
+        )}
+
         {/* Betting form (only for open markets) */}
-        {!market.resolved && (
+        {!market.resolved && !expired && (
           <>
             {/* Position buttons */}
             <div className="space-y-2">
@@ -200,9 +222,16 @@ export function BetForm({ market, total, expired }: BetFormProps) {
 
             {/* Amount input */}
             <div className="space-y-3">
-              <label className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]" htmlFor="bet-amount">
-                BET AMOUNT (INIT)
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]" htmlFor="bet-amount">
+                  BET AMOUNT (INIT)
+                </label>
+                {isConnected && (
+                  <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#555]">
+                    BAL: {balanceInit.toFixed(2)} INIT
+                  </span>
+                )}
+              </div>
               <Input
                 id="bet-amount"
                 type="number"
@@ -223,11 +252,11 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                     key={v}
                     type="button"
                     disabled={expired || isSubmitting}
-                    onClick={() => setAmount(v === "MAX" ? "10.0" : v)}
+                    onClick={() => setAmount(v === "MAX" ? (balanceInit > 0 ? balanceInit.toFixed(2) : "0") : v)}
                     className={cn(
                       "flex-1 border-[1.5px] py-1.5 font-technical text-[11px] font-bold uppercase tracking-widest transition-all",
                       expired ? "opacity-50 cursor-not-allowed" : "",
-                      amount === (v === "MAX" ? "10.0" : v)
+                      amount === (v === "MAX" ? (balanceInit > 0 ? balanceInit.toFixed(2) : "0") : v)
                         ? "border-[#CCFF00] bg-[#CCFF00] text-black"
                         : "border-[#333] text-[#888] hover:border-[#CCFF00] hover:text-[#CCFF00]"
                     )}
@@ -306,11 +335,11 @@ export function BetForm({ market, total, expired }: BetFormProps) {
           </>
         )}
 
-        {/* Auto-sign hint */}
+        {/* Info hint */}
         <div className="flex items-start gap-3 border border-[#333] bg-[#050505] p-4">
           <Zap className="mt-0.5 size-4 shrink-0 text-[#CCFF00]" />
           <p className="font-technical text-[10px] uppercase leading-relaxed text-[#888]">
-            <span className="text-[#CCFF00] font-bold">1-TAP SIGNING</span> available. Enable in settings to execute transactions without RPC popup interruptions.
+            All bets are settled on <span className="text-[#CCFF00] font-bold">Initia L1</span>. Payouts are proportional to pool distribution minus 2% platform fee.
           </p>
         </div>
       </div>

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import { getMarketStatus } from "@/types/market"
 import { useMoveAllMarkets } from "@/hooks/useMoveContract"
 import { UINIT_DECIMALS } from "@/lib/move"
-import { MOCK_MARKETS } from "@/lib/mock-data"
+
 
 type FilterTab = "all" | "open" | "closed" | "resolved"
 
@@ -43,11 +43,9 @@ export function MarketsPage() {
   const [search, setSearch] = useState("")
   const debouncedSearch = useDebouncedValue(search, 300)
 
-  // Fetch real on-chain markets; fall back to mock data while loading
+  // Fetch real on-chain markets
   const { data: onChainMarkets, isLoading, error } = useMoveAllMarkets()
-  const markets = onChainMarkets && onChainMarkets.length > 0
-    ? onChainMarkets
-    : (!isLoading ? [] : MOCK_MARKETS)
+  const markets = onChainMarkets ?? []
 
   const filtered = useMemo(() => {
     return markets.filter((m) => {

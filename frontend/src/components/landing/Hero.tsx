@@ -43,7 +43,7 @@ export function Hero() {
             <FadeIn delay={0.35}>
               <div className="mt-10 flex flex-wrap items-center gap-6">
                 <Link to="/markets" className="btn-acid inline-flex h-14 items-center px-8 font-technical text-[15px] no-underline">
-                  Enter Oracle
+                  Browse Markets
                   <ArrowRight className="ml-3 size-5" strokeWidth={3} />
                 </Link>
                 <Link

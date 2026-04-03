@@ -1,5 +1,9 @@
 import { cn } from "@/lib/utils"
-import { formatEther } from "viem"
+import { UINIT_DECIMALS } from "@/lib/move"
+
+function formatUinit(uinit: bigint, decimals = 2): string {
+  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
+}
 
 interface PoolBarProps {
   yesPool: bigint
@@ -17,10 +21,10 @@ export function PoolBar({ yesPool, noPool, className, size = "sm" }: PoolBarProp
     <div className={cn("space-y-3", className)} role="group" aria-label="Pool distribution">
       <div className="flex justify-between font-technical text-[12px] font-bold uppercase tracking-widest">
         <span className="text-[#CCFF00]">
-          YES_ {yesPercent}%
+          YES {yesPercent}%
         </span>
         <span className="text-[#FF2A2A]">
-          NO_ {noPercent}%
+          NO {noPercent}%
         </span>
       </div>
       <div className={cn(
@@ -37,8 +41,8 @@ export function PoolBar({ yesPool, noPool, className, size = "sm" }: PoolBarProp
         />
       </div>
       <div className="flex justify-between font-technical text-[10px] uppercase tracking-widest text-[#888]">
-        <span>{formatEther(yesPool)} INIT</span>
-        <span>{formatEther(noPool)} INIT</span>
+        <span>{formatUinit(yesPool)} INIT</span>
+        <span>{formatUinit(noPool)} INIT</span>
       </div>
     </div>
   )

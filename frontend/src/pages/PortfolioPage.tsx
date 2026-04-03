@@ -13,7 +13,7 @@ import { UINIT_DECIMALS, INITIA_REST_URL, fetchBet, fetchCalculatePayout } from 
 import { getMarketStatus } from "@/types/market"
 import { useCountdown } from "@/hooks/useCountdown"
 import { useQuery } from "@tanstack/react-query"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import type { Market, Bet } from "@/types/market"
 
 function formatUinit(uinit: bigint, decimals = 2): string {
@@ -41,7 +41,8 @@ export function PortfolioPage() {
   useDocTitle("Portfolio")
   const { isConnected, openConnect, initiaAddress } = useInterwovenKit()
   const { data: markets, isLoading: marketsLoading } = useMoveAllMarkets()
-  const { mutate: claimWinnings, isPending: claimPending } = useMoveClaimWinnings()
+  const { mutate: claimWinnings } = useMoveClaimWinnings()
+  const [claimingId, setClaimingId] = useState<number | null>(null)
 
   // Fetch bets for all markets for the connected user
   const { data: positions, isLoading: positionsLoading } = useQuery({
@@ -250,14 +251,18 @@ export function PortfolioPage() {
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
-                          claimWinnings({ marketId: pos.market.id })
+                          setClaimingId(pos.market.id)
+                          claimWinnings(
+                            { marketId: pos.market.id },
+                            { onSettled: () => setClaimingId(null) },
+                          )
                         }}
                         className={cn(
                           "ml-2 bg-[#CCFF00] text-black px-4 py-2 font-technical text-[12px] font-black uppercase tracking-widest hover:bg-white transition-colors",
-                          claimPending && "opacity-50 pointer-events-none"
+                          claimingId === pos.market.id && "opacity-50 pointer-events-none"
                         )}
                       >
-                        {claimPending ? "CLAIMING..." : `CLAIM ${formatUinit(pos.payout)} INIT`}
+                        {claimingId === pos.market.id ? "CLAIMING..." : `CLAIM ${formatUinit(pos.payout)} INIT`}
                       </span>
                     ) : (
                       <div className="ml-2 border border-[#333] p-2 bg-black group-hover:border-[#CCFF00] transition-colors">

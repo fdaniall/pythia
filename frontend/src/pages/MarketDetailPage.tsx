@@ -134,12 +134,20 @@ export function MarketDetailPage() {
 
   return (
     <div className="space-y-8">
-      {/* EXPIRED DIAGONAL STAMP */}
+      {/* Expired/Resolved banner */}
       {countdown.expired && (
-        <div className="fixed inset-0 z-[100] pointer-events-none flex items-center justify-center overflow-hidden">
-          <div className="transform -rotate-12 border-4 border-[#FF2A2A] text-[#FF2A2A] p-4 text-[clamp(40px,8vw,80px)] font-black tracking-widest uppercase opacity-80 mix-blend-screen bg-black/60 shadow-[8px_8px_0_0_#FF2A2A]">
-            CLASSIFIED: EXECUTED
+        <div className="border-2 border-[#FF2A2A] bg-[#FF2A2A]/10 p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="size-3 bg-[#FF2A2A]" />
+            <span className="font-technical text-[13px] font-bold uppercase tracking-widest text-[#FF2A2A]">
+              {market.resolved ? "MARKET RESOLVED" : "BETTING CLOSED"}
+            </span>
           </div>
+          <span className="font-technical text-[11px] uppercase tracking-widest text-[#888]">
+            {market.resolved
+              ? `Outcome: ${market.outcome ? "YES" : "NO"}`
+              : "Awaiting resolution"}
+          </span>
         </div>
       )}
 

@@ -4,7 +4,11 @@ import { Clock, CheckCircle, XCircle, Users } from "lucide-react"
 import { useCountdown } from "@/hooks/useCountdown"
 import type { Market, MarketStatus } from "@/types/market"
 import { getMarketStatus } from "@/types/market"
-import { formatEther } from "viem"
+import { UINIT_DECIMALS } from "@/lib/move"
+
+function formatUinit(uinit: bigint, decimals = 1): string {
+  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
+}
 
 const statusConfig: Record<MarketStatus, { label: string; bg: string; text: string; icon: typeof Clock }> = {
   open: { label: "LIVE", bg: "bg-[#CCFF00]", text: "text-black", icon: Clock },
@@ -22,6 +26,8 @@ export function MarketCard({ market }: MarketCardProps) {
   const Icon = config.icon
   const countdown = useCountdown(market.deadline)
   const total = market.totalYesPool + market.totalNoPool
+  const yesPercent = total > 0n ? Number((market.totalYesPool * 100n) / total) : 50
+  const noPercent = total > 0n ? 100 - yesPercent : 50
 
   return (
     <Link to={`/markets/${market.id}`} className="block h-full">
@@ -40,6 +46,13 @@ export function MarketCard({ market }: MarketCardProps) {
           </div>
         </div>
 
+        {/* Odds display */}
+        <div className="mb-4 flex items-center gap-3 font-technical text-[13px] font-black uppercase tracking-widest">
+          <span className="text-[#CCFF00]">YES {yesPercent}%</span>
+          <span className="text-[#333]">/</span>
+          <span className="text-[#FF2A2A]">NO {noPercent}%</span>
+        </div>
+
         {/* Meta row */}
         <div className="mb-6 flex flex-wrap items-center gap-3 font-technical text-[11px] font-bold uppercase tracking-widest text-[#888]">
           <span className="flex items-center gap-1.5">
@@ -53,7 +66,7 @@ export function MarketCard({ market }: MarketCardProps) {
           </span>
           <span className="text-[#333]">&middot;</span>
           <span className="text-white">
-            {parseFloat(formatEther(total)).toFixed(1)} INIT
+            {formatUinit(total)} INIT
           </span>
         </div>
 
