@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PoolBar } from "@/components/PoolBar"
 import { FadeIn } from "@/components/FadeIn"
-import { Sparkles, TerminalSquare, Calendar, Wallet, Lock, Clock, Eye } from "lucide-react"
+import { Sparkles, TerminalSquare, Calendar, Wallet, Lock, Clock, Eye, Bot, Loader2 } from "lucide-react"
+import { generateMarketWithAI, type AIMarketSuggestion } from "@/lib/ai"
 import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { useMoveCreateMarket } from "@/hooks/useMoveContract"
 
@@ -16,8 +17,31 @@ export function CreateMarketPage() {
   const [question, setQuestion] = useState("")
   const [deadline, setDeadline] = useState("")
   const [created, setCreated] = useState(false)
+  const [aiPrompt, setAiPrompt] = useState("")
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState("")
+  const [aiSuggestion, setAiSuggestion] = useState<AIMarketSuggestion | null>(null)
 
   const { mutate: createMarket, isPending } = useMoveCreateMarket()
+
+  const handleAiGenerate = async () => {
+    if (!aiPrompt.trim()) return
+    setAiLoading(true)
+    setAiError("")
+    setAiSuggestion(null)
+    try {
+      const suggestion = await generateMarketWithAI(aiPrompt)
+      setAiSuggestion(suggestion)
+      setQuestion(suggestion.question)
+      const deadlineDate = new Date(Date.now() + suggestion.deadlineDays * 24 * 60 * 60 * 1000)
+      const local = new Date(deadlineDate.getTime() - deadlineDate.getTimezoneOffset() * 60000)
+      setDeadline(local.toISOString().slice(0, 16))
+    } catch (err) {
+      setAiError(err instanceof Error ? err.message : "AI generation failed")
+    } finally {
+      setAiLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -107,6 +131,61 @@ export function CreateMarketPage() {
             </div>
           )}
 
+          {/* AI Generator */}
+          <div className="border-2 border-dashed border-[#CCFF00]/30 bg-[#CCFF00]/[0.02] p-5 mb-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <Bot className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+              <span className="font-technical text-[12px] font-bold uppercase tracking-widest text-[#CCFF00]">
+                AI Market Generator
+              </span>
+            </div>
+            <p className="font-technical text-[10px] uppercase text-[#888]">
+              Describe your idea in plain language. AI will generate a well-structured market question, deadline, and resolution criteria.
+            </p>
+            <div className="flex gap-2">
+              <Input
+                placeholder="e.g. something about bitcoin price, next US election, AI replacing jobs..."
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAiGenerate())}
+                disabled={aiLoading}
+                className="h-11 flex-1 rounded-none border-[2px] border-[#333] bg-black px-4 font-technical text-[12px] text-white placeholder:text-[#555] focus-visible:border-[#CCFF00] focus-visible:ring-0"
+              />
+              <Button
+                type="button"
+                onClick={handleAiGenerate}
+                disabled={aiLoading || !aiPrompt.trim()}
+                className="btn-acid h-11 px-5 font-technical text-[11px] shrink-0"
+              >
+                {aiLoading ? <Loader2 className="size-4 animate-spin" /> : <><Bot className="size-4 mr-1.5" />GENERATE</>}
+              </Button>
+            </div>
+            {aiError && (
+              <p className="font-technical text-[10px] uppercase text-[#FF2A2A]">{aiError}</p>
+            )}
+            {aiSuggestion && (
+              <div className="border border-[#CCFF00]/30 bg-black p-4 space-y-2">
+                <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">
+                  AI SUGGESTION APPLIED
+                </p>
+                <p className="font-technical text-[11px] text-[#888]">
+                  <span className="text-[#555]">Category:</span> <span className="text-white">{aiSuggestion.category.toUpperCase()}</span>
+                  <span className="text-[#555] ml-3">Deadline:</span> <span className="text-white">{aiSuggestion.deadlineDays} days</span>
+                </p>
+                <p className="font-technical text-[11px] text-[#888]">
+                  <span className="text-[#555]">Resolution:</span> <span className="text-[#888]">{aiSuggestion.resolutionCriteria}</span>
+                </p>
+                <div className="flex gap-2 mt-2">
+                  {aiSuggestion.tags.map((tag) => (
+                    <span key={tag} className="font-technical text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 border border-[#CCFF00]/30 text-[#CCFF00]">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -123,7 +202,7 @@ export function CreateMarketPage() {
                 className="h-14 rounded-none border-[2px] border-[#333] bg-black px-4 font-sans text-[16px] font-bold text-white placeholder:text-[#555] focus-visible:border-[#CCFF00] focus-visible:ring-0"
               />
               <p className="font-technical text-[10px] uppercase text-[#555]">
-                Tip: Your question must have a clear YES or NO answer.
+                Tip: Your question must have a clear YES or NO answer. Or use AI Generator above.
               </p>
             </div>
 

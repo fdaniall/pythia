@@ -15,6 +15,7 @@ import { useMoveMarket, useMoveAdmin, useMoveResolveMarket } from "@/hooks/useMo
 import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { useInitUsername, formatAddress } from "@/hooks/useInitUsername"
 import { UINIT_DECIMALS, bech32ToHex } from "@/lib/move"
+import { parseCryptoPriceMarket, fetchCryptoPrice } from "@/lib/ai"
 
 /** Format uinit amount for display */
 function formatUinit(uinit: bigint, decimals = 1): string {
@@ -83,17 +84,37 @@ function ShareToX({ question }: { question: string }) {
   )
 }
 
-function AdminResolvePanel({ marketId, expired, resolved }: { marketId: number; expired: boolean; resolved: boolean }) {
+function AdminResolvePanel({ marketId, expired, resolved, question }: { marketId: number; expired: boolean; resolved: boolean; question: string }) {
   const { initiaAddress } = useInterwovenKit()
   const { data: adminAddr } = useMoveAdmin()
   const { mutate: resolveMarket, isPending } = useMoveResolveMarket()
+  const [oraclePrice, setOraclePrice] = useState<number | null>(null)
+  const [oracleLoading, setOracleLoading] = useState(false)
 
-  // Compare addresses — admin from contract is hex, initiaAddress is bech32
   const isAdmin = adminAddr && initiaAddress
     ? bech32ToHex(initiaAddress).toLowerCase() === adminAddr.toLowerCase()
     : false
 
+  const cryptoMarket = parseCryptoPriceMarket(question)
+
+  const handleFetchPrice = async () => {
+    if (!cryptoMarket) return
+    setOracleLoading(true)
+    try {
+      const price = await fetchCryptoPrice(cryptoMarket.coinId)
+      setOraclePrice(price)
+    } catch {
+      setOraclePrice(null)
+    } finally {
+      setOracleLoading(false)
+    }
+  }
+
   if (!isAdmin || resolved || !expired) return null
+
+  const oracleSuggestion = oraclePrice !== null && cryptoMarket
+    ? oraclePrice >= cryptoMarket.targetPrice ? 0 as const : 1 as const
+    : null
 
   return (
     <div className="brutalist-card bg-black p-6 border-[#CCFF00]">
@@ -101,29 +122,89 @@ function AdminResolvePanel({ marketId, expired, resolved }: { marketId: number; 
         <Shield className="size-4" strokeWidth={2.5} />
         ADMIN: RESOLVE MARKET
       </h2>
+
+      {/* Crypto price oracle */}
+      {cryptoMarket && (
+        <div className="border border-[#CCFF00]/30 bg-[#CCFF00]/[0.02] p-4 mb-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="font-technical text-[11px] font-bold uppercase tracking-widest text-[#CCFF00]">
+              PRICE ORACLE — {cryptoMarket.coinSymbol}
+            </span>
+            <button
+              type="button"
+              onClick={handleFetchPrice}
+              disabled={oracleLoading}
+              className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00] border border-[#CCFF00]/50 px-3 py-1 hover:bg-[#CCFF00] hover:text-black transition-all disabled:opacity-50"
+            >
+              {oracleLoading ? "FETCHING..." : "FETCH LIVE PRICE"}
+            </button>
+          </div>
+          {oraclePrice !== null && (
+            <div className="space-y-2">
+              <div className="flex justify-between font-technical text-[12px] uppercase tracking-widest">
+                <span className="text-[#888]">Current Price</span>
+                <span className="text-white font-black">${oraclePrice.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between font-technical text-[12px] uppercase tracking-widest">
+                <span className="text-[#888]">Target Price</span>
+                <span className="text-white font-black">${cryptoMarket.targetPrice.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between font-technical text-[12px] uppercase tracking-widest">
+                <span className="text-[#888]">Oracle Verdict</span>
+                <span className={oracleSuggestion === 0 ? "text-[#CCFF00] font-black" : "text-[#FF2A2A] font-black"}>
+                  {oracleSuggestion === 0 ? "YES — TARGET REACHED" : "NO — BELOW TARGET"}
+                </span>
+              </div>
+              <p className="font-technical text-[9px] uppercase text-[#555]">
+                Source: CoinGecko API — live market data
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       <p className="font-technical text-[11px] uppercase tracking-widest text-[#888] mb-6">
-        Select the winning outcome to resolve this market and enable payouts.
+        {oracleSuggestion !== null
+          ? "Oracle suggests an outcome. Confirm or override below."
+          : "Select the winning outcome to resolve this market and enable payouts."
+        }
       </p>
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => resolveMarket({ marketId, winningOutcome: 0 })}
           disabled={isPending}
-          className="flex flex-col items-center gap-2 border-2 border-[#CCFF00] p-4 text-[#CCFF00] hover:bg-[#CCFF00] hover:text-black transition-all disabled:opacity-50"
+          className={cn(
+            "flex flex-col items-center gap-2 border-2 p-4 transition-all disabled:opacity-50",
+            oracleSuggestion === 0
+              ? "border-[#CCFF00] bg-[#CCFF00]/20 text-[#CCFF00] animate-pulse"
+              : "border-[#CCFF00] text-[#CCFF00] hover:bg-[#CCFF00] hover:text-black"
+          )}
         >
           <TrendingUp className="size-5" strokeWidth={2.5} />
           <span className="font-technical text-[14px] font-black uppercase tracking-widest">
             {isPending ? "..." : "YES WINS"}
           </span>
+          {oracleSuggestion === 0 && (
+            <span className="font-technical text-[9px] uppercase tracking-widest">ORACLE RECOMMENDED</span>
+          )}
         </button>
         <button
           onClick={() => resolveMarket({ marketId, winningOutcome: 1 })}
           disabled={isPending}
-          className="flex flex-col items-center gap-2 border-2 border-[#FF2A2A] p-4 text-[#FF2A2A] hover:bg-[#FF2A2A] hover:text-white transition-all disabled:opacity-50"
+          className={cn(
+            "flex flex-col items-center gap-2 border-2 p-4 transition-all disabled:opacity-50",
+            oracleSuggestion === 1
+              ? "border-[#FF2A2A] bg-[#FF2A2A]/20 text-[#FF2A2A] animate-pulse"
+              : "border-[#FF2A2A] text-[#FF2A2A] hover:bg-[#FF2A2A] hover:text-white"
+          )}
         >
           <TrendingDown className="size-5" strokeWidth={2.5} />
           <span className="font-technical text-[14px] font-black uppercase tracking-widest">
             {isPending ? "..." : "NO WINS"}
           </span>
+          {oracleSuggestion === 1 && (
+            <span className="font-technical text-[9px] uppercase tracking-widest">ORACLE RECOMMENDED</span>
+          )}
         </button>
       </div>
     </div>
@@ -375,7 +456,7 @@ export function MarketDetailPage() {
 
           {/* Right column: admin resolve + bet form — shown first on mobile */}
           <div className="space-y-6 order-1 lg:order-2">
-            <AdminResolvePanel marketId={market.id} expired={countdown.expired} resolved={market.resolved} />
+            <AdminResolvePanel marketId={market.id} expired={countdown.expired} resolved={market.resolved} question={market.question} />
             <BetForm market={market} total={total} expired={countdown.expired} />
           </div>
         </div>
