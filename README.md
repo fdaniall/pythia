@@ -66,6 +66,23 @@ The leaderboard, market detail, and portfolio pages resolve on-chain addresses t
 
 ---
 
+## Why This Only Works on Initia
+
+Pythia is not a generic prediction market ported to another chain. Three capabilities make it **impossible to replicate on Ethereum, Solana, or any single-chain L1:**
+
+### 1. Auto-Signing Eliminates Betting Friction
+Prediction markets live or die on **speed of conviction**. When a user sees odds shifting, they need to bet *now* — not confirm a wallet popup, wait for it to load, click approve, then confirm. Initia's auto-signing sessions let users place 50 bets in a row without a single popup. On Ethereum, that's 50 MetaMask confirmations. On Solana, 50 Phantom approvals. **No other chain has protocol-level session signing that works this seamlessly.**
+
+### 2. Cross-Chain Deposits Unlock Liquidity
+Prediction market depth = better odds = more users. Pythia's bridge integration means a user on Celestia, Cosmos, or any Initia-connected chain can deposit and bet without leaving the app. On Polymarket, you need to bridge ETH to Polygon, swap to USDC, then deposit — 3 transactions across 2 chains. **Initia's interwoven architecture collapses this to 1 click.** More accessible liquidity = deeper pools = more accurate predictions.
+
+### 3. .init Usernames Create a Social Prediction Layer
+Prediction markets are inherently social — you're betting against other people's beliefs. `.init` usernames turn anonymous addresses into identities. When you see `oracle.init` is #1 on the leaderboard with a 78% win rate, you pay attention to their positions. **This social layer doesn't exist on any other chain's prediction market.** Polymarket has no identity system. Azuro has no usernames. Pythia has reputation built into the protocol.
+
+**The combination** — frictionless betting (auto-sign) + universal liquidity (bridge) + social identity (usernames) — creates a prediction market UX that **cannot be built on any other chain today.**
+
+---
+
 ## How to Run Locally
 
 ### Prerequisites
@@ -155,19 +172,59 @@ net   = gross * (1 - platform_fee)
 
 ## Revenue & Market Understanding
 
-**Target Users:** Crypto-native users who already trade on prediction markets (Polymarket, Azuro) or sports betting platforms, looking for a transparent, on-chain alternative with better UX.
+### Market Size
 
-**Revenue Model:**
-- **2% platform fee** on all winning payouts (configurable up to 10%)
-- **Gas fees** — own appchain means all transaction fees stay with the platform
-- Every bet generates revenue. The platform operator captures value from market activity, not just market creation.
+Prediction markets are a proven, high-growth category:
+- **Polymarket** processed **$9B+ in volume in 2024** — up from ~$300M in 2023 (30x growth)
+- **Global online betting market** projected at $150B+ by 2027
+- **Initia ecosystem** is early-stage with growing user base — zero prediction markets exist today
+- Even capturing **0.1% of Polymarket's volume on Initia** = $9M+ annual volume at 2% fee = **$180K+ revenue**
 
-**Competitive Landscape:**
-- **Polymarket** (Ethereum) — dominant but high gas, no auto-signing, no cross-chain UX
-- **Azuro** (Polygon) — focused on sports, oracle-dependent, not on Initia
-- **No native prediction market exists on Initia** — Pythia fills this gap with deep ecosystem integration
+### Target Users
 
-**Go-to-Market:** Deploy as own Initia appchain → attract Initia ecosystem users via .init username integration → expand to crypto prediction markets (price targets, protocol events, governance votes).
+| Segment | Why They Use Pythia | Acquisition Channel |
+|---|---|---|
+| **Initia ecosystem users** | Already have INIT, .init usernames, familiar with InterwovenKit | .init leaderboard creates competitive loop — users recruit friends to compete |
+| **Polymarket refugees** | Lower fees, no bridging friction, auto-sign UX | Crypto Twitter, "bet on X without 3 bridge transactions" narrative |
+| **Crypto traders** | Already have price opinions — prediction market = put money behind conviction | AI market creation lowers barrier — type an idea, market is live in seconds |
+
+### Revenue Model
+
+| Revenue Stream | Mechanism | Scale |
+|---|---|---|
+| **Platform fee** | 2% on winning payouts (configurable up to 10%) | Grows linearly with volume |
+| **Gas fees** | Own appchain = all tx fees stay with platform | Every bet, claim, and market creation generates gas revenue |
+| **Market creation fee** | Optional gate to prevent spam (configurable) | Quality control + revenue |
+
+### Competitive Landscape
+
+| Platform | Chain | Auto-Sign | Cross-Chain Deposits | Usernames | Fee | Weakness |
+|---|---|---|---|---|---|---|
+| **Polymarket** | Ethereum/Polygon | No | No (manual bridge) | No | 0% (maker) / 1% (taker) | High friction, no social layer, no auto-sign |
+| **Azuro** | Polygon/Gnosis | No | No | No | 2-5% | Sports-only, oracle-dependent, no crypto markets |
+| **Drift** | Solana | No | No | No | Variable | Perps-focused, not pure prediction market |
+| **Pythia** | **Initia** | **Yes** | **Yes** | **Yes (.init)** | **2%** | MVP — centralized resolution, binary only |
+
+### User Acquisition Funnel
+
+```
+Discovery → .init leaderboard on Twitter ("I'm #3 on Pythia")
+    ↓
+Onboarding → Bridge from any chain, 1 click
+    ↓
+First Bet → AI creates market from plain text, auto-sign = zero friction
+    ↓
+Retention → Leaderboard rank + win rate = competitive loop
+    ↓
+Viral → Share to X button on every market ("I bet YES on BTC $100K")
+```
+
+### Go-to-Market
+
+1. **Launch on Initia mainnet** as own appchain — capture first-mover advantage
+2. **Seed markets** around Initia ecosystem events (launches, governance, TVL milestones)
+3. **Leaderboard as growth engine** — .init usernames make top predictors into micro-influencers
+4. **Expand categories** — crypto → sports → politics → culture (follow Polymarket's playbook)
 
 ---
 

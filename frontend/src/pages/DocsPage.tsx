@@ -61,13 +61,14 @@ export function DocsPage() {
           <h2 className="mb-4 font-technical text-[12px] font-bold uppercase tracking-widest text-[#CCFF00] border-b border-[#333] pb-3">
             // TABLE OF CONTENTS
           </h2>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { href: "#what-is-pythia", label: "01 — What is Pythia" },
               { href: "#how-it-works", label: "02 — How It Works" },
               { href: "#market-mechanics", label: "03 — Market Mechanics" },
-              { href: "#features", label: "04 — Platform Features" },
-              { href: "#architecture", label: "05 — Architecture" },
+              { href: "#features", label: "04 — Features" },
+              { href: "#why-initia", label: "05 — Why Initia" },
+              { href: "#architecture", label: "06 — Architecture" },
             ].map((item) => (
               <a
                 key={item.href}
@@ -434,7 +435,72 @@ export function DocsPage() {
         </section>
       </FadeIn>
 
-      {/* Section 5 — Architecture */}
+      {/* Section 5 — Why Only Initia */}
+      <FadeIn delay={0.1}>
+        <section id="why-initia" className="scroll-mt-24 space-y-6">
+          <div className="flex items-center gap-3 border-b-2 border-[#333] pb-4">
+            <div className="flex size-10 items-center justify-center bg-[#CCFF00]">
+              <Globe className="size-5 text-black" strokeWidth={2.5} />
+            </div>
+            <div>
+              <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">Section 05</span>
+              <h2 className="font-sans text-[clamp(24px,3vw,36px)] font-black uppercase tracking-tighter text-white">
+                Why Only Initia
+              </h2>
+            </div>
+          </div>
+
+          <p className="font-technical text-[14px] leading-[1.8] text-[#888] max-w-[700px]">
+            Pythia is not a generic prediction market ported to another chain. Three capabilities make it impossible to replicate on Ethereum, Solana, or any single-chain L1.
+          </p>
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="brutalist-card bg-black p-6 space-y-4 border-[#CCFF00]/30">
+              <div className="flex items-center gap-2 border-b border-[#333] pb-3">
+                <Zap className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+                <h3 className="font-technical text-[13px] font-bold uppercase tracking-widest text-white">Zero-Friction Betting</h3>
+              </div>
+              <p className="font-technical text-[12px] leading-[1.7] text-[#888]">
+                Prediction markets live or die on speed of conviction. When odds shift, users need to bet NOW. Initia's auto-signing sessions let users place unlimited bets without a single wallet popup. On Ethereum, that's a MetaMask confirmation per bet. On Solana, a Phantom approval each time. No other chain has protocol-level session signing this seamless.
+              </p>
+              <div className="border border-[#333] bg-[#050505] p-3 text-center">
+                <p className="font-sans text-2xl font-black text-[#CCFF00]">0</p>
+                <p className="font-technical text-[10px] uppercase tracking-widest text-[#555]">Wallet popups per session</p>
+              </div>
+            </div>
+
+            <div className="brutalist-card bg-black p-6 space-y-4 border-[#CCFF00]/30">
+              <div className="flex items-center gap-2 border-b border-[#333] pb-3">
+                <Globe className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+                <h3 className="font-technical text-[13px] font-bold uppercase tracking-widest text-white">Universal Liquidity</h3>
+              </div>
+              <p className="font-technical text-[12px] leading-[1.7] text-[#888]">
+                Deeper pools = better odds = more users. Initia's Interwoven Bridge means anyone on Celestia, Cosmos, or any connected chain can deposit and bet in one click. On Polymarket, you bridge ETH to Polygon, swap to USDC, then deposit — 3 transactions across 2 chains. Initia collapses this to 1 click.
+              </p>
+              <div className="border border-[#333] bg-[#050505] p-3 text-center">
+                <p className="font-sans text-2xl font-black text-[#CCFF00]">1</p>
+                <p className="font-technical text-[10px] uppercase tracking-widest text-[#555]">Click to deposit from any chain</p>
+              </div>
+            </div>
+
+            <div className="brutalist-card bg-black p-6 space-y-4 border-[#CCFF00]/30">
+              <div className="flex items-center gap-2 border-b border-[#333] pb-3">
+                <Trophy className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
+                <h3 className="font-technical text-[13px] font-bold uppercase tracking-widest text-white">Social Prediction Layer</h3>
+              </div>
+              <p className="font-technical text-[12px] leading-[1.7] text-[#888]">
+                Prediction markets are inherently social — you're betting against other people's beliefs. .init usernames turn anonymous addresses into identities. When oracle.init is #1 with 78% win rate, you pay attention. This social layer doesn't exist on any other chain's prediction market.
+              </p>
+              <div className="border border-[#333] bg-[#050505] p-3 text-center">
+                <p className="font-sans text-2xl font-black text-[#CCFF00]">.init</p>
+                <p className="font-technical text-[10px] uppercase tracking-widest text-[#555]">Built-in reputation system</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </FadeIn>
+
+      {/* Section 6 — Architecture */}
       <FadeIn delay={0.1}>
         <section id="architecture" className="scroll-mt-24 space-y-6">
           <div className="flex items-center gap-3 border-b-2 border-[#333] pb-4">
@@ -442,7 +508,7 @@ export function DocsPage() {
               <Layers className="size-5 text-black" strokeWidth={2.5} />
             </div>
             <div>
-              <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">Section 05</span>
+              <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">Section 06</span>
               <h2 className="font-sans text-[clamp(24px,3vw,36px)] font-black uppercase tracking-tighter text-white">
                 Architecture
               </h2>
