@@ -61,12 +61,13 @@ export function DocsPage() {
           <h2 className="mb-4 font-technical text-[12px] font-bold uppercase tracking-widest text-[#CCFF00] border-b border-[#333] pb-3">
             // TABLE OF CONTENTS
           </h2>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
             {[
               { href: "#what-is-pythia", label: "01 — What is Pythia" },
               { href: "#how-it-works", label: "02 — How It Works" },
               { href: "#market-mechanics", label: "03 — Market Mechanics" },
-              { href: "#architecture", label: "04 — Architecture" },
+              { href: "#features", label: "04 — Platform Features" },
+              { href: "#architecture", label: "05 — Architecture" },
             ].map((item) => (
               <a
                 key={item.href}
@@ -115,10 +116,12 @@ export function DocsPage() {
                 {[
                   "Permissionless market creation — anyone can create a prediction pool",
                   "Parimutuel odds — no market makers, no order books, pure pool mechanics",
-                  "Cross-chain deposits via Initia's interwoven stack",
-                  "1-tap signing — execute bets without repetitive wallet popups",
+                  "Cross-chain deposits via Interwoven Bridge — fund bets from any chain",
+                  "Auto-signing — execute bets without repetitive wallet popups",
+                  ".init usernames — social identity on leaderboards and market pages",
+                  "Market categories — auto-tagged by keyword (Crypto, Sports, Politics, Tech, Culture)",
+                  "Leaderboard — global rankings by volume and win rate, fully on-chain",
                   "2% platform fee — taken only from winning payouts",
-                  "Fully on-chain settlement — trustless, transparent, immutable",
                 ].map((feature, i) => (
                   <div key={i} className="flex gap-3 items-start">
                     <span className="font-technical text-[#CCFF00] font-black text-[12px] mt-0.5">[{i + 1}]</span>
@@ -330,7 +333,96 @@ export function DocsPage() {
         </section>
       </FadeIn>
 
-      {/* Section 4 — Architecture */}
+      {/* Section 4 — Platform Features */}
+      <FadeIn delay={0.1}>
+        <section id="features" className="scroll-mt-24 space-y-6">
+          <div className="flex items-center gap-3 border-b-2 border-[#333] pb-4">
+            <div className="flex size-10 items-center justify-center bg-[#CCFF00]">
+              <Zap className="size-5 text-black" strokeWidth={2.5} />
+            </div>
+            <div>
+              <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">Section 04</span>
+              <h2 className="font-sans text-[clamp(24px,3vw,36px)] font-black uppercase tracking-tighter text-white">
+                Platform Features
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                title: "Auto-Signing",
+                desc: "Enable a session and place unlimited bets without wallet popups. High-frequency betting feels instant — like a Web2 app.",
+                badge: "INITIA NATIVE",
+                color: "#CCFF00",
+              },
+              {
+                title: "Interwoven Bridge",
+                desc: "Deposit INIT from any connected chain directly from the bet form. When balance is low, a bridge CTA appears automatically.",
+                badge: "INITIA NATIVE",
+                color: "#CCFF00",
+              },
+              {
+                title: ".init Usernames",
+                desc: "Leaderboard and market pages resolve on-chain addresses to human-readable .init usernames (e.g. alice.init).",
+                badge: "INITIA NATIVE",
+                color: "#CCFF00",
+              },
+              {
+                title: "Leaderboard",
+                desc: "Global rankings of top predictors by volume and win rate. Real data from on-chain bettor lists — no indexer needed.",
+                badge: "NEW",
+                color: "#00BFFF",
+              },
+              {
+                title: "Market Categories",
+                desc: "Markets are auto-categorized by keyword analysis into Crypto, Sports, Politics, Tech, and Culture. Filter by category on the browse page.",
+                badge: "NEW",
+                color: "#00BFFF",
+              },
+              {
+                title: "Admin Resolution",
+                desc: "Inline resolve panel visible only to the contract admin. Pick YES or NO outcome directly from the market detail page — no CLI needed.",
+                badge: "NEW",
+                color: "#00BFFF",
+              },
+              {
+                title: "Share to X",
+                desc: "One-click share to Twitter/X with pre-filled market question and link. Also supports native share API and clipboard copy.",
+                badge: "NEW",
+                color: "#00BFFF",
+              },
+              {
+                title: "Payout Calculator",
+                desc: "Live preview of potential returns as you adjust your bet amount. Shows gross, net, fee, profit, and multiplier in real-time.",
+                badge: "CORE",
+                color: "#888",
+              },
+              {
+                title: "Command Palette",
+                desc: "Press Cmd+K to search markets and navigate pages instantly. Keyboard-first UX for power users.",
+                badge: "UX",
+                color: "#888",
+              },
+            ].map((item) => (
+              <div key={item.title} className="border-2 border-[#333] bg-[#050505] p-5 space-y-3 hover:border-[#CCFF00]/30 transition-colors">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-technical text-[13px] font-bold uppercase tracking-widest text-white">{item.title}</h3>
+                  <span
+                    className="font-technical text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 border"
+                    style={{ color: item.color, borderColor: `${item.color}40` }}
+                  >
+                    {item.badge}
+                  </span>
+                </div>
+                <p className="font-technical text-[12px] leading-[1.7] text-[#888]">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </FadeIn>
+
+      {/* Section 5 — Architecture */}
       <FadeIn delay={0.1}>
         <section id="architecture" className="scroll-mt-24 space-y-6">
           <div className="flex items-center gap-3 border-b-2 border-[#333] pb-4">
@@ -338,7 +430,7 @@ export function DocsPage() {
               <Layers className="size-5 text-black" strokeWidth={2.5} />
             </div>
             <div>
-              <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">Section 04</span>
+              <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">Section 05</span>
               <h2 className="font-sans text-[clamp(24px,3vw,36px)] font-black uppercase tracking-tighter text-white">
                 Architecture
               </h2>
@@ -406,6 +498,7 @@ export function DocsPage() {
                 { fn: "resolve_market(market_id, winning_outcome)", desc: "Settle the market (admin only)" },
                 { fn: "claim_winnings(market_id)", desc: "Withdraw proportional payout" },
                 { fn: "get_market(market_id)", desc: "Read market state (view)" },
+                { fn: "get_bettors(market_id)", desc: "List all bettor addresses (view)" },
                 { fn: "calculate_payout(market_id, bettor)", desc: "Preview potential payout (view)" },
               ].map((item) => (
                 <div key={item.fn} className="border border-[#333] bg-[#050505] p-3">
@@ -436,7 +529,7 @@ export function DocsPage() {
           <div className="space-y-3">
             <FAQItem
               q="Who resolves the markets?"
-              a="Currently, the market creator resolves the outcome after the deadline passes. In future versions, Pythia will integrate UMA's Optimistic Oracle for decentralized, trustless resolution with economic guarantees against false reporting."
+              a="Currently, the contract admin resolves markets via an inline resolution panel on the market detail page. Once the betting deadline passes, the admin selects the winning outcome (YES or NO) and payouts become claimable. In future versions, Pythia will integrate an optimistic oracle for decentralized, trustless resolution."
             />
             <FAQItem
               q="Can I cancel or withdraw my bet?"

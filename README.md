@@ -1,287 +1,181 @@
 # Pythia — See the Future on Initia
 
-**Binary prediction market protocol deployed on Initia L1 (MoveVM).** Bet on real-world outcomes, earn proportional payouts, and enjoy seamless UX with auto-signing — no wallet popups.
+> **INITIATE Hackathon Submission — Gaming & Consumer Applications Track**
 
-> *Named after the Oracle of Delphi, the most famous prediction oracle in ancient history.*
+## Initia Hackathon Submission
 
----
-
-## What is Pythia?
-
-Pythia lets users create and participate in binary (Yes/No) prediction markets powered by on-chain Move smart contracts on Initia's L1. Think Polymarket, but on Initia — with cross-chain deposits, gasless betting sessions, and `.init` usernames.
-
-**Core Flow:**
-1. **Create** a market: *"Will BTC hit $100K by April 10?"*
-2. **Bet** Yes or No with INIT tokens — odds shift dynamically based on pool ratios
-3. **Resolve** — admin sets the actual outcome after the deadline
-4. **Claim** — winners receive proportional payouts from the total pool (minus 2% platform fee)
-
----
-
-## Key Features
-
-| Feature | Description |
+| Field | Value |
 |---|---|
-| **On-chain prediction markets** | Real bets, real payouts — no mock transactions or hardcoded odds |
-| **Dynamic odds** | Payout ratio determined by pool distribution (parimutuel model) |
-| **Auto-signing** | Enable a session and bet freely without wallet popups (Initia native) |
-| **Cross-chain deposits** | Deposit from any chain via Interwoven Bridge |
-| **`.init` usernames** | Leaderboard displays human-readable names instead of raw addresses |
-| **Platform fee** | 2% fee on payouts — own appchain means all revenue stays with the platform |
-| **Move on L1** | Native Move contract on Initia L1 — not a rollup, not an EVM wrapper |
+| **Project** | Pythia |
+| **Track** | Gaming & Consumer Applications |
+| **VM** | Move (Initia MoveVM) |
+| **Native Features** | Auto-signing, Interwoven Bridge, .init Usernames |
+| **Contract** | `0xF83249D6AB09160493214DE15D7EC623CCB5063E::prediction_market` |
 
 ---
 
-## Tech Stack
+## Overview
 
-### Smart Contract
-- **Move** on Initia L1 (MoveVM, Aptos Move fork)
-- **initia_std** — Fungible Asset model, Object/ExtendRef pattern, Table storage
-- **initiad CLI** — build, test, deploy
+**Pythia is a binary prediction market protocol where users bet on real-world outcomes using INIT tokens.** It targets crypto-native users who want to put conviction behind their opinions — from BTC price targets to election outcomes — with real money and transparent, on-chain settlement.
 
-### Frontend
-- **React 19** + **TypeScript 5.9**
-- **Vite 8** — build tooling with HMR
-- **Tailwind CSS 4** + **shadcn/ui** (brutalist theme)
-- **InterwovenKit** (`@initia/interwovenkit-react`) — Initia wallet, auto-sign, bridge
-- **TanStack Query 5** — server state management
-- **React Router 7** — client-side routing
+Unlike existing prediction markets (Polymarket on Ethereum, Azuro on Polygon), Pythia is built natively on Initia and leverages **auto-signing for zero-popup betting**, **Interwoven Bridge for cross-chain deposits**, and **.init usernames for social identity** — delivering a UX that centralized betting platforms can't match with the transparency they can't offer.
 
 ---
 
-## Project Structure
+## Custom Implementation & Unique Functionality
+
+Pythia is **not a Blueprint clone**. Every component is custom-built:
+
+### Smart Contract (Move)
+- **Parimutuel market model** — dynamic odds based on pool ratios, not hardcoded multipliers
+- **Contract-owned vault** via Initia's `Object + ExtendRef` pattern — funds held by an on-chain object, not an EOA
+- **Proportional payout engine** — winners receive `(user_bet / winning_pool) * total_pool * 0.98`
+- **11 error codes**, **29 passing tests**, full admin controls (fee adjustment, ownership transfer, fee withdrawal)
+- **475+ lines** of production Move code with u128 intermediate math to prevent overflow
+
+### Frontend (React + InterwovenKit)
+- **8 pages**: Landing, Markets (with category filters), Market Detail, Create Market, Portfolio, Leaderboard, Docs, 404
+- **Real-time countdown timers** shared across components via `useSyncExternalStore`
+- **Payout calculator** — live preview of potential returns as user adjusts bet amount
+- **Admin resolution panel** — inline UI for market resolution (only visible to contract admin)
+- **Auto-categorization** — markets auto-tagged by keyword analysis (Crypto, Sports, Politics, Tech, Culture)
+- **Brutalist/cyberpunk design system** — cohesive neon-on-dark theme with custom grid overlays, glitch effects, and terminal aesthetics
+- **Command palette** (Cmd+K) for quick market search and navigation
+
+---
+
+## Native Feature Integration
+
+### 1. Auto-Signing (Primary Feature)
+Users enable a signing session via InterwovenKit and place unlimited bets without wallet popups. This is the **core UX differentiator** — high-frequency betting feels instant, like a Web2 app. Without auto-signing, every bet requires a manual wallet approval, destroying the betting flow.
+
+**Implementation:** `requestTxBlock()` from `useInterwovenKit()` handles session-based signing transparently. See [`frontend/src/hooks/useMoveContract.ts`](frontend/src/hooks/useMoveContract.ts).
+
+### 2. Interwoven Bridge
+New users can deposit INIT from any connected chain directly from the betting interface. When a user's balance is low, the bet form shows a "Bridge Funds" CTA that opens InterwovenKit's bridge modal.
+
+**Implementation:** `openBridge()` from `useInterwovenKit()`. See [`frontend/src/components/bet-form.tsx`](frontend/src/components/bet-form.tsx).
+
+### 3. .init Usernames
+The leaderboard, market detail, and portfolio pages resolve on-chain addresses to human-readable `.init` usernames (e.g., `alice.init`). This adds a social layer — users build reputation as predictors.
+
+**Implementation:** Custom `useInitUsername()` hook resolving via Initia's usernames API. See [`frontend/src/hooks/useInitUsername.ts`](frontend/src/hooks/useInitUsername.ts).
+
+---
+
+## How to Run Locally
+
+### Prerequisites
+- Node.js >= 18
+- Git
+
+### Steps
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/fdaniall/pythia.git
+cd pythia
+
+# 2. Install frontend dependencies
+cd frontend
+npm install
+
+# 3. Start development server
+npm run dev
+# Opens at http://localhost:5173
+
+# 4. Connect wallet via InterwovenKit (testnet)
+# Click "Connect Wallet" in the navbar — InterwovenKit handles wallet setup
+# The app connects to Initia testnet (initiation-2) by default
+```
+
+The smart contract is already deployed on testnet. No local contract deployment needed to test the frontend.
+
+To build and test the Move contract:
+```bash
+cd move
+initiad move build --dev
+initiad move test --dev
+# Test result: OK. Total tests: 29; passed: 29; failed: 0
+```
+
+---
+
+## Architecture
 
 ```
 pythia/
-├── move/                       # Move smart contract (Initia L1)
+├── move/                          # Move smart contract
 │   ├── sources/
-│   │   ├── prediction_market.move       # Main contract (~460 lines)
-│   │   └── prediction_market_tests.move # 28 tests, all passing
+│   │   ├── prediction_market.move        # Core contract (475+ lines)
+│   │   └── prediction_market_tests.move  # 29 tests
 │   └── Move.toml
 │
-├── frontend/                   # React/TypeScript app
+├── frontend/                      # React/TypeScript app
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── ui/            # shadcn/ui primitives
-│   │   │   ├── Layout.tsx     # Header, nav, wallet, footer
-│   │   │   ├── MarketCard.tsx # Market preview card
-│   │   │   ├── PoolBar.tsx    # Yes/No pool visualization
-│   │   │   ├── bet-form.tsx   # Bet interface with payout calc
-│   │   │   └── CommandPalette.tsx # Cmd+K search
-│   │   ├── pages/
-│   │   │   ├── LandingPage.tsx      # Landing page
-│   │   │   ├── MarketsPage.tsx      # Browse all markets
-│   │   │   ├── MarketDetailPage.tsx # Bet, view pool, claim
-│   │   │   ├── CreateMarketPage.tsx # Create new market
-│   │   │   ├── PortfolioPage.tsx    # Your bets & winnings
-│   │   │   ├── DocsPage.tsx         # Documentation
-│   │   │   └── NotFoundPage.tsx     # 404 with terminal UI
-│   │   ├── hooks/
-│   │   │   ├── useContract.ts # Contract interaction hooks
-│   │   │   └── useCountdown.ts # Shared countdown timer
-│   │   ├── lib/
-│   │   │   ├── contract.ts    # Contract config + ABI
-│   │   │   ├── confetti.ts    # Brutalist confetti effect
-│   │   │   └── utils.ts       # Tailwind utilities
-│   │   └── types/
-│   │       └── market.ts      # Market & Bet interfaces
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── contracts/                  # Solidity reference implementation (Foundry)
-│   ├── src/PredictionMarket.sol
-│   ├── test/PredictionMarket.t.sol  # 26 tests
-│   └── script/Deploy.s.sol
+│   │   ├── components/            # UI components (MarketCard, BetForm, PoolBar, etc.)
+│   │   ├── pages/                 # 8 pages (Landing → Markets → Detail → Create → Portfolio → Leaderboard → Docs → 404)
+│   │   ├── hooks/                 # useMoveContract, useInitUsername, useCountdown
+│   │   ├── lib/                   # move.ts (contract integration), confetti, utils
+│   │   └── types/                 # Market, Bet, MarketCategory types
+│   └── package.json
 │
 ├── .initia/
-│   └── submission.json
+│   └── submission.json            # Hackathon submission metadata
 │
 └── README.md
 ```
 
----
-
-## Getting Started
-
-### Prerequisites
-
-- **Node.js** >= 18
-- **initiad** — [build from source](https://github.com/initia-labs/initia) or download from releases
-- **Git**
-
-### Smart Contract (Move)
-
-```bash
-# Navigate to move directory
-cd move
-
-# Build
-initiad move build --dev
-
-# Run tests (28 tests)
-initiad move test --dev
-
-# Deploy to Initia testnet
-initiad move deploy \
-  --path . \
-  --upgrade-policy COMPATIBLE \
-  --from <YOUR_KEY> \
-  --gas auto --gas-adjustment 1.5 \
-  --gas-prices 0.015uinit \
-  --node https://rpc.testnet.initia.xyz \
-  --chain-id initiation-2
-```
-
-### Frontend
-
-```bash
-# Navigate to frontend directory
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server (http://localhost:5173)
-npm run dev
-
-# Build for production
-npm run build
-```
-
----
-
-## Smart Contract Architecture
-
-### prediction_market.move
-
-The contract uses Initia's **Fungible Asset model** with an **Object + ExtendRef** pattern for holding bet funds in a contract-owned vault.
-
-**Storage:**
-
-```move
-struct Market has store {
-    question: String,
-    deadline: u64,          // Unix timestamp
-    total_yes_pool: u64,
-    total_no_pool: u64,
-    resolved: bool,
-    winning_outcome: u8,    // 0 = YES, 1 = NO
-    creator: address,
-    created_at: u64,
-    bets: Table<address, Bet>,
-    bettors: vector<address>,
-}
-
-struct Bet has store, copy, drop {
-    yes_amount: u64,
-    no_amount: u64,
-    claimed: bool,
-}
-```
+### Smart Contract Functions
 
 **Entry Functions:**
 
 | Function | Access | Description |
 |---|---|---|
-| `create_market(question, deadline)` | Public | Create a new prediction market |
-| `place_bet(market_id, outcome, amount)` | Public | Bet YES (0) or NO (1) with INIT tokens |
-| `resolve_market(market_id, winning_outcome)` | Admin only | Set the market outcome |
+| `create_market(question, deadline)` | Public | Create a binary prediction market |
+| `place_bet(market_id, outcome, amount)` | Public | Bet YES (0) or NO (1) with INIT |
+| `resolve_market(market_id, winning_outcome)` | Admin | Set market outcome |
 | `claim_winnings(market_id)` | Public | Winners claim proportional payout |
-| `set_platform_fee(new_fee_bps)` | Admin only | Adjust fee (max 10%) |
-| `transfer_ownership(new_admin)` | Admin only | Transfer admin rights |
-| `withdraw_fees(amount)` | Admin only | Withdraw accumulated platform fees |
-
-**View Functions:**
-
-| Function | Returns |
-|---|---|
-| `get_market_count()` | Total number of markets |
-| `get_market(market_id)` | Full market data tuple |
-| `get_bet(market_id, bettor)` | User's bet amounts + claimed status |
-| `calculate_payout(market_id, bettor)` | Preview net payout after fees |
-| `get_platform_fee_bps()` | Current fee in basis points |
-| `get_admin()` | Admin address |
+| `set_platform_fee(new_fee_bps)` | Admin | Adjust fee (max 10%) |
+| `transfer_ownership(new_admin)` | Admin | Transfer admin rights |
+| `withdraw_fees(amount)` | Admin | Withdraw platform fees |
 
 **Payout Formula:**
 ```
-gross_payout = (user_winning_bet / winning_pool) * total_pool
-fee = gross_payout * platform_fee_bps / 10000
-net_payout = gross_payout - fee
-```
-
-**Security:**
-- Contract-owned vault via `ExtendRef` — funds held by an object, not an EOA
-- Admin-only resolution with `error::permission_denied` checks
-- Input validation: deadline in future, non-zero bets, valid outcome (0 or 1)
-- Double-claim prevention via `claimed` flag
-- u128 intermediate math to prevent overflow on payout calculation
-
----
-
-## Initia Integration
-
-Pythia is built specifically for Initia and integrates native features:
-
-### 1. Auto-Signing (Session Keys)
-Users enable a signing session and place bets without wallet popups. High-frequency betting feels instant, like a Web2 app.
-
-### 2. Interwoven Bridge
-Users can deposit INIT from any connected chain directly. No manual bridging needed — onboarding from anywhere.
-
-### 3. `.init` Usernames
-The leaderboard and bet history display human-readable `.init` names (e.g., `alice.init`) instead of raw addresses.
-
----
-
-## Pages
-
-| Route | Page | Description |
-|---|---|---|
-| `/` | Landing | Hero, features, how it works, CTA |
-| `/markets` | Markets | Browse all open, closed, and resolved markets |
-| `/markets/:id` | Market Detail | View pool distribution, place bets, share |
-| `/create` | Create Market | Form to create a new prediction market |
-| `/portfolio` | Portfolio | Your active bets, winnings, and claim status |
-| `/docs` | Documentation | Protocol mechanics, architecture, FAQ |
-| `*` | 404 | Interactive terminal crash recovery |
-
----
-
-## Revenue Model
-
-- **Platform fee:** 2% on all winning payouts (configurable, max 10%)
-- **Gas fees:** All transaction fees on the Initia appchain stay with the platform
-- **Own economics:** Every bet generates revenue for the platform operator
-
----
-
-## Testing
-
-The Move contract includes **28 tests** covering:
-
-- Market creation with validation (deadline, multiple markets)
-- Bet placement (YES/NO, both sides, multiple users, edge cases)
-- Market resolution (admin only, double resolve prevention)
-- Payout calculation and claiming (proportional, fee deduction)
-- Claim protection (losers, double claims, before resolution)
-- Admin functions (fee changes, ownership transfer)
-- Error cases (expired markets, nonexistent markets, invalid outcomes)
-
-```bash
-cd move
-initiad move test --dev
-# Test result: OK. Total tests: 28; passed: 28; failed: 0
+gross = (user_winning_bet / winning_pool) * total_pool
+net   = gross * (1 - platform_fee)
 ```
 
 ---
 
-## Submission
+## Revenue & Market Understanding
 
-This project is submitted to the **INITIATE — The Initia Hackathon (Season 1)** on DoraHacks.
+**Target Users:** Crypto-native users who already trade on prediction markets (Polymarket, Azuro) or sports betting platforms, looking for a transparent, on-chain alternative with better UX.
 
-- **Track:** Gaming & Consumer Applications
-- **VM:** MoveVM (Initia L1)
-- **Hackathon:** March 16 — April 15, 2026
+**Revenue Model:**
+- **2% platform fee** on all winning payouts (configurable up to 10%)
+- **Gas fees** — own appchain means all transaction fees stay with the platform
+- Every bet generates revenue. The platform operator captures value from market activity, not just market creation.
+
+**Competitive Landscape:**
+- **Polymarket** (Ethereum) — dominant but high gas, no auto-signing, no cross-chain UX
+- **Azuro** (Polygon) — focused on sports, oracle-dependent, not on Initia
+- **No native prediction market exists on Initia** — Pythia fills this gap with deep ecosystem integration
+
+**Go-to-Market:** Deploy as own Initia appchain → attract Initia ecosystem users via .init username integration → expand to crypto prediction markets (price targets, protocol events, governance votes).
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Smart Contract | Move (Initia MoveVM) |
+| Frontend | React 19, TypeScript 5.9, Vite 8 |
+| Styling | Tailwind CSS 4, shadcn/ui |
+| Wallet/SDK | InterwovenKit (`@initia/interwovenkit-react`) |
+| State | TanStack Query 5 (server), React state (client) |
+| Routing | React Router 7 |
 
 ---
 

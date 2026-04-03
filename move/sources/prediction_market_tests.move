@@ -389,6 +389,50 @@ module pythia::prediction_market_tests {
     }
 
     // ================================================================
+    // Get Bettors Tests
+    // ================================================================
+
+    #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
+    fun test_get_bettors_empty(admin: signer, user1: signer, user2: signer) {
+        setup_test(&admin, &user1, &user2);
+        prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+
+        let bettors = prediction_market::get_bettors(0);
+        assert!(std::vector::length(&bettors) == 0, 1);
+    }
+
+    #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
+    fun test_get_bettors_single(admin: signer, user1: signer, user2: signer) {
+        setup_test(&admin, &user1, &user2);
+        prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+        prediction_market::place_bet(&user1, 0, 0, 5);
+
+        let bettors = prediction_market::get_bettors(0);
+        assert!(std::vector::length(&bettors) == 1, 1);
+        assert!(*std::vector::borrow(&bettors, 0) == signer::address_of(&user1), 2);
+    }
+
+    #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
+    fun test_get_bettors_multiple(admin: signer, user1: signer, user2: signer) {
+        setup_test(&admin, &user1, &user2);
+        prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+        prediction_market::place_bet(&user1, 0, 0, 5);
+        prediction_market::place_bet(&user2, 0, 1, 8);
+        // user1 bets again — should NOT duplicate in bettors list
+        prediction_market::place_bet(&user1, 0, 1, 3);
+
+        let bettors = prediction_market::get_bettors(0);
+        assert!(std::vector::length(&bettors) == 2, 1);
+    }
+
+    #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
+    #[expected_failure(abort_code = 0x60001)]
+    fun test_get_bettors_nonexistent_market(admin: signer, user1: signer, user2: signer) {
+        setup_test(&admin, &user1, &user2);
+        prediction_market::get_bettors(99);
+    }
+
+    // ================================================================
     // Bet on Resolved Market
     // ================================================================
 

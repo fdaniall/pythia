@@ -1,29 +1,12 @@
 {
   "project_name": "Pythia",
-  "description": "Binary prediction market protocol on Initia L1. Bet on real-world outcomes with dynamic odds, auto-signing, cross-chain deposits, and .init usernames.",
-  "track": "Gaming & Consumer Applications",
-  "vm": "MoveVM",
-  "chain_id": "initiation-2",
-  "contract_address": "0xF83249D6AB09160493214DE15D7EC623CCB5063E",
-  "deploy_tx": "7D1D256DC0300270E5F946730742C69DDE6D704BD215B6F302EC8A7FFDDD6E3D",
-  "frontend_url": "",
-  "demo_video_url": "",
-  "team": [
-    {
-      "name": "fdaniall",
-      "role": "Solo Developer",
-      "github": "fdaniall"
-    }
-  ],
-  "tech_stack": {
-    "smart_contract": "Move (Initia L1 MoveVM)",
-    "frontend": "React 19, Vite 8, TailwindCSS 4, InterwovenKit",
-    "wallet": "InterwovenKit (@initia/interwovenkit-react)"
-  },
-  "initia_features": [
-    "auto-signing",
-    "interwoven-bridge",
-    "init-usernames"
-  ],
-  "repository": "https://github.com/fdaniall/pythia"
+  "repo_url": "https://github.com/fdaniall/pythia",
+  "commit_sha": "REPLACE_BEFORE_SUBMIT",
+  "rollup_chain_id": "REPLACE_WITH_YOUR_APPCHAIN_ID",
+  "deployed_address": "0xF83249D6AB09160493214DE15D7EC623CCB5063E",
+  "vm": "move",
+  "native_feature": "auto-signing",
+  "core_logic_path": "move/sources/prediction_market.move",
+  "native_feature_frontend_path": "frontend/src/hooks/useMoveContract.ts",
+  "demo_video_url": "REPLACE_WITH_YOUTUBE_OR_LOOM_URL"
 }
