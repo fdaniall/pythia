@@ -392,10 +392,81 @@ module pythia::prediction_market_tests {
     }
 
     #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
-    fun test_transfer_ownership(admin: signer, user1: signer, user2: signer) {
+    fun test_two_step_ownership_transfer(admin: signer, user1: signer, user2: signer) {
         setup_test(&admin, &user1, &user2);
-        prediction_market::transfer_ownership(&admin, signer::address_of(&user1));
-        assert!(prediction_market::get_admin() == signer::address_of(&user1), 1);
+        // Step 1: propose
+        prediction_market::propose_admin(&admin, signer::address_of(&user1));
+        assert!(prediction_market::get_admin() == signer::address_of(&admin), 1); // still admin
+
+        // Step 2: accept
+        prediction_market::accept_admin(&user1);
+        assert!(prediction_market::get_admin() == signer::address_of(&user1), 2); // now user1
+    }
+
+    #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
+    #[expected_failure(abort_code = 0x5000C)]
+    fun test_accept_admin_wrong_address(admin: signer, user1: signer, user2: signer) {
+        setup_test(&admin, &user1, &user2);
+        prediction_market::propose_admin(&admin, signer::address_of(&user1));
+        prediction_market::accept_admin(&user2); // wrong address, should fail
+    }
+
+    // ================================================================
+    // Cancel Market Tests
+    // ================================================================
+
+    #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
+    fun test_cancel_market_with_refunds(admin: signer, user1: signer, user2: signer) {
+        setup_test(&admin, &user1, &user2);
+        prediction_market::create_market(&admin, string::utf8(b"Cancel me?"), 2000);
+
+        prediction_market::place_bet(&user1, 0, 0, 10); // 10 YES
+        prediction_market::place_bet(&user2, 0, 1, 8);  // 8 NO
+
+        let user1_before = prediction_market::test_get_balance(signer::address_of(&user1));
+        let user2_before = prediction_market::test_get_balance(signer::address_of(&user2));
+
+        prediction_market::cancel_market(&admin, 0);
+
+        let user1_after = prediction_market::test_get_balance(signer::address_of(&user1));
+        let user2_after = prediction_market::test_get_balance(signer::address_of(&user2));
+
+        // Full refund
+        assert!(user1_after - user1_before == 10, 1);
+        assert!(user2_after - user2_before == 8, 2);
+
+        // Market is resolved (cancelled)
+        let (_, _, _, _, resolved, outcome, _, _, _) = prediction_market::get_market(0);
+        assert!(resolved, 3);
+        assert!(outcome == 255, 4); // 255 = cancelled
+    }
+
+    #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
+    fun test_cancel_market_no_bets(admin: signer, user1: signer, user2: signer) {
+        setup_test(&admin, &user1, &user2);
+        prediction_market::create_market(&admin, string::utf8(b"Empty"), 2000);
+        prediction_market::cancel_market(&admin, 0); // should work fine with 0 bettors
+
+        let (_, _, _, _, resolved, _, _, _, _) = prediction_market::get_market(0);
+        assert!(resolved, 1);
+    }
+
+    #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
+    #[expected_failure(abort_code = 0x50009)]
+    fun test_cancel_market_not_admin(admin: signer, user1: signer, user2: signer) {
+        setup_test(&admin, &user1, &user2);
+        prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+        prediction_market::cancel_market(&user1, 0); // not admin
+    }
+
+    #[test(admin = @0x42, user1 = @0x100, user2 = @0x200)]
+    #[expected_failure(abort_code = 0x30002)]
+    fun test_cancel_resolved_market(admin: signer, user1: signer, user2: signer) {
+        setup_test(&admin, &user1, &user2);
+        prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+        block::set_block_info(2, 3000);
+        prediction_market::resolve_market(&admin, 0, 0);
+        prediction_market::cancel_market(&admin, 0); // already resolved
     }
 
     // ================================================================

@@ -28,6 +28,8 @@ module pythia::prediction_market {
     const EUNAUTHORIZED: u64 = 9;
     const EINVALID_OUTCOME: u64 = 10;
     const EINVALID_FEE: u64 = 11;
+    const ENO_PENDING_ADMIN: u64 = 12;
+    const EMARKET_HAS_BETS: u64 = 13;
 
     //  Outcome Constants 
     const OUTCOME_YES: u8 = 0;
@@ -86,6 +88,7 @@ module pythia::prediction_market {
 
     struct State has key {
         admin: address,
+        pending_admin: address,
         markets: Table<u64, Market>,
         market_count: u64,
         platform_fee_bps: u64,
@@ -108,6 +111,7 @@ module pythia::prediction_market {
 
         move_to(admin, State {
             admin: admin_addr,
+            pending_admin: @0x0,
             markets: table::new(),
             market_count: 0,
             platform_fee_bps: 200, // 2%
@@ -339,15 +343,87 @@ module pythia::prediction_market {
         state.platform_fee_bps = new_fee_bps;
     }
 
-    //  Admin: Transfer Ownership 
+    //  Admin: Transfer Ownership (Two-Step)
 
-    public entry fun transfer_ownership(
+    /// Step 1: Current admin proposes a new admin.
+    public entry fun propose_admin(
         admin: &signer,
         new_admin: address,
     ) acquires State {
         let state = borrow_global_mut<State>(@pythia);
         assert!(signer::address_of(admin) == state.admin, error::permission_denied(EUNAUTHORIZED));
-        state.admin = new_admin;
+        state.pending_admin = new_admin;
+    }
+
+    /// Step 2: Proposed admin accepts ownership.
+    public entry fun accept_admin(
+        new_admin: &signer,
+    ) acquires State {
+        let state = borrow_global_mut<State>(@pythia);
+        let new_admin_addr = signer::address_of(new_admin);
+        assert!(new_admin_addr == state.pending_admin, error::permission_denied(ENO_PENDING_ADMIN));
+        state.admin = new_admin_addr;
+        state.pending_admin = @0x0;
+    }
+
+    //  Admin: Cancel Market
+
+    /// Cancel a market and refund all bettors. Only callable by admin.
+    /// Market must not be resolved yet.
+    public entry fun cancel_market(
+        admin: &signer,
+        market_id: u64,
+    ) acquires State {
+        let admin_addr = signer::address_of(admin);
+        let metadata = get_token_metadata();
+
+        // Collect refund info immutably
+        let refunds: vector<address>;
+        let refund_amounts: vector<u64>;
+        {
+            let state = borrow_global<State>(@pythia);
+            assert!(admin_addr == state.admin, error::permission_denied(EUNAUTHORIZED));
+            assert!(table::contains(&state.markets, market_id), error::not_found(EMARKET_NOT_FOUND));
+
+            let market = table::borrow(&state.markets, market_id);
+            assert!(!market.resolved, error::invalid_state(EMARKET_ALREADY_RESOLVED));
+
+            refunds = market.bettors;
+            refund_amounts = vector::empty();
+            let i = 0;
+            let len = vector::length(&refunds);
+            while (i < len) {
+                let addr = *vector::borrow(&refunds, i);
+                let bet = table::borrow(&market.bets, addr);
+                vector::push_back(&mut refund_amounts, bet.yes_amount + bet.no_amount);
+                i = i + 1;
+            };
+        };
+
+        // Mark market as resolved with a special "cancelled" state
+        {
+            let state = borrow_global_mut<State>(@pythia);
+            let market = table::borrow_mut(&mut state.markets, market_id);
+            market.resolved = true;
+            market.winning_outcome = 255; // 255 = cancelled
+        };
+
+        // Process refunds from vault
+        {
+            let state = borrow_global<State>(@pythia);
+            let obj_signer = object::generate_signer_for_extending(&state.extend_ref);
+            let i = 0;
+            let len = vector::length(&refunds);
+            while (i < len) {
+                let addr = *vector::borrow(&refunds, i);
+                let amount = *vector::borrow(&refund_amounts, i);
+                if (amount > 0) {
+                    let fa = primary_fungible_store::withdraw(&obj_signer, metadata, amount);
+                    primary_fungible_store::deposit(addr, fa);
+                };
+                i = i + 1;
+            };
+        };
     }
 
     //  Admin: Withdraw Fees 
