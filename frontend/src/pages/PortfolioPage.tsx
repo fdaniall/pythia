@@ -196,10 +196,11 @@ export function PortfolioPage() {
         ) : !positions || positions.length === 0 ? (
           <div className="py-16 text-center">
             <p className="font-technical text-[14px] font-bold uppercase tracking-widest text-[#555]">
-              NO POSITIONS YET.
+              YOU HAVEN'T MADE ANY PREDICTIONS YET.
             </p>
             <p className="mt-2 font-technical text-[12px] uppercase tracking-widest text-[#444]">
-              <Link to="/markets" className="text-[#CCFF00] underline">Browse markets</Link> and place your first bet.
+              Your positions will appear here once you place your first bet.{" "}
+              <Link to="/markets" className="text-[#CCFF00] underline">Explore live markets</Link>
             </p>
           </div>
         ) : (

@@ -57,7 +57,7 @@ export function MarketCard({ market }: MarketCardProps) {
         <div className="mb-6 flex flex-wrap items-center gap-3 font-technical text-[11px] font-bold uppercase tracking-widest text-[#888]">
           <span className="flex items-center gap-1.5">
             <Clock className="size-3.5" />
-            {countdown.expired ? "EXPIRED" : countdown.label}
+            {countdown.expired ? "AWAITING RESULT" : countdown.label}
           </span>
           <span className="text-[#333]">&middot;</span>
           <span className="flex items-center gap-1.5">

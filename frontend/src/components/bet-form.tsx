@@ -18,35 +18,31 @@ interface BetFormProps {
   expired: boolean
 }
 
-/** Convert a decimal INIT string to uinit (6 decimals). e.g. "1.5" -> 1_500_000n */
 function initToUinit(value: string): bigint {
   const parsed = parseFloat(value)
   if (!parsed || parsed <= 0) return 0n
   return BigInt(Math.round(parsed * 10 ** UINIT_DECIMALS))
 }
 
-/** Format uinit amount as human-readable INIT string with n decimal places */
 function formatUinit(uinit: bigint, decimals = 4): string {
-  const divisor = 10 ** UINIT_DECIMALS
-  return (Number(uinit) / divisor).toFixed(decimals)
+  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
 }
 
 export function BetForm({ market, total, expired }: BetFormProps) {
   const { isConnected, openConnect, initiaAddress } = useInterwovenKit()
   const [amount, setAmount] = useState("")
   const [position, setPosition] = useState<boolean>(true)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const { mutate: placeBet, isPending: isBetting } = useMovePlaceBet()
   const { mutate: claimWinnings, isPending: isClaiming } = useMoveClaimWinnings()
 
-  // Fetch user's existing bet on this market
   const { data: userBet } = useMoveUserBet(market.id, initiaAddress || undefined)
   const { data: calculatedPayout } = useMoveCalculatePayout(
     market.id,
     market.resolved ? (initiaAddress || undefined) : undefined,
   )
 
-  // Fetch wallet balance
   const { data: balanceUinit } = useQuery({
     queryKey: ["balance", initiaAddress],
     queryFn: () => fetchBalance(INITIA_REST_URL, initiaAddress!),
@@ -57,7 +53,6 @@ export function BetForm({ market, total, expired }: BetFormProps) {
 
   const isSubmitting = isBetting || isClaiming
 
-  // Payout estimation in uinit (6 decimals)
   const payout = useMemo(() => {
     const betAmountUinit = initToUinit(amount)
     if (betAmountUinit <= 0n) return null
@@ -100,6 +95,8 @@ export function BetForm({ market, total, expired }: BetFormProps) {
         onSuccess: () => {
           fireBrutalistConfetti()
           setAmount("")
+          setShowSuccess(true)
+          setTimeout(() => setShowSuccess(false), 5000)
         },
       },
     )
@@ -113,12 +110,24 @@ export function BetForm({ market, total, expired }: BetFormProps) {
     <div className="brutalist-card bg-black p-6 sticky top-24">
       <h2 className="mb-6 flex items-center gap-2 font-technical text-[14px] font-bold uppercase tracking-widest text-white border-b border-[#333] pb-4">
         <TerminalSquare className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
-        TRANSACTION INTERFACE
+        PLACE YOUR BET
       </h2>
 
       <div className="space-y-6">
+        {/* Success confirmation after bet */}
+        {showSuccess && (
+          <div className="border-2 border-[#CCFF00] bg-[#CCFF00]/10 p-4 text-center animate-pulse">
+            <p className="font-technical text-[12px] font-bold uppercase tracking-widest text-[#CCFF00]">
+              BET CONFIRMED
+            </p>
+            <p className="mt-1 font-technical text-[10px] uppercase tracking-widest text-[#888]">
+              Your position is now active. Good luck.
+            </p>
+          </div>
+        )}
+
         {/* User's existing bet info */}
-        {userHasBet && (
+        {userHasBet && !showSuccess && (
           <div className="border border-[#CCFF00]/30 bg-[#CCFF00]/5 p-4 space-y-2">
             <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">
               YOUR POSITION
@@ -151,11 +160,11 @@ export function BetForm({ market, total, expired }: BetFormProps) {
           </Button>
         )}
 
-        {/* Already claimed */}
+        {/* Already claimed — celebrate */}
         {market.resolved && userBet?.claimed && (
-          <div className="border border-[#333] p-4 text-center">
-            <p className="font-technical text-[12px] uppercase tracking-widest text-[#888]">
-              WINNINGS CLAIMED
+          <div className="border border-[#CCFF00]/30 bg-[#CCFF00]/5 p-4 text-center">
+            <p className="font-technical text-[12px] uppercase tracking-widest text-[#CCFF00]">
+              WINNINGS CLAIMED SUCCESSFULLY
             </p>
           </div>
         )}
@@ -167,7 +176,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
               BETTING CLOSED
             </p>
             <p className="mt-1 font-technical text-[10px] uppercase tracking-widest text-[#888]">
-              Awaiting resolution. Check back to claim winnings.
+              Awaiting resolution by market creator. You'll be able to claim once the outcome is confirmed.
             </p>
           </div>
         )}
@@ -196,7 +205,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                   <TrendingUp className="size-5 mb-1" strokeWidth={2.5} />
                   <span className="font-technical text-[14px] font-black uppercase tracking-widest">YES</span>
                   <span className="font-technical text-[10px] font-bold opacity-70">
-                    {total > 0n ? Number((market.totalYesPool * 100n) / total) : 50}%
+                    {total > 0n ? Number((market.totalYesPool * 100n) / total) : 50}% of pool
                   </span>
                 </button>
                 <button
@@ -214,7 +223,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                   <TrendingDown className="size-5 mb-1" strokeWidth={2.5} />
                   <span className="font-technical text-[14px] font-black uppercase tracking-widest">NO</span>
                   <span className="font-technical text-[10px] font-bold opacity-70">
-                    {total > 0n ? Number((market.totalNoPool * 100n) / total) : 50}%
+                    {total > 0n ? Number((market.totalNoPool * 100n) / total) : 50}% of pool
                   </span>
                 </button>
               </div>
@@ -278,7 +287,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#888]">NETWORK FEE</span>
+                <span className="text-[#888]">PLATFORM FEE</span>
                 <span className="text-white">2.0%</span>
               </div>
 
@@ -300,6 +309,9 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                     <span className="text-[#888]">MULTIPLIER</span>
                     <span className="text-white">{payout.multiplier}X</span>
                   </div>
+                  <p className="text-[10px] text-[#555] text-right normal-case">
+                    You bet {amount} INIT and get back {payout.net} INIT if {position ? "YES" : "NO"} wins
+                  </p>
                 </>
               )}
             </div>
@@ -328,7 +340,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                     ? "MARKET CLOSED"
                     : payout
                       ? `PLACE BET [ ${amount} INIT -> ${position ? "YES" : "NO"} ]`
-                      : "ENTER AMOUNT..."
+                      : "ENTER AN AMOUNT TO SEE YOUR PAYOUT"
                 }
               </Button>
             )}

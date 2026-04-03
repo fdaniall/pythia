@@ -143,10 +143,10 @@ export function MarketDetailPage() {
               {market.resolved ? "MARKET RESOLVED" : "BETTING CLOSED"}
             </span>
           </div>
-          <span className="font-technical text-[11px] uppercase tracking-widest text-[#888]">
+          <span className="font-technical text-[11px] uppercase tracking-widest">
             {market.resolved
-              ? `Outcome: ${market.outcome ? "YES" : "NO"}`
-              : "Awaiting resolution"}
+              ? <>Outcome: <span className={market.outcome ? "text-[#CCFF00] font-bold" : "text-[#FF2A2A] font-bold"}>{market.outcome ? "YES" : "NO"}</span></>
+              : <span className="text-[#888]">Awaiting resolution by market creator</span>}
           </span>
         </div>
       )}
@@ -166,9 +166,12 @@ export function MarketDetailPage() {
             {market.question}
           </h1>
           <div className="mt-6 flex flex-wrap items-center gap-3 font-technical text-[11px] font-bold uppercase tracking-widest text-[#888]">
-            <div className="flex items-center justify-center gap-1.5 border-2 border-transparent bg-[#CCFF00] px-2.5 py-1 text-[10px] text-black">
-              <span className="size-1.5 bg-black animate-pulse" />
-              {countdown.expired ? "ENDED" : "LIVE"}
+            <div className={cn(
+              "flex items-center justify-center gap-1.5 border-2 border-transparent px-2.5 py-1 text-[10px]",
+              countdown.expired ? "bg-[#FF2A2A] text-white" : "bg-[#CCFF00] text-black"
+            )}>
+              {!countdown.expired && <span className="size-1.5 bg-black animate-pulse" />}
+              {countdown.expired ? (market.resolved ? "RESOLVED" : "CLOSED") : "LIVE"}
             </div>
             <span className="text-white">MARKET #{id}</span>
             <span className="text-[#333]">&middot;</span>

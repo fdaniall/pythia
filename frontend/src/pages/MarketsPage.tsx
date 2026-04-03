@@ -83,7 +83,7 @@ export function MarketsPage() {
             GLOBAL <span className="text-[#CCFF00]">LIQUIDITY.</span>
           </h1>
           <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase max-w-[500px]">
-            Execute trades across isolated pools. All positions settled on-chain via Initia L1.
+            Pick a question you have a strong opinion on. Bet YES or NO. Win the pool if you're right.
           </p>
         </div>
       </FadeIn>
@@ -212,11 +212,13 @@ export function MarketsPage() {
               <Search className="size-6 text-[#555]" />
             </div>
             <p className="font-technical text-[14px] font-bold uppercase tracking-widest text-[#888]">
-              NO MARKETS FOUND.
+              {markets.length === 0 ? "NO MARKETS CREATED YET." : "NO MARKETS MATCH YOUR SEARCH."}
             </p>
             <p className="mt-2 font-technical text-[12px] uppercase tracking-widest text-[#555]">
-              Try a different filter or{" "}
-              <Link to="/create" className="text-[#CCFF00] underline">create a new market</Link>.
+              {markets.length === 0
+                ? <>Be the first — <Link to="/create" className="text-[#CCFF00] underline">create a market now</Link>.</>
+                : <>Try a different filter or <Link to="/create" className="text-[#CCFF00] underline">create a new market</Link>.</>
+              }
             </p>
           </div>
         )}

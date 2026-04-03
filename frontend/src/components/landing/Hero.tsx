@@ -36,7 +36,7 @@ export function Hero() {
 
             <FadeIn delay={0.2}>
               <p className="mt-8 max-w-[600px] font-technical text-[clamp(15px,1.5vw,18px)] leading-[1.6] text-[#888]">
-                ZERO-BULLSHIT PREDICTION MARKETS. NATIVE ON INITIA. CREATE POOLS, SET ODDS, TAKE POSITIONS, EXTRACT LIQUIDITY. ALL ON-CHAIN.
+                Bet on real-world outcomes. If you're right, you win the pool. No middlemen. No BS. Native on Initia.
               </p>
             </FadeIn>
 

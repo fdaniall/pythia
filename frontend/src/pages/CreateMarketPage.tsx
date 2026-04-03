@@ -15,6 +15,7 @@ export function CreateMarketPage() {
   const { isConnected, openConnect } = useInterwovenKit()
   const [question, setQuestion] = useState("")
   const [deadline, setDeadline] = useState("")
+  const [created, setCreated] = useState(false)
 
   const { mutate: createMarket, isPending } = useMoveCreateMarket()
 
@@ -29,7 +30,8 @@ export function CreateMarketPage() {
         onSuccess: () => {
           setQuestion("")
           setDeadline("")
-          setTimeout(() => navigate("/markets"), 1500)
+          setCreated(true)
+          setTimeout(() => navigate("/markets"), 2000)
         },
       },
     )
@@ -48,7 +50,7 @@ export function CreateMarketPage() {
               CONNECT TO CONTINUE
             </h1>
             <p className="font-technical text-[14px] leading-[1.6] text-[#888] uppercase mb-8">
-              System deployment protocol requires an authenticated wallet node. Please secure a connection before initializing a new prediction market.
+              Connect your wallet to create a prediction market. It takes 30 seconds.
             </p>
             <Button
               className="btn-acid h-14 w-full font-technical text-[14px]"
@@ -92,6 +94,17 @@ export function CreateMarketPage() {
             <p className="font-technical text-[12px] text-[#888] uppercase mt-1">Configure binary condition &amp; deadline.</p>
           </div>
 
+          {created && (
+            <div className="border-2 border-[#CCFF00] bg-[#CCFF00]/10 p-4 text-center mb-6">
+              <p className="font-technical text-[13px] font-bold uppercase tracking-widest text-[#CCFF00]">
+                MARKET CREATED SUCCESSFULLY
+              </p>
+              <p className="mt-1 font-technical text-[10px] uppercase tracking-widest text-[#888]">
+                Redirecting to markets...
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -108,7 +121,7 @@ export function CreateMarketPage() {
                 className="h-14 rounded-none border-[2px] border-[#333] bg-black px-4 font-sans text-[16px] font-bold text-white placeholder:text-[#555] focus-visible:border-[#CCFF00] focus-visible:ring-0"
               />
               <p className="font-technical text-[10px] uppercase text-[#555]">
-                // Must be resolvable to absolute TRUE or FALSE.
+                Tip: Your question must have a clear YES or NO answer.
               </p>
             </div>
 
@@ -177,7 +190,7 @@ export function CreateMarketPage() {
 
             <div className="mt-6 border-t border-[#333] pt-4">
               <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#555] text-center">
-                THIS IS EXTREMELY ACCURATE.
+                This is how your market will appear to bettors.
               </p>
             </div>
           </div>
