@@ -247,8 +247,34 @@
     border-radius: 0px !important;
     font-family: var(--font-mono) !important;
     text-transform: uppercase !important;
-    border: 1px solid #333 !important;
+    border: 1px solid #555 !important;
     transition: all 0.1s !important;
+    background-color: #111 !important;
+    color: #fff !important;
+}
+
+/* Primary/confirm buttons — always visible (not just on hover) */
+[class*="_button_"][class*="_primary_"],
+[class*="_button_"][class*="_confirm_"],
+[class*="_button_"][class*="_approve_"],
+[class*="_button_"][class*="_submit_"],
+[class*="_footer_"] button:last-child,
+[class*="_actions_"] button:last-child,
+[class*="_bottom_"] button:last-child {
+    background-color: #CCFF00 !important;
+    color: #000 !important;
+    border-color: #CCFF00 !important;
+    font-weight: 900 !important;
+}
+
+/* Nuclear: ANY button with text "Approve" or similar CTA inside modals */
+[class*="_modal_"] button:not([class*="_close_"]):not([class*="_back_"]),
+[class*="_content_"] > div:last-child button:last-child,
+[class*="_inner_"] > div:last-child button:last-child {
+    background-color: #CCFF00 !important;
+    color: #000 !important;
+    border-color: #CCFF00 !important;
+    font-weight: 900 !important;
 }
 
 /* Brutalist Hover effects for lists & buttons */

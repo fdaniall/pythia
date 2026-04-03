@@ -109,11 +109,37 @@ export function encodeString(value: string): string {
 }
 
 /**
+ * Converts a bech32 address (init1...) to hex (0x...) format.
+ * Move view functions require hex addresses, not bech32.
+ */
+export function bech32ToHex(bech32Addr: string): string {
+  if (bech32Addr.startsWith("0x")) return bech32Addr
+  // bech32 decode: strip prefix "init", decode data bytes
+  const CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
+  const sepIdx = bech32Addr.lastIndexOf("1")
+  const data = bech32Addr.slice(sepIdx + 1, -6) // strip prefix + checksum (6 chars)
+  // Convert 5-bit groups to 8-bit bytes
+  const values = Array.from(data).map((c) => CHARSET.indexOf(c))
+  let bits = 0
+  let value = 0
+  const bytes: number[] = []
+  for (const v of values) {
+    value = (value << 5) | v
+    bits += 5
+    if (bits >= 8) {
+      bits -= 8
+      bytes.push((value >> bits) & 0xff)
+    }
+  }
+  return "0x" + bytes.map((b) => b.toString(16).padStart(2, "0")).join("")
+}
+
+/**
  * Encodes a Move address as a MsgExecuteJSON arg string.
- * Accepts both hex (0x...) and bech32 (init1...) formats.
+ * Converts bech32 (init1...) to hex (0x...) format for Move compatibility.
  */
 export function encodeAddress(value: string): string {
-  return JSON.stringify(value)
+  return JSON.stringify(bech32ToHex(value))
 }
 
 // ── Message constructors ────────────────────────────────────────────────────

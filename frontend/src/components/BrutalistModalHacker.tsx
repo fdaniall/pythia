@@ -49,6 +49,15 @@ export function BrutalistModalHacker() {
           border-radius: 0px !important;
           text-transform: uppercase !important;
           transition: all 0.1s !important;
+          border: 1px solid #555 !important;
+          background-color: #111 !important;
+          color: #fff !important;
+        }
+        button:last-of-type {
+          background-color: #CCFF00 !important;
+          color: #000 !important;
+          border-color: #CCFF00 !important;
+          font-weight: 900 !important;
         }
         button:hover {
           background-color: #CCFF00 !important;
@@ -159,9 +168,69 @@ export function BrutalistModalHacker() {
       privyShadowObserver.observe(shadowRoot, { childList: true, subtree: true, attributes: true })
     }
 
+    // Inject brutalist styles into InterwovenKit shadow root
+    const injectIwkStyles = (shadowRoot: ShadowRoot) => {
+      if (shadowRoot.querySelector("#brutalist-iwk-hack")) return
+      const style = document.createElement("style")
+      style.id = "brutalist-iwk-hack"
+      style.textContent = `
+        * {
+          border-radius: 0px !important;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+        }
+        button, [role="button"] {
+          border-radius: 0px !important;
+          text-transform: uppercase !important;
+          transition: all 0.1s !important;
+          border: 1px solid #555 !important;
+          background-color: #111 !important;
+          color: #fff !important;
+        }
+        button:last-of-type, [role="button"]:last-of-type {
+          background-color: #CCFF00 !important;
+          color: #000 !important;
+          border-color: #CCFF00 !important;
+          font-weight: 900 !important;
+        }
+        button:hover, [role="button"]:hover {
+          background-color: #CCFF00 !important;
+          color: #000 !important;
+          border-color: #CCFF00 !important;
+        }
+        button:hover *, [role="button"]:hover * {
+          color: #000 !important;
+        }
+        input, select, textarea {
+          border-radius: 0px !important;
+          border: 1px solid #333 !important;
+          background-color: #0A0A0A !important;
+          color: #fff !important;
+        }
+        span, p, div, label {
+          border: none !important;
+          box-shadow: none !important;
+        }
+        [class*="modal"], [class*="drawer"], [class*="dialog"] {
+          border-radius: 0px !important;
+          border: 2px solid #333 !important;
+          box-shadow: 8px 8px 0px 0px #CCFF00 !important;
+          background-color: #0A0A0A !important;
+        }
+        [class*="overlay"], [class*="backdrop"] {
+          background-color: rgba(0, 0, 0, 0.85) !important;
+          backdrop-filter: blur(4px) grayscale(100%) !important;
+        }
+      `
+      shadowRoot.appendChild(style)
+    }
+
     const setupIwkShadowObserver = (shadowRoot: ShadowRoot) => {
       if (iwkShadowObserver) return
-      iwkShadowObserver = new MutationObserver(updateOverlayState)
+      injectIwkStyles(shadowRoot)
+      iwkShadowObserver = new MutationObserver(() => {
+        injectIwkStyles(shadowRoot)
+        updateOverlayState()
+      })
       iwkShadowObserver.observe(shadowRoot, { childList: true, subtree: true, attributes: true })
     }
 
@@ -307,8 +376,20 @@ export function BrutalistModalHacker() {
         border-radius: 0px !important;
         font-family: var(--font-mono) !important;
         text-transform: uppercase !important;
-        border: 1px solid #333 !important;
+        border: 1px solid #555 !important;
+        background-color: #111 !important;
+        color: #fff !important;
         transition: all 0.1s !important;
+      }
+
+      /* Make ALL modal buttons visible — especially Approve/Confirm CTAs */
+      [class*="_modal_"] button:last-of-type,
+      [class*="_content_"] button:last-of-type,
+      [class*="_inner_"] button:last-of-type {
+        background-color: #CCFF00 !important;
+        color: #000 !important;
+        border-color: #CCFF00 !important;
+        font-weight: 900 !important;
       }
 
       [class*="_modal_"] button:hover, [class*="_modal_"] li:hover,
