@@ -5,13 +5,18 @@ import { BrutalistSparkline } from "@/components/BrutalistSparkline"
 import { BetForm } from "@/components/bet-form"
 import { cn } from "@/lib/utils"
 import { useCountdown } from "@/hooks/useCountdown"
-import { formatEther } from "viem"
 import { FadeIn } from "@/components/FadeIn"
 import {
   ArrowLeft, Clock, Trophy, Users, Zap, TerminalSquare, Share2, Check
 } from "lucide-react"
 import { useState } from "react"
-import { MOCK_MARKETS } from "@/lib/mock-data"
+import { useMoveMarket } from "@/hooks/useMoveContract"
+import { UINIT_DECIMALS } from "@/lib/move"
+
+/** Format uinit amount for display */
+function formatUinit(uinit: bigint, decimals = 1): string {
+  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
+}
 
 // Deterministic sparkline data per market (seeded by id)
 function generateSparkline(seed: number): number[] {
@@ -59,13 +64,31 @@ function ShareButton({ question }: { question: string }) {
 
 export function MarketDetailPage() {
   const { id } = useParams()
-  const market = MOCK_MARKETS.find((m) => m.id === parseInt(id || "0"))
+  const marketId = parseInt(id ?? "0")
+
+  const { data: market, isLoading, error } = useMoveMarket(marketId)
 
   useDocTitle(market?.question ?? "Market")
   const countdown = useCountdown(market?.deadline ?? 0n)
   const total = (market?.totalYesPool ?? 0n) + (market?.totalNoPool ?? 0n)
 
-  if (!market) {
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-8 animate-pulse">
+        <div className="h-6 bg-[#1a1a1a] w-32 mb-8" />
+        <div className="h-12 bg-[#1a1a1a] w-2/3" />
+        <div className="h-4 bg-[#1a1a1a] w-1/3" />
+        <div className="grid gap-8 lg:grid-cols-3 mt-8">
+          <div className="lg:col-span-2 brutalist-card bg-black p-8" style={{ height: "400px" }} />
+          <div className="brutalist-card bg-black p-6" style={{ height: "300px" }} />
+        </div>
+      </div>
+    )
+  }
+
+  // Not found or error
+  if (!market || error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
         <div className="mb-6 border-2 border-[#FF2A2A] px-8 py-3">
@@ -176,19 +199,19 @@ export function MarketDetailPage() {
                 <div className="border border-[#333] bg-[#050505] p-4 flex flex-col items-center justify-center text-center">
                   <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]">TOTAL POOL</p>
                   <p className="mt-2 font-sans text-2xl font-black text-white">
-                    {parseFloat(formatEther(total)).toFixed(1)} <span className="text-sm text-[#555]">INIT</span>
+                    {formatUinit(total)} <span className="text-sm text-[#555]">INIT</span>
                   </p>
                 </div>
                 <div className="border border-[#CCFF00]/30 bg-[#CCFF00]/5 p-4 flex flex-col items-center justify-center text-center">
                   <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">YES POOL</p>
                   <p className="mt-2 font-sans text-2xl font-black text-[#CCFF00]">
-                    {parseFloat(formatEther(market.totalYesPool)).toFixed(1)} <span className="text-sm text-[#CCFF00]/50">INIT</span>
+                    {formatUinit(market.totalYesPool)} <span className="text-sm text-[#CCFF00]/50">INIT</span>
                   </p>
                 </div>
                 <div className="border border-[#FF2A2A]/30 bg-[#FF2A2A]/5 p-4 flex flex-col items-center justify-center text-center">
                   <p className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#FF2A2A]">NO POOL</p>
                   <p className="mt-2 font-sans text-2xl font-black text-[#FF2A2A]">
-                    {parseFloat(formatEther(market.totalNoPool)).toFixed(1)} <span className="text-sm text-[#FF2A2A]/50">INIT</span>
+                    {formatUinit(market.totalNoPool)} <span className="text-sm text-[#FF2A2A]/50">INIT</span>
                   </p>
                 </div>
               </div>
@@ -203,7 +226,9 @@ export function MarketDetailPage() {
                 <div className="space-y-3 font-technical text-[11px] uppercase tracking-widest">
                   <div className="flex justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2">
                     <span className="text-[#888]">Creator</span>
-                    <span className="text-white font-mono text-[10px]">{market.creator.slice(0, 6)}...{market.creator.slice(-4)}</span>
+                    <span className="text-white font-mono text-[10px]">
+                      {market.creator.slice(0, 6)}...{market.creator.slice(-4)}
+                    </span>
                   </div>
                   <div className="flex justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2">
                     <span className="text-[#888]">Status</span>
@@ -234,16 +259,16 @@ export function MarketDetailPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between font-technical text-[11px] uppercase tracking-widest">
                     <span className="text-[#CCFF00]">YES POOL</span>
-                    <span className="text-white font-black">{parseFloat(formatEther(market.totalYesPool)).toFixed(2)} INIT</span>
+                    <span className="text-white font-black">{formatUinit(market.totalYesPool, 2)} INIT</span>
                   </div>
                   <div className="flex justify-between font-technical text-[11px] uppercase tracking-widest">
                     <span className="text-[#FF2A2A]">NO POOL</span>
-                    <span className="text-white font-black">{parseFloat(formatEther(market.totalNoPool)).toFixed(2)} INIT</span>
+                    <span className="text-white font-black">{formatUinit(market.totalNoPool, 2)} INIT</span>
                   </div>
                   <div className="h-px bg-[#333] my-2" />
                   <div className="flex justify-between font-technical text-[11px] uppercase tracking-widest">
                     <span className="text-[#888]">TOTAL</span>
-                    <span className="text-white font-black">{parseFloat(formatEther(total)).toFixed(2)} INIT</span>
+                    <span className="text-white font-black">{formatUinit(total, 2)} INIT</span>
                   </div>
                   <div className="flex justify-between font-technical text-[11px] uppercase tracking-widest">
                     <span className="text-[#888]">BETTORS</span>

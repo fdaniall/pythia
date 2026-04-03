@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createConfig, http, WagmiProvider } from "wagmi"
 import { mainnet } from "wagmi/chains"
+// initiaAppchain is Initia L1 testnet (initiation-2) for wagmi bootstrapping
 import { initiaAppchain } from "@/lib/contract"
 import {
   InterwovenKitProvider,
@@ -25,10 +26,11 @@ const NotFoundPage = lazy(() => import("@/pages/NotFoundPage").then(m => ({ defa
 
 const wagmiConfig = createConfig({
   connectors: [initiaPrivyWalletConnector],
+  // mainnet included as fallback; initiaAppchain is the primary chain
   chains: [mainnet, initiaAppchain],
   transports: {
     [mainnet.id]: http(),
-    [initiaAppchain.id]: http(),
+    [initiaAppchain.id]: http("https://json-rpc.testnet.initia.xyz"),
   },
 })
 

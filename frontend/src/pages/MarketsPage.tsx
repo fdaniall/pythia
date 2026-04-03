@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Eye, Search, TrendingUp, Users, Coins, Plus } from "lucide-react"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { formatEther } from "viem"
 import { getMarketStatus } from "@/types/market"
+import { useMoveAllMarkets } from "@/hooks/useMoveContract"
+import { UINIT_DECIMALS } from "@/lib/move"
 import { MOCK_MARKETS } from "@/lib/mock-data"
 
 type FilterTab = "all" | "open" | "closed" | "resolved"
@@ -29,23 +30,45 @@ function useDebouncedValue<T>(value: T, delay: number): T {
   return debounced
 }
 
+/** Format uinit amount as human-readable INIT string */
+function formatUinitCompact(uinit: bigint): string {
+  const init = Number(uinit) / 10 ** UINIT_DECIMALS
+  if (init >= 1000) return `${(init / 1000).toFixed(1)}K`
+  return init.toFixed(1)
+}
+
 export function MarketsPage() {
   useDocTitle("Markets")
   const [activeTab, setActiveTab] = useState<FilterTab>("all")
   const [search, setSearch] = useState("")
   const debouncedSearch = useDebouncedValue(search, 300)
 
+  // Fetch real on-chain markets; fall back to mock data while loading
+  const { data: onChainMarkets, isLoading, error } = useMoveAllMarkets()
+  const markets = onChainMarkets && onChainMarkets.length > 0
+    ? onChainMarkets
+    : (!isLoading ? [] : MOCK_MARKETS)
+
   const filtered = useMemo(() => {
-    return MOCK_MARKETS.filter((m) => {
+    return markets.filter((m) => {
       if (activeTab !== "all" && getMarketStatus(m) !== activeTab) return false
       if (debouncedSearch && !m.question.toLowerCase().includes(debouncedSearch.toLowerCase())) return false
       return true
     })
-  }, [activeTab, debouncedSearch])
+  }, [markets, activeTab, debouncedSearch])
 
-  const totalVolume = useMemo(() => MOCK_MARKETS.reduce((acc, m) => acc + m.totalYesPool + m.totalNoPool, 0n), [])
-  const totalBettors = useMemo(() => MOCK_MARKETS.reduce((acc, m) => acc + (m.bettorCount ?? 0), 0), [])
-  const openCount = useMemo(() => MOCK_MARKETS.filter((m) => getMarketStatus(m) === "open").length, [])
+  const totalVolume = useMemo(
+    () => markets.reduce((acc, m) => acc + m.totalYesPool + m.totalNoPool, 0n),
+    [markets],
+  )
+  const totalBettors = useMemo(
+    () => markets.reduce((acc, m) => acc + (m.bettorCount ?? 0), 0),
+    [markets],
+  )
+  const openCount = useMemo(
+    () => markets.filter((m) => getMarketStatus(m) === "open").length,
+    [markets],
+  )
 
   return (
     <div className="space-y-8">
@@ -75,31 +98,49 @@ export function MarketsPage() {
             <Eye className="size-4 text-[#888]" strokeWidth={2.5} />
             <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">TOTAL MARKETS</p>
           </div>
-          <p className="font-sans text-3xl font-black text-white">{MOCK_MARKETS.length}</p>
+          <p className="font-sans text-3xl font-black text-white">
+            {isLoading ? "—" : markets.length}
+          </p>
         </div>
         <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="size-4 text-[#CCFF00]" strokeWidth={2.5} />
             <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">LIVE NOW</p>
           </div>
-          <p className="font-sans text-3xl font-black text-[#CCFF00]">{openCount}</p>
+          <p className="font-sans text-3xl font-black text-[#CCFF00]">
+            {isLoading ? "—" : openCount}
+          </p>
         </div>
         <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
           <div className="flex items-center gap-2 mb-2">
             <Coins className="size-4 text-white" strokeWidth={2.5} />
             <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">VOLUME</p>
           </div>
-          <p className="font-sans text-3xl font-black text-white">{parseFloat(formatEther(totalVolume)).toFixed(0)} <span className="text-xl text-[#555]">INIT</span></p>
+          <p className="font-sans text-3xl font-black text-white">
+            {isLoading ? "—" : formatUinitCompact(totalVolume)}{" "}
+            <span className="text-xl text-[#555]">INIT</span>
+          </p>
         </div>
         <div className="brutalist-card bg-black p-5 flex flex-col gap-1">
           <div className="flex items-center gap-2 mb-2">
             <Users className="size-4 text-[#888]" strokeWidth={2.5} />
             <p className="font-technical text-[10px] font-bold tracking-widest uppercase text-[#888]">TOTAL BETTORS</p>
           </div>
-          <p className="font-sans text-3xl font-black text-white">{totalBettors}</p>
+          <p className="font-sans text-3xl font-black text-white">
+            {isLoading ? "—" : totalBettors}
+          </p>
         </div>
       </div>
       </FadeIn>
+
+      {/* Error state */}
+      {error && (
+        <div className="border border-[#FF2A2A]/30 bg-[#FF2A2A]/5 p-4">
+          <p className="font-technical text-[11px] uppercase tracking-widest text-[#FF2A2A]">
+            CHAIN CONNECTION ERROR — retrying...
+          </p>
+        </div>
+      )}
 
       {/* Search + Filter + Create */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-y border-[#333] py-4 bg-black/50">
@@ -144,7 +185,22 @@ export function MarketsPage() {
 
       {/* Market grid */}
       <div className="min-h-[400px]">
-        {filtered.length > 0 ? (
+        {isLoading ? (
+          /* Skeleton loader */
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="brutalist-card bg-black p-6 animate-pulse"
+                style={{ height: "220px" }}
+              >
+                <div className="h-4 bg-[#1a1a1a] mb-3 w-3/4" />
+                <div className="h-3 bg-[#1a1a1a] mb-2 w-1/2" />
+                <div className="h-3 bg-[#1a1a1a] w-1/4" />
+              </div>
+            ))}
+          </div>
+        ) : filtered.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((market, i) => (
               <FadeIn key={market.id} delay={Math.min(i * 0.05, 0.3)}>

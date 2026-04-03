@@ -4,7 +4,8 @@
   "track": "Gaming & Consumer Applications",
   "vm": "MoveVM",
   "chain_id": "initiation-2",
-  "contract_address": "",
+  "contract_address": "0xF83249D6AB09160493214DE15D7EC623CCB5063E",
+  "deploy_tx": "7D1D256DC0300270E5F946730742C69DDE6D704BD215B6F302EC8A7FFDDD6E3D",
   "frontend_url": "",
   "demo_video_url": "",
   "team": [

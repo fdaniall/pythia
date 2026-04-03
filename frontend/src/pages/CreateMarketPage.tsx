@@ -6,30 +6,30 @@ import { PoolBar } from "@/components/PoolBar"
 import { FadeIn } from "@/components/FadeIn"
 import { Sparkles, TerminalSquare, Calendar, Wallet, Lock, Clock, Eye } from "lucide-react"
 import { useInterwovenKit } from "@initia/interwovenkit-react"
-import { toast } from "sonner"
+import { useMoveCreateMarket } from "@/hooks/useMoveContract"
 
 export function CreateMarketPage() {
   useDocTitle("Create Market")
   const { isConnected, openConnect } = useInterwovenKit()
   const [question, setQuestion] = useState("")
   const [deadline, setDeadline] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const { mutate: createMarket, isPending } = useMoveCreateMarket()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
-    try {
-      // TODO: wire to real contract call
-      await new Promise((r) => setTimeout(r, 1500))
-      toast.success("Market Created Successfully", {
-        description: "Your prediction market is now live and accepting bets.",
-        duration: 5000,
-      })
-      setQuestion("")
-      setDeadline("")
-    } finally {
-      setIsSubmitting(false)
-    }
+    if (!deadlineDate) return
+
+    const deadlineUnixSec = Math.floor(deadlineDate.getTime() / 1000)
+    createMarket(
+      { question: question.trim(), deadlineUnixSec },
+      {
+        onSuccess: () => {
+          setQuestion("")
+          setDeadline("")
+        },
+      },
+    )
   }
 
   const deadlineDate = deadline ? new Date(deadline) : null
@@ -86,7 +86,7 @@ export function CreateMarketPage() {
         <div className="brutalist-card bg-black p-8">
           <div className="mb-6 border-b-2 border-[#333] pb-4">
             <h2 className="font-technical text-[18px] font-bold uppercase tracking-widest text-white">System Parameters</h2>
-            <p className="font-technical text-[12px] text-[#888] uppercase mt-1">Configure binary condition & deadline.</p>
+            <p className="font-technical text-[12px] text-[#888] uppercase mt-1">Configure binary condition &amp; deadline.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -130,10 +130,10 @@ export function CreateMarketPage() {
             <Button
               type="submit"
               className="btn-acid h-14 w-full font-technical text-[14px] mt-4"
-              disabled={!isValid || isSubmitting}
+              disabled={!isValid || isPending}
             >
               <Sparkles className="mr-2 size-4" strokeWidth={2.5} />
-              {isSubmitting ? "DEPLOYING..." : "CREATE MARKET"}
+              {isPending ? "DEPLOYING..." : "CREATE MARKET"}
             </Button>
           </form>
         </div>
@@ -196,7 +196,7 @@ export function CreateMarketPage() {
               </li>
               <li className="flex gap-3">
                 <span className="text-[#CCFF00] font-black">[3]</span>
-                Resolution relies on UMA Optimistic Oracle. Falsified data results in slashing.
+                Resolution relies on admin oracle. Falsified data results in slashing.
               </li>
             </ul>
           </div>

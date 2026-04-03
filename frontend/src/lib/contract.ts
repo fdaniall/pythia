@@ -1,233 +1,48 @@
+/**
+ * Contract configuration for Pythia Prediction Market
+ *
+ * The contract is a Move module deployed on Initia L1 (initiation-2 testnet).
+ * It is NOT an EVM contract — there is no ABI or EVM address.
+ *
+ * For Move contract integration, see:
+ *   - src/lib/move.ts          — message builders + view function callers
+ *   - src/hooks/useMoveContract.ts — React hooks wrapping InterwovenKit
+ *
+ * This file is kept for backward compatibility during migration and defines
+ * the chain configuration used by wagmi (for wallet connection context).
+ */
+
 import { defineChain } from "viem"
 
-// ── Contract Address ────────────────────────────────────────────
-// TODO: Replace after deploying to your Initia MiniEVM appchain
-export const PREDICTION_MARKET_ADDRESS = "0x" as `0x${string}`
+// ── Move Contract Address ───────────────────────────────────────────────────
+// This is the deployer address (@pythia named address in Move)
+// The module is: 0xF83249D6AB09160493214DE15D7EC623CCB5063E::prediction_market
+export { MODULE_ADDRESS as PREDICTION_MARKET_ADDRESS } from "@/lib/move"
 
-// ── Initia Appchain Definition ──────────────────────────────────
-// TODO: Update chainId, name, and rpcUrls after spinning up your rollup
+// ── Chain: Initia L1 Testnet (initiation-2) ─────────────────────────────────
+// InterwovenKit handles chain switching + wallet connection internally.
+// Wagmi is used by InterwovenKit under the hood for EVM-compatible wallet support.
+// The chain definition below is used only for wagmi config bootstrapping.
 export const initiaAppchain = defineChain({
-  id: 12345, // Replace with your appchain's chain ID
-  name: "Pythia Appchain",
-  nativeCurrency: { name: "INIT", symbol: "INIT", decimals: 18 },
+  id: 7658622, // initiation-2 EVM-equivalent chain ID (0x74C9AE)
+  name: "Initia Testnet",
+  nativeCurrency: { name: "INIT", symbol: "INIT", decimals: 6 },
   rpcUrls: {
-    default: { http: ["http://localhost:8545"] }, // Replace with your RPC
+    default: {
+      http: ["https://json-rpc.testnet.initia.xyz"],
+    },
   },
   blockExplorers: {
-    default: { name: "Explorer", url: "https://scan.initia.xyz" },
+    default: {
+      name: "Initia Scan",
+      url: "https://scan.testnet.initia.xyz",
+    },
   },
+  testnet: true,
 })
 
-// ── ABI ─────────────────────────────────────────────────────────
-export const PREDICTION_MARKET_ABI = [
-  {
-    type: "constructor",
-    inputs: [],
-    stateMutability: "nonpayable",
-  },
-  // ── Write Functions ──
-  {
-    type: "function",
-    name: "createMarket",
-    inputs: [
-      { name: "question", type: "string", internalType: "string" },
-      { name: "deadline", type: "uint256", internalType: "uint256" },
-    ],
-    outputs: [{ name: "marketId", type: "uint256", internalType: "uint256" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "placeBet",
-    inputs: [
-      { name: "marketId", type: "uint256", internalType: "uint256" },
-      { name: "position", type: "bool", internalType: "bool" },
-    ],
-    outputs: [],
-    stateMutability: "payable",
-  },
-  {
-    type: "function",
-    name: "resolveMarket",
-    inputs: [
-      { name: "marketId", type: "uint256", internalType: "uint256" },
-      { name: "outcome", type: "bool", internalType: "bool" },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "claimWinnings",
-    inputs: [
-      { name: "marketId", type: "uint256", internalType: "uint256" },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  // ── Read Functions ──
-  {
-    type: "function",
-    name: "getMarket",
-    inputs: [
-      { name: "marketId", type: "uint256", internalType: "uint256" },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "tuple",
-        internalType: "struct PredictionMarket.Market",
-        components: [
-          { name: "question", type: "string", internalType: "string" },
-          { name: "deadline", type: "uint256", internalType: "uint256" },
-          { name: "totalYesPool", type: "uint256", internalType: "uint256" },
-          { name: "totalNoPool", type: "uint256", internalType: "uint256" },
-          { name: "resolved", type: "bool", internalType: "bool" },
-          { name: "outcome", type: "bool", internalType: "bool" },
-          { name: "creator", type: "address", internalType: "address" },
-          { name: "createdAt", type: "uint256", internalType: "uint256" },
-        ],
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "getBet",
-    inputs: [
-      { name: "marketId", type: "uint256", internalType: "uint256" },
-      { name: "bettor", type: "address", internalType: "address" },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "tuple",
-        internalType: "struct PredictionMarket.Bet",
-        components: [
-          { name: "yesAmount", type: "uint256", internalType: "uint256" },
-          { name: "noAmount", type: "uint256", internalType: "uint256" },
-          { name: "claimed", type: "bool", internalType: "bool" },
-        ],
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "getMarketBettors",
-    inputs: [
-      { name: "marketId", type: "uint256", internalType: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "address[]", internalType: "address[]" },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "calculatePayout",
-    inputs: [
-      { name: "marketId", type: "uint256", internalType: "uint256" },
-      { name: "bettor", type: "address", internalType: "address" },
-    ],
-    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "marketCount",
-    inputs: [],
-    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "owner",
-    inputs: [],
-    outputs: [{ name: "", type: "address", internalType: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "platformFeeBps",
-    inputs: [],
-    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "markets",
-    inputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-    outputs: [
-      { name: "question", type: "string", internalType: "string" },
-      { name: "deadline", type: "uint256", internalType: "uint256" },
-      { name: "totalYesPool", type: "uint256", internalType: "uint256" },
-      { name: "totalNoPool", type: "uint256", internalType: "uint256" },
-      { name: "resolved", type: "bool", internalType: "bool" },
-      { name: "outcome", type: "bool", internalType: "bool" },
-      { name: "creator", type: "address", internalType: "address" },
-      { name: "createdAt", type: "uint256", internalType: "uint256" },
-    ],
-    stateMutability: "view",
-  },
-  // ── Admin Functions ──
-  {
-    type: "function",
-    name: "setPlatformFee",
-    inputs: [{ name: "newFeeBps", type: "uint256", internalType: "uint256" }],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "transferOwnership",
-    inputs: [{ name: "newOwner", type: "address", internalType: "address" }],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "withdrawFees",
-    inputs: [],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  // ── Events ──
-  {
-    type: "event",
-    name: "MarketCreated",
-    inputs: [
-      { name: "marketId", type: "uint256", indexed: true, internalType: "uint256" },
-      { name: "question", type: "string", indexed: false, internalType: "string" },
-      { name: "deadline", type: "uint256", indexed: false, internalType: "uint256" },
-      { name: "creator", type: "address", indexed: false, internalType: "address" },
-    ],
-  },
-  {
-    type: "event",
-    name: "BetPlaced",
-    inputs: [
-      { name: "marketId", type: "uint256", indexed: true, internalType: "uint256" },
-      { name: "bettor", type: "address", indexed: true, internalType: "address" },
-      { name: "position", type: "bool", indexed: false, internalType: "bool" },
-      { name: "amount", type: "uint256", indexed: false, internalType: "uint256" },
-    ],
-  },
-  {
-    type: "event",
-    name: "MarketResolved",
-    inputs: [
-      { name: "marketId", type: "uint256", indexed: true, internalType: "uint256" },
-      { name: "outcome", type: "bool", indexed: false, internalType: "bool" },
-    ],
-  },
-  {
-    type: "event",
-    name: "WinningsClaimed",
-    inputs: [
-      { name: "marketId", type: "uint256", indexed: true, internalType: "uint256" },
-      { name: "bettor", type: "address", indexed: true, internalType: "address" },
-      { name: "payout", type: "uint256", indexed: false, internalType: "uint256" },
-    ],
-  },
-] as const
+// ── Legacy ABI (no longer used) ─────────────────────────────────────────────
+// The contract has been migrated from Solidity/MiniEVM to Move on Initia L1.
+// This ABI is kept as a reference snapshot only — do not use for new code.
+// All contract calls must go through useMoveContract.ts hooks.
+export const PREDICTION_MARKET_ABI = [] as const
