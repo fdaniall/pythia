@@ -14,13 +14,8 @@ import { useState } from "react"
 import { useMoveMarket, useMoveAdmin, useMoveResolveMarket } from "@/hooks/useMoveContract"
 import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { useInitUsername, formatAddress } from "@/hooks/useInitUsername"
-import { UINIT_DECIMALS, bech32ToHex } from "@/lib/move"
+import { formatUinit, bech32ToHex } from "@/lib/move"
 import { parseCryptoPriceMarket, fetchCryptoPrice } from "@/lib/ai"
-
-/** Format uinit amount for display */
-function formatUinit(uinit: bigint, decimals = 1): string {
-  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
-}
 
 // Deterministic sparkline data per market (seeded by id)
 function generateSparkline(seed: number): number[] {

@@ -8,7 +8,7 @@ import {
 } from "lucide-react"
 import { fireBrutalistConfetti } from "@/lib/confetti"
 import { useMovePlaceBet, useMoveClaimWinnings, useMoveUserBet, useMoveCalculatePayout } from "@/hooks/useMoveContract"
-import { UINIT_DECIMALS, INITIA_REST_URL, fetchBalance } from "@/lib/move"
+import { UINIT_DECIMALS, INITIA_REST_URL, fetchBalance, formatUinit } from "@/lib/move"
 import { useQuery } from "@tanstack/react-query"
 import type { Market } from "@/types/market"
 
@@ -24,9 +24,6 @@ function initToUinit(value: string): bigint {
   return BigInt(Math.round(parsed * 10 ** UINIT_DECIMALS))
 }
 
-function formatUinit(uinit: bigint, decimals = 4): string {
-  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
-}
 
 export function BetForm({ market, total, expired }: BetFormProps) {
   const { isConnected, openConnect, openBridge, initiaAddress } = useInterwovenKit()
@@ -68,13 +65,13 @@ export function BetForm({ market, total, expired }: BetFormProps) {
     const netPayout = grossPayout - fee
 
     return {
-      gross: formatUinit(grossPayout),
-      fee: formatUinit(fee),
-      net: formatUinit(netPayout),
+      gross: formatUinit(grossPayout, 4),
+      fee: formatUinit(fee, 4),
+      net: formatUinit(netPayout, 4),
       multiplier: betAmountUinit > 0n
         ? (Number(netPayout) / Number(betAmountUinit)).toFixed(2)
         : "0.00",
-      profit: formatUinit(netPayout > betAmountUinit ? netPayout - betAmountUinit : 0n),
+      profit: formatUinit(netPayout > betAmountUinit ? netPayout - betAmountUinit : 0n, 4),
     }
   }, [amount, position, market.totalYesPool, market.totalNoPool, total])
 

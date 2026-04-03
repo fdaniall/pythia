@@ -4,11 +4,7 @@ import { Clock, CheckCircle, XCircle, Users } from "lucide-react"
 import { useCountdown } from "@/hooks/useCountdown"
 import type { Market, MarketStatus } from "@/types/market"
 import { getMarketStatus, categorizeMarket, CATEGORY_CONFIG } from "@/types/market"
-import { UINIT_DECIMALS } from "@/lib/move"
-
-function formatUinit(uinit: bigint, decimals = 1): string {
-  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
-}
+import { formatUinit } from "@/lib/move"
 
 const statusConfig: Record<MarketStatus, { label: string; bg: string; text: string; icon: typeof Clock }> = {
   open: { label: "LIVE", bg: "bg-[#CCFF00]", text: "text-black", icon: Clock },

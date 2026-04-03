@@ -30,8 +30,11 @@ Pythia is **not a Blueprint clone**. Every component is custom-built:
 - **Parimutuel market model** — dynamic odds based on pool ratios, not hardcoded multipliers
 - **Contract-owned vault** via Initia's `Object + ExtendRef` pattern — funds held by an on-chain object, not an EOA
 - **Proportional payout engine** — winners receive `(user_bet / winning_pool) * total_pool * 0.98`
-- **11 error codes**, **29 passing tests**, full admin controls (fee adjustment, ownership transfer, fee withdrawal)
-- **475+ lines** of production Move code with u128 intermediate math to prevent overflow
+- **13 error codes**, **37 passing tests**, full admin controls (fee adjustment, two-step ownership transfer, fee withdrawal, market cancellation)
+- **585 lines** of production Move code with u128 intermediate math to prevent overflow
+- **Market cancellation** with automatic refunds to all bettors
+- **Two-step ownership transfer** — propose + accept pattern prevents accidental lockout
+- **Fee accounting** — tracked fees vs. bettor deposits, admin can only withdraw earned fees
 
 ### Frontend (React + InterwovenKit)
 - **8 pages**: Landing, Markets (with category filters), Market Detail, Create Market, Portfolio, Leaderboard, Docs, 404
@@ -96,7 +99,7 @@ To build and test the Move contract:
 cd move
 initiad move build --dev
 initiad move test --dev
-# Test result: OK. Total tests: 29; passed: 29; failed: 0
+# Test result: OK. Total tests: 37; passed: 37; failed: 0
 ```
 
 ---
@@ -108,7 +111,7 @@ pythia/
 ├── move/                          # Move smart contract
 │   ├── sources/
 │   │   ├── prediction_market.move        # Core contract (475+ lines)
-│   │   └── prediction_market_tests.move  # 29 tests
+│   │   └── prediction_market_tests.move  # 37 tests
 │   └── Move.toml
 │
 ├── frontend/                      # React/TypeScript app
@@ -136,9 +139,11 @@ pythia/
 | `place_bet(market_id, outcome, amount)` | Public | Bet YES (0) or NO (1) with INIT |
 | `resolve_market(market_id, winning_outcome)` | Admin | Set market outcome |
 | `claim_winnings(market_id)` | Public | Winners claim proportional payout |
+| `cancel_market(market_id)` | Admin | Cancel market & refund all bettors |
 | `set_platform_fee(new_fee_bps)` | Admin | Adjust fee (max 10%) |
-| `transfer_ownership(new_admin)` | Admin | Transfer admin rights |
-| `withdraw_fees(amount)` | Admin | Withdraw platform fees |
+| `propose_admin(new_admin)` | Admin | Step 1: propose new admin |
+| `accept_admin()` | Proposed | Step 2: accept admin role |
+| `withdraw_fees(amount)` | Admin | Withdraw earned platform fees only |
 
 **Payout Formula:**
 ```
@@ -176,6 +181,16 @@ net   = gross * (1 - platform_fee)
 | Wallet/SDK | InterwovenKit (`@initia/interwovenkit-react`) |
 | State | TanStack Query 5 (server), React state (client) |
 | Routing | React Router 7 |
+
+---
+
+## Known Limitations (MVP)
+
+- **Centralized resolution** — markets are resolved by the contract admin, not a decentralized oracle. Roadmap includes UMA Optimistic Oracle integration.
+- **Binary outcomes only** — markets support YES/NO only. Multi-outcome markets planned for v2.
+- **No dispute mechanism** — resolution is final once submitted. Future versions will add a dispute window.
+- **AI market creation uses client-side API key** — Groq API key is bundled in the frontend. For production, this should be proxied through a backend.
+- **Leaderboard scales linearly** — fetches all bettors for all markets via REST. Production would use an indexer.
 
 ---
 

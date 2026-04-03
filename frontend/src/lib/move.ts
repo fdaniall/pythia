@@ -41,6 +41,20 @@ export const INITIA_REST_URL = "https://rest.testnet.initia.xyz"
 export const UINIT_DENOM = "uinit"
 export const UINIT_DECIMALS = 6
 
+// ── Formatting helpers ─────────────────────────────────────────────────────
+
+/** Format uinit (micro-INIT) as human-readable INIT string */
+export function formatUinit(uinit: bigint, decimals = 2): string {
+  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
+}
+
+/** Format uinit as compact string (e.g. 1.2K) */
+export function formatUinitCompact(uinit: bigint): string {
+  const init = Number(uinit) / 10 ** UINIT_DECIMALS
+  if (init >= 1000) return `${(init / 1000).toFixed(1)}K`
+  return init.toFixed(1)
+}
+
 // ── Type definitions ────────────────────────────────────────────────────────
 
 /** On-chain market data as returned by get_market view function */
@@ -269,6 +283,63 @@ export function buildResolveMarketMsg(
         encodeU64(BigInt(marketId)),
         encodeU8(winningOutcome),
       ],
+    },
+  }
+}
+
+/**
+ * Builds the EncodeObject for cancel_market entry function (admin only).
+ */
+export function buildCancelMarketMsg(
+  sender: string,
+  marketId: bigint | number,
+) {
+  return {
+    typeUrl: MSG_EXECUTE_JSON_TYPE_URL,
+    value: {
+      sender,
+      moduleAddress: MODULE_ADDRESS,
+      moduleName: MODULE_NAME,
+      functionName: "cancel_market",
+      typeArgs: [],
+      args: [encodeU64(BigInt(marketId))],
+    },
+  }
+}
+
+/**
+ * Builds the EncodeObject for propose_admin entry function (admin only).
+ */
+export function buildProposeAdminMsg(
+  sender: string,
+  newAdmin: string,
+) {
+  return {
+    typeUrl: MSG_EXECUTE_JSON_TYPE_URL,
+    value: {
+      sender,
+      moduleAddress: MODULE_ADDRESS,
+      moduleName: MODULE_NAME,
+      functionName: "propose_admin",
+      typeArgs: [],
+      args: [encodeAddress(newAdmin)],
+    },
+  }
+}
+
+/**
+ * Builds the EncodeObject for accept_admin entry function.
+ */
+export function buildAcceptAdminMsg(sender: string) {
+  return {
+    typeUrl: MSG_EXECUTE_JSON_TYPE_URL,
+    value: {
+      sender,
+      moduleAddress: MODULE_ADDRESS,
+      moduleName: MODULE_NAME,
+      functionName: "accept_admin",
+      typeArgs: [],
+      args: [],
     },
   }
 }

@@ -9,7 +9,7 @@ import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { getMarketStatus, categorizeMarket, CATEGORY_CONFIG, type MarketCategory } from "@/types/market"
 import { useMoveAllMarkets } from "@/hooks/useMoveContract"
-import { UINIT_DECIMALS } from "@/lib/move"
+import { formatUinitCompact } from "@/lib/move"
 
 
 type FilterTab = "all" | "open" | "closed" | "resolved"
@@ -30,12 +30,7 @@ function useDebouncedValue<T>(value: T, delay: number): T {
   return debounced
 }
 
-/** Format uinit amount as human-readable INIT string */
-function formatUinitCompact(uinit: bigint): string {
-  const init = Number(uinit) / 10 ** UINIT_DECIMALS
-  if (init >= 1000) return `${(init / 1000).toFixed(1)}K`
-  return init.toFixed(1)
-}
+
 
 export function MarketsPage() {
   useDocTitle("Markets")

@@ -9,16 +9,12 @@ import {
 import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { Button } from "@/components/ui/button"
 import { useMoveAllMarkets, useMoveClaimWinnings } from "@/hooks/useMoveContract"
-import { UINIT_DECIMALS, INITIA_REST_URL, fetchBet, fetchCalculatePayout } from "@/lib/move"
+import { formatUinit, INITIA_REST_URL, fetchBet, fetchCalculatePayout } from "@/lib/move"
 import { getMarketStatus } from "@/types/market"
 import { useCountdown } from "@/hooks/useCountdown"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import type { Market, Bet } from "@/types/market"
-
-function formatUinit(uinit: bigint, decimals = 2): string {
-  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
-}
 
 function MarketCountdown({ deadline }: { deadline: bigint }) {
   const countdown = useCountdown(deadline)

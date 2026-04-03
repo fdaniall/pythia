@@ -6,13 +6,9 @@ import { cn } from "@/lib/utils"
 import { Trophy, Crown, Medal, TrendingUp, Coins, Users } from "lucide-react"
 import { useMoveAllMarkets } from "@/hooks/useMoveContract"
 import { useInitUsernames, formatAddress } from "@/hooks/useInitUsername"
-import { UINIT_DECIMALS, INITIA_REST_URL, fetchBettors, fetchBet } from "@/lib/move"
+import { formatUinit, INITIA_REST_URL, fetchBettors, fetchBet } from "@/lib/move"
 import { getMarketStatus } from "@/types/market"
 import { useQuery } from "@tanstack/react-query"
-
-function formatUinit(uinit: bigint, decimals = 2): string {
-  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
-}
 
 interface LeaderboardEntry {
   address: string

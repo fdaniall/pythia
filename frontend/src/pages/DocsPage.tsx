@@ -393,6 +393,18 @@ export function DocsPage() {
                 color: "#00BFFF",
               },
               {
+                title: "Market Cancellation",
+                desc: "Admin can cancel any unresolved market. All bettors receive full refunds automatically from the on-chain vault.",
+                badge: "NEW",
+                color: "#00BFFF",
+              },
+              {
+                title: "Two-Step Ownership",
+                desc: "Admin transfer requires proposal + acceptance. Prevents accidental lockout from typos in the new admin address.",
+                badge: "NEW",
+                color: "#00BFFF",
+              },
+              {
                 title: "Payout Calculator",
                 desc: "Live preview of potential returns as you adjust your bet amount. Shows gross, net, fee, profit, and multiplier in real-time.",
                 badge: "CORE",
@@ -496,7 +508,10 @@ export function DocsPage() {
                 { fn: "create_market(question, deadline)", desc: "Create a new binary prediction pool" },
                 { fn: "place_bet(market_id, outcome, amount)", desc: "Bet YES (0) or NO (1) with INIT" },
                 { fn: "resolve_market(market_id, winning_outcome)", desc: "Settle the market (admin only)" },
+                { fn: "cancel_market(market_id)", desc: "Cancel market & refund all bettors (admin)" },
                 { fn: "claim_winnings(market_id)", desc: "Withdraw proportional payout" },
+                { fn: "propose_admin(new_admin)", desc: "Step 1: propose new admin (admin only)" },
+                { fn: "accept_admin()", desc: "Step 2: accept admin role (proposed addr only)" },
                 { fn: "get_market(market_id)", desc: "Read market state (view)" },
                 { fn: "get_bettors(market_id)", desc: "List all bettor addresses (view)" },
                 { fn: "calculate_payout(market_id, bettor)", desc: "Preview potential payout (view)" },
@@ -533,7 +548,7 @@ export function DocsPage() {
             />
             <FAQItem
               q="Can I cancel or withdraw my bet?"
-              a="No. Once a bet is placed, it is locked in the pool until the market resolves. This is by design — it prevents manipulation where users could withdraw after seeing which side is losing. Your conviction is your commitment."
+              a="Individual bets cannot be withdrawn — once placed, they are locked until resolution. However, the admin can cancel an entire market if it becomes invalid or unanswerable. When a market is cancelled, all bettors receive full refunds automatically."
             />
             <FAQItem
               q="What happens if nobody bets on the losing side?"

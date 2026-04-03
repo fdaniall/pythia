@@ -374,3 +374,87 @@ export function useMoveResolveMarket() {
     },
   })
 }
+
+/** Cancels a market and refunds all bettors (admin only). */
+export function useMoveCancelMarket() {
+  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ marketId }: { marketId: number }) => {
+      const { buildCancelMarketMsg } = await import("@/lib/move")
+      const msg = buildCancelMarketMsg(initiaAddress, marketId)
+      return requestTxBlock({
+        messages: [msg],
+        gas: DEFAULT_GAS,
+        gasAdjustment: DEFAULT_GAS_ADJUSTMENT,
+      })
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: moveQueryKeys.market(variables.marketId) })
+      queryClient.invalidateQueries({ queryKey: moveQueryKeys.marketCount() })
+      toast.success("Market Cancelled", {
+        description: "All bets have been refunded to bettors.",
+      })
+    },
+    onError: (error: Error) => {
+      toast.error("Cancellation Failed", {
+        description: error.message ?? "Failed to cancel market.",
+      })
+    },
+  })
+}
+
+/** Proposes a new admin (step 1 of two-step ownership transfer). */
+export function useMoveProposeAdmin() {
+  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+
+  return useMutation({
+    mutationFn: async ({ newAdmin }: { newAdmin: string }) => {
+      const { buildProposeAdminMsg } = await import("@/lib/move")
+      const msg = buildProposeAdminMsg(initiaAddress, newAdmin)
+      return requestTxBlock({
+        messages: [msg],
+        gas: DEFAULT_GAS,
+        gasAdjustment: DEFAULT_GAS_ADJUSTMENT,
+      })
+    },
+    onSuccess: () => {
+      toast.success("Admin Proposed", {
+        description: "New admin must call accept_admin to complete transfer.",
+      })
+    },
+    onError: (error: Error) => {
+      toast.error("Proposal Failed", {
+        description: error.message ?? "Failed to propose admin.",
+      })
+    },
+  })
+}
+
+/** Accepts admin role (step 2 of two-step ownership transfer). */
+export function useMoveAcceptAdmin() {
+  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+
+  return useMutation({
+    mutationFn: async () => {
+      const { buildAcceptAdminMsg } = await import("@/lib/move")
+      const msg = buildAcceptAdminMsg(initiaAddress)
+      return requestTxBlock({
+        messages: [msg],
+        gas: DEFAULT_GAS,
+        gasAdjustment: DEFAULT_GAS_ADJUSTMENT,
+      })
+    },
+    onSuccess: () => {
+      toast.success("Admin Accepted", {
+        description: "You are now the contract admin.",
+      })
+    },
+    onError: (error: Error) => {
+      toast.error("Accept Failed", {
+        description: error.message ?? "Failed to accept admin role.",
+      })
+    },
+  })
+}

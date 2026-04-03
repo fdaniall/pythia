@@ -1,9 +1,5 @@
 import { cn } from "@/lib/utils"
-import { UINIT_DECIMALS } from "@/lib/move"
-
-function formatUinit(uinit: bigint, decimals = 2): string {
-  return (Number(uinit) / 10 ** UINIT_DECIMALS).toFixed(decimals)
-}
+import { formatUinit } from "@/lib/move"
 
 interface PoolBarProps {
   yesPool: bigint

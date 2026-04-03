@@ -61,12 +61,12 @@ export function Hero() {
             <FadeIn delay={0.5}>
               <div className="brutalist-card p-6">
                 <div className="border-b border-[#333] pb-4 mb-4 flex justify-between items-center">
-                  <span className="font-technical text-[12px] text-[#888] uppercase">Live Market Data</span>
-                  <div className="size-2 bg-[#CCFF00] animate-pulse"></div>
+                  <span className="font-technical text-[12px] text-[#888] uppercase">Example Market</span>
+                  <span className="font-technical text-[9px] text-[#555] uppercase border border-[#333] px-2 py-0.5">Preview</span>
                 </div>
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-white font-bold text-lg mb-2 leading-tight">Will ETH surpass $5k by end of Q2?</h3>
+                    <h3 className="text-white font-bold text-lg mb-2 leading-tight">Will BTC hit $100K by June 2026?</h3>
                     <div className="flex justify-between font-technical text-sm mb-1">
                       <span className="text-[#CCFF00]">YES 65%</span>
                       <span className="text-[#FF2A2A]">NO 35%</span>
@@ -76,16 +76,10 @@ export function Hero() {
                       <div className="h-full bg-[#FF2A2A] w-[35%]"></div>
                     </div>
                   </div>
-                  <div>
-                  <h3 className="text-white font-bold text-lg mb-2 leading-tight">Initia Mainnet Launch this month?</h3>
-                    <div className="flex justify-between font-technical text-sm mb-1">
-                      <span className="text-[#CCFF00]">YES 82%</span>
-                      <span className="text-[#FF2A2A]">NO 18%</span>
-                    </div>
-                    <div className="h-2 w-full bg-[#111] flex">
-                      <div className="h-full bg-[#CCFF00] w-[82%]"></div>
-                      <div className="h-full bg-[#FF2A2A] w-[18%]"></div>
-                    </div>
+                  <div className="border-t border-[#333] pt-4 space-y-2 font-technical text-[11px] text-[#555] uppercase tracking-widest">
+                    <div className="flex justify-between"><span>Pool</span><span className="text-white">10.0 INIT</span></div>
+                    <div className="flex justify-between"><span>Bettors</span><span className="text-white">12</span></div>
+                    <div className="flex justify-between"><span>Fee</span><span className="text-[#CCFF00]">2%</span></div>
                   </div>
                 </div>
               </div>
