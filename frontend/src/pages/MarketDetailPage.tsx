@@ -7,11 +7,14 @@ import { cn } from "@/lib/utils"
 import { useCountdown } from "@/hooks/useCountdown"
 import { FadeIn } from "@/components/FadeIn"
 import {
-  ArrowLeft, Clock, Trophy, Users, Zap, TerminalSquare, Share2, Check
+  ArrowLeft, Clock, Trophy, Users, Zap, TerminalSquare, Share2, Check,
+  Shield, TrendingUp, TrendingDown
 } from "lucide-react"
 import { useState } from "react"
-import { useMoveMarket } from "@/hooks/useMoveContract"
-import { UINIT_DECIMALS } from "@/lib/move"
+import { useMoveMarket, useMoveAdmin, useMoveResolveMarket } from "@/hooks/useMoveContract"
+import { useInterwovenKit } from "@initia/interwovenkit-react"
+import { useInitUsername, formatAddress } from "@/hooks/useInitUsername"
+import { UINIT_DECIMALS, bech32ToHex } from "@/lib/move"
 
 /** Format uinit amount for display */
 function formatUinit(uinit: bigint, decimals = 1): string {
@@ -59,6 +62,80 @@ function ShareButton({ question }: { question: string }) {
       {copied ? <Check className="size-3.5" strokeWidth={2.5} /> : <Share2 className="size-3.5" strokeWidth={2.5} />}
       {copied ? "COPIED" : "SHARE"}
     </button>
+  )
+}
+
+function ShareToX({ question }: { question: string }) {
+  const url = window.location.href
+  const text = encodeURIComponent(`${question}\n\nPredict now on @PythiaProtocol 🔮\n${url}`)
+  const twitterUrl = `https://x.com/intent/tweet?text=${text}`
+
+  return (
+    <a
+      href={twitterUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-1.5 text-[#888] hover:text-[#CCFF00] transition-colors"
+    >
+      <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+      POST
+    </a>
+  )
+}
+
+function AdminResolvePanel({ marketId, expired, resolved }: { marketId: number; expired: boolean; resolved: boolean }) {
+  const { initiaAddress } = useInterwovenKit()
+  const { data: adminAddr } = useMoveAdmin()
+  const { mutate: resolveMarket, isPending } = useMoveResolveMarket()
+
+  // Compare addresses — admin from contract is hex, initiaAddress is bech32
+  const isAdmin = adminAddr && initiaAddress
+    ? bech32ToHex(initiaAddress).toLowerCase() === adminAddr.toLowerCase()
+    : false
+
+  if (!isAdmin || resolved || !expired) return null
+
+  return (
+    <div className="brutalist-card bg-black p-6 border-[#CCFF00]">
+      <h2 className="mb-4 flex items-center gap-2 font-technical text-[14px] font-bold uppercase tracking-widest text-[#CCFF00] border-b border-[#333] pb-4">
+        <Shield className="size-4" strokeWidth={2.5} />
+        ADMIN: RESOLVE MARKET
+      </h2>
+      <p className="font-technical text-[11px] uppercase tracking-widest text-[#888] mb-6">
+        Select the winning outcome to resolve this market and enable payouts.
+      </p>
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          onClick={() => resolveMarket({ marketId, winningOutcome: 0 })}
+          disabled={isPending}
+          className="flex flex-col items-center gap-2 border-2 border-[#CCFF00] p-4 text-[#CCFF00] hover:bg-[#CCFF00] hover:text-black transition-all disabled:opacity-50"
+        >
+          <TrendingUp className="size-5" strokeWidth={2.5} />
+          <span className="font-technical text-[14px] font-black uppercase tracking-widest">
+            {isPending ? "..." : "YES WINS"}
+          </span>
+        </button>
+        <button
+          onClick={() => resolveMarket({ marketId, winningOutcome: 1 })}
+          disabled={isPending}
+          className="flex flex-col items-center gap-2 border-2 border-[#FF2A2A] p-4 text-[#FF2A2A] hover:bg-[#FF2A2A] hover:text-white transition-all disabled:opacity-50"
+        >
+          <TrendingDown className="size-5" strokeWidth={2.5} />
+          <span className="font-technical text-[14px] font-black uppercase tracking-widest">
+            {isPending ? "..." : "NO WINS"}
+          </span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function CreatorDisplay({ address }: { address: string }) {
+  const { data: username } = useInitUsername(address)
+  return (
+    <span className="text-white font-mono text-[10px]">
+      {formatAddress(address, username)}
+    </span>
   )
 }
 
@@ -186,6 +263,8 @@ export function MarketDetailPage() {
             </span>
             <span className="text-[#333]">&middot;</span>
             <ShareButton question={market.question} />
+            <span className="text-[#333]">&middot;</span>
+            <ShareToX question={market.question} />
           </div>
         </div>
       </FadeIn>
@@ -237,8 +316,12 @@ export function MarketDetailPage() {
                 <div className="space-y-3 font-technical text-[11px] uppercase tracking-widest">
                   <div className="flex justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2">
                     <span className="text-[#888]">Creator</span>
+                    <CreatorDisplay address={market.creator} />
+                  </div>
+                  <div className="flex justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2">
+                    <span className="text-[#888]">Deadline</span>
                     <span className="text-white font-mono text-[10px]">
-                      {market.creator.slice(0, 6)}...{market.creator.slice(-4)}
+                      {new Date(Number(market.deadline) * 1000).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between border-l-2 border-[#333] bg-[#0a0a0a] px-3 py-2">
@@ -290,8 +373,9 @@ export function MarketDetailPage() {
             </div>
           </div>
 
-          {/* Right column: bet form — shown first on mobile */}
+          {/* Right column: admin resolve + bet form — shown first on mobile */}
           <div className="space-y-6 order-1 lg:order-2">
+            <AdminResolvePanel marketId={market.id} expired={countdown.expired} resolved={market.resolved} />
             <BetForm market={market} total={total} expired={countdown.expired} />
           </div>
         </div>

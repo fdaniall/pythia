@@ -21,6 +21,7 @@ const MarketsPage = lazy(() => import("@/pages/MarketsPage").then(m => ({ defaul
 const MarketDetailPage = lazy(() => import("@/pages/MarketDetailPage").then(m => ({ default: m.MarketDetailPage })))
 const CreateMarketPage = lazy(() => import("@/pages/CreateMarketPage").then(m => ({ default: m.CreateMarketPage })))
 const PortfolioPage = lazy(() => import("@/pages/PortfolioPage").then(m => ({ default: m.PortfolioPage })))
+const LeaderboardPage = lazy(() => import("@/pages/LeaderboardPage").then(m => ({ default: m.LeaderboardPage })))
 const DocsPage = lazy(() => import("@/pages/DocsPage").then(m => ({ default: m.DocsPage })))
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })))
 
@@ -93,6 +94,7 @@ export default function App() {
                   <Route path="/markets/:id" element={<MarketDetailPage />} />
                   <Route path="/create" element={<CreateMarketPage />} />
                   <Route path="/portfolio" element={<PortfolioPage />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
                   <Route path="/docs" element={<DocsPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>

@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from "react-router-dom"
 import { useInterwovenKit } from "@initia/interwovenkit-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { TerminalSquare, Plus, BarChart3, Wallet, Menu, X, BookOpen, ArrowUp, Search } from "lucide-react"
+import { TerminalSquare, Plus, BarChart3, Wallet, Menu, X, BookOpen, ArrowUp, Search, Trophy } from "lucide-react"
 import { TerminalStream } from "@/components/TerminalStream"
 import { CommandPalette } from "@/components/CommandPalette"
 
@@ -11,6 +11,7 @@ const navItems = [
   { path: "/markets", label: "MARKETS", icon: TerminalSquare },
   { path: "/create", label: "CREATE", icon: Plus },
   { path: "/portfolio", label: "PORTFOLIO", icon: BarChart3 },
+  { path: "/leaderboard", label: "RANKS", icon: Trophy },
   { path: "/docs", label: "DOCS", icon: BookOpen },
 ]
 

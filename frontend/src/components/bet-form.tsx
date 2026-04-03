@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import {
-  TrendingUp, TrendingDown, Info, TerminalSquare, Wallet, Zap
+  TrendingUp, TrendingDown, Info, TerminalSquare, Wallet, Zap, ArrowDownToLine
 } from "lucide-react"
 import { fireBrutalistConfetti } from "@/lib/confetti"
 import { useMovePlaceBet, useMoveClaimWinnings, useMoveUserBet, useMoveCalculatePayout } from "@/hooks/useMoveContract"
@@ -29,7 +29,7 @@ function formatUinit(uinit: bigint, decimals = 4): string {
 }
 
 export function BetForm({ market, total, expired }: BetFormProps) {
-  const { isConnected, openConnect, initiaAddress } = useInterwovenKit()
+  const { isConnected, openConnect, openBridge, initiaAddress } = useInterwovenKit()
   const [amount, setAmount] = useState("")
   const [position, setPosition] = useState<boolean>(true)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -347,11 +347,33 @@ export function BetForm({ market, total, expired }: BetFormProps) {
           </>
         )}
 
+        {/* Bridge deposit */}
+        {isConnected && balanceInit < 0.1 && !expired && (
+          <button
+            type="button"
+            onClick={() => openBridge()}
+            className="flex w-full items-center justify-center gap-2 border-2 border-dashed border-[#CCFF00]/50 bg-[#CCFF00]/5 p-4 text-[#CCFF00] hover:border-[#CCFF00] hover:bg-[#CCFF00]/10 transition-all"
+          >
+            <ArrowDownToLine className="size-4" strokeWidth={2.5} />
+            <span className="font-technical text-[12px] font-bold uppercase tracking-widest">
+              BRIDGE FUNDS FROM ANOTHER CHAIN
+            </span>
+          </button>
+        )}
+
         {/* Info hint */}
         <div className="flex items-start gap-3 border border-[#333] bg-[#050505] p-4">
           <Zap className="mt-0.5 size-4 shrink-0 text-[#CCFF00]" />
           <p className="font-technical text-[10px] uppercase leading-relaxed text-[#888]">
             All bets are settled on <span className="text-[#CCFF00] font-bold">Initia L1</span>. Payouts are proportional to pool distribution minus 2% platform fee.
+            {isConnected && (
+              <>
+                {" "}
+                <button type="button" onClick={() => openBridge()} className="text-[#CCFF00] underline hover:text-white transition-colors">
+                  Bridge from another chain
+                </button>.
+              </>
+            )}
           </p>
         </div>
       </div>

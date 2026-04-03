@@ -38,7 +38,9 @@ export function CreateMarketPage() {
   }
 
   const deadlineDate = deadline ? new Date(deadline) : null
-  const isValid = question.trim().length > 0 && deadlineDate !== null && deadlineDate.getTime() > Date.now()
+  const minDeadlineMs = Date.now() + 60 * 60 * 1000 // at least 1 hour from now
+  const isValid = question.trim().length > 0 && deadlineDate !== null && deadlineDate.getTime() > minDeadlineMs
+  const isTooSoon = deadlineDate !== null && deadlineDate.getTime() > Date.now() && deadlineDate.getTime() <= minDeadlineMs
 
   if (!isConnected) {
     return (
@@ -138,8 +140,13 @@ export function CreateMarketPage() {
                 className="h-14 rounded-none border-[2px] border-[#333] bg-black px-4 font-technical text-[14px] font-bold uppercase text-white placeholder:text-[#555] focus-visible:border-[#CCFF00] focus-visible:ring-0"
                 style={{ colorScheme: "dark" }}
               />
+              {isTooSoon && (
+                <p className="font-technical text-[10px] uppercase text-[#FF2A2A]">
+                  Deadline must be at least 1 hour from now.
+                </p>
+              )}
               <p className="font-technical text-[10px] uppercase text-[#555]">
-                // Betting closes at this time. After expiry, market awaits resolution.
+                // Betting closes at this time. After expiry, market awaits resolution. Minimum 1 hour from now.
               </p>
             </div>
 

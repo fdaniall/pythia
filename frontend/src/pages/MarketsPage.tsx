@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Eye, Search, TrendingUp, Users, Coins, Plus } from "lucide-react"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { getMarketStatus } from "@/types/market"
+import { getMarketStatus, categorizeMarket, CATEGORY_CONFIG, type MarketCategory } from "@/types/market"
 import { useMoveAllMarkets } from "@/hooks/useMoveContract"
 import { UINIT_DECIMALS } from "@/lib/move"
 
@@ -40,6 +40,7 @@ function formatUinitCompact(uinit: bigint): string {
 export function MarketsPage() {
   useDocTitle("Markets")
   const [activeTab, setActiveTab] = useState<FilterTab>("all")
+  const [activeCategory, setActiveCategory] = useState<MarketCategory | "all">("all")
   const [search, setSearch] = useState("")
   const debouncedSearch = useDebouncedValue(search, 300)
 
@@ -50,10 +51,11 @@ export function MarketsPage() {
   const filtered = useMemo(() => {
     return markets.filter((m) => {
       if (activeTab !== "all" && getMarketStatus(m) !== activeTab) return false
+      if (activeCategory !== "all" && categorizeMarket(m.question) !== activeCategory) return false
       if (debouncedSearch && !m.question.toLowerCase().includes(debouncedSearch.toLowerCase())) return false
       return true
     })
-  }, [markets, activeTab, debouncedSearch])
+  }, [markets, activeTab, activeCategory, debouncedSearch])
 
   const totalVolume = useMemo(
     () => markets.reduce((acc, m) => acc + m.totalYesPool + m.totalNoPool, 0n),
@@ -141,43 +143,75 @@ export function MarketsPage() {
       )}
 
       {/* Search + Filter + Create */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-y border-[#333] py-4 bg-black/50">
-        <div role="tablist" className="flex flex-wrap gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.value}
-              role="tab"
-              aria-selected={activeTab === tab.value}
-              onClick={() => setActiveTab(tab.value)}
-              className={cn(
-                "border-[2px] px-4 py-1.5 font-technical text-[12px] font-bold uppercase tracking-wider transition-all",
-                activeTab === tab.value
-                  ? "border-[#CCFF00] bg-[#CCFF00] text-black"
-                  : "border-[#333] bg-transparent text-[#888] hover:border-[#CCFF00] hover:text-[#CCFF00]"
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
+      <div className="flex flex-col gap-4 border-y border-[#333] py-4 bg-black/50">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div role="tablist" className="flex flex-wrap gap-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.value}
+                role="tab"
+                aria-selected={activeTab === tab.value}
+                onClick={() => setActiveTab(tab.value)}
+                className={cn(
+                  "border-[2px] px-4 py-1.5 font-technical text-[12px] font-bold uppercase tracking-wider transition-all",
+                  activeTab === tab.value
+                    ? "border-[#CCFF00] bg-[#CCFF00] text-black"
+                    : "border-[#333] bg-transparent text-[#888] hover:border-[#CCFF00] hover:text-[#CCFF00]"
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#888]" strokeWidth={2.5} />
+              <Input
+                placeholder="SEARCH_MARKETS..."
+                aria-label="Search markets"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-10 w-full sm:w-64 rounded-none border-[2px] border-[#333] bg-black pl-10 font-technical text-[12px] font-bold uppercase text-white placeholder:text-[#555] focus-visible:border-[#CCFF00] focus-visible:ring-0"
+              />
+            </div>
+            <Link to="/create">
+              <Button className="btn-acid h-10 px-5 font-technical text-[12px]">
+                <Plus className="mr-2 size-4" strokeWidth={2.5} />
+                CREATE MARKET
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#888]" strokeWidth={2.5} />
-            <Input
-              placeholder="SEARCH_MARKETS..."
-              aria-label="Search markets"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-10 w-full sm:w-64 rounded-none border-[2px] border-[#333] bg-black pl-10 font-technical text-[12px] font-bold uppercase text-white placeholder:text-[#555] focus-visible:border-[#CCFF00] focus-visible:ring-0"
-            />
-          </div>
-          <Link to="/create">
-            <Button className="btn-acid h-10 px-5 font-technical text-[12px]">
-              <Plus className="mr-2 size-4" strokeWidth={2.5} />
-              CREATE MARKET
-            </Button>
-          </Link>
+        {/* Category filter */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setActiveCategory("all")}
+            className={cn(
+              "border px-3 py-1 font-technical text-[10px] font-bold uppercase tracking-widest transition-all",
+              activeCategory === "all"
+                ? "border-white bg-white text-black"
+                : "border-[#333] text-[#555] hover:border-[#888] hover:text-[#888]"
+            )}
+          >
+            ALL
+          </button>
+          {(Object.entries(CATEGORY_CONFIG) as [MarketCategory, { label: string; color: string }][]).map(([key, cat]) => (
+            <button
+              key={key}
+              onClick={() => setActiveCategory(key)}
+              className={cn(
+                "border px-3 py-1 font-technical text-[10px] font-bold uppercase tracking-widest transition-all",
+              )}
+              style={activeCategory === key
+                ? { borderColor: cat.color, backgroundColor: cat.color, color: "#000" }
+                : { borderColor: `${cat.color}40`, color: `${cat.color}99` }
+              }
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
       </div>
 

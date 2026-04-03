@@ -3,7 +3,7 @@ import { PoolBar } from "@/components/PoolBar"
 import { Clock, CheckCircle, XCircle, Users } from "lucide-react"
 import { useCountdown } from "@/hooks/useCountdown"
 import type { Market, MarketStatus } from "@/types/market"
-import { getMarketStatus } from "@/types/market"
+import { getMarketStatus, categorizeMarket, CATEGORY_CONFIG } from "@/types/market"
 import { UINIT_DECIMALS } from "@/lib/move"
 
 function formatUinit(uinit: bigint, decimals = 1): string {
@@ -26,6 +26,8 @@ export function MarketCard({ market }: MarketCardProps) {
   const Icon = config.icon
   const countdown = useCountdown(market.deadline)
   const total = market.totalYesPool + market.totalNoPool
+  const category = categorizeMarket(market.question)
+  const catConfig = CATEGORY_CONFIG[category]
   const yesPercent = total > 0n ? Number((market.totalYesPool * 100n) / total) : 50
   const noPercent = total > 0n ? 100 - yesPercent : 50
 
@@ -37,12 +39,20 @@ export function MarketCard({ market }: MarketCardProps) {
           <h3 className="font-sans text-[22px] font-black uppercase leading-[1.1] tracking-tighter text-white transition-colors group-hover:text-[#CCFF00]">
             {market.question}
           </h3>
-          <div className={`flex shrink-0 items-center justify-center gap-1.5 border-2 border-transparent px-2.5 py-1 font-technical text-[10px] font-bold tracking-widest ${config.bg} ${config.text}`}>
-            {status === "open" && (
-              <span className="size-1.5 bg-black animate-pulse" />
-            )}
-            {status !== "open" && <Icon className="size-3" strokeWidth={3} />}
-            {config.label}
+          <div className="flex flex-col items-end gap-1.5 shrink-0">
+            <div className={`flex items-center justify-center gap-1.5 border-2 border-transparent px-2.5 py-1 font-technical text-[10px] font-bold tracking-widest ${config.bg} ${config.text}`}>
+              {status === "open" && (
+                <span className="size-1.5 bg-black animate-pulse" />
+              )}
+              {status !== "open" && <Icon className="size-3" strokeWidth={3} />}
+              {config.label}
+            </div>
+            <span
+              className="font-technical text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 border"
+              style={{ color: catConfig.color, borderColor: `${catConfig.color}40` }}
+            >
+              {catConfig.label}
+            </span>
           </div>
         </div>
 

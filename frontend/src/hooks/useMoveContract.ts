@@ -325,6 +325,20 @@ export function useMoveClaimWinnings() {
   })
 }
 
+/** Returns the contract admin address. */
+export function useMoveAdmin() {
+  return useQuery({
+    queryKey: [...moveQueryKeys.marketCount(), "admin"],
+    queryFn: async () => {
+      const { fetchAdmin } = await import("@/lib/move")
+      const adminAddr = await fetchAdmin(REST_URL)
+      return adminAddr
+    },
+    staleTime: 60_000,
+    refetchInterval: 120_000,
+  })
+}
+
 /** Resolves a market (admin only). */
 export function useMoveResolveMarket() {
   const { requestTxBlock, initiaAddress } = useInterwovenKit()
