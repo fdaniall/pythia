@@ -448,6 +448,16 @@ module pythia::prediction_market {
         borrow_global<State>(@pythia).admin
     }
 
+    /// Returns the list of bettor addresses for a given market.
+    #[view]
+    public fun get_bettors(market_id: u64): vector<address> acquires State {
+        let state = borrow_global<State>(@pythia);
+        assert!(table::contains(&state.markets, market_id), error::not_found(EMARKET_NOT_FOUND));
+
+        let market = table::borrow(&state.markets, market_id);
+        market.bettors
+    }
+
     // -- Test-only helpers --
 
     #[test_only]

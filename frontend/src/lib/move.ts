@@ -450,6 +450,25 @@ export async function fetchPlatformFeeBps(restUrl: string): Promise<string> {
 }
 
 /**
+ * Fetches the list of bettor addresses for a given market.
+ *
+ * Calls: get_bettors(market_id: u64): vector<address>
+ * Returns: array of hex addresses
+ */
+export async function fetchBettors(
+  restUrl: string,
+  marketId: bigint | number,
+): Promise<string[]> {
+  return callViewFunction<string[]>(restUrl, {
+    address: MODULE_ADDRESS,
+    module_name: MODULE_NAME,
+    function_name: "get_bettors",
+    type_args: [],
+    args: [encodeU64(BigInt(marketId))],
+  })
+}
+
+/**
  * Fetches the contract admin address.
  *
  * Calls: get_admin(): address

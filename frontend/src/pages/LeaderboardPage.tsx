@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils"
 import { Trophy, Crown, Medal, TrendingUp, Coins, Users } from "lucide-react"
 import { useMoveAllMarkets } from "@/hooks/useMoveContract"
 import { useInitUsernames, formatAddress } from "@/hooks/useInitUsername"
-import { UINIT_DECIMALS } from "@/lib/move"
+import { UINIT_DECIMALS, INITIA_REST_URL, fetchBettors, fetchBet } from "@/lib/move"
+import { getMarketStatus } from "@/types/market"
 import { useQuery } from "@tanstack/react-query"
 
 function formatUinit(uinit: bigint, decimals = 2): string {
@@ -27,36 +28,76 @@ export function LeaderboardPage() {
   useDocTitle("Leaderboard")
   const { data: markets, isLoading: marketsLoading } = useMoveAllMarkets()
 
-  // Collect all unique bettor addresses from all markets
-  // We can't get bettors list from the contract view functions directly,
-  // so we track from market data. For the leaderboard, we'll aggregate
-  // what we can from resolved markets and known bettors.
+  // Fetch all bettors from all markets using the get_bettors view function,
+  // then fetch each bettor's bet details to build real leaderboard data.
   const { data: leaderboard, isLoading: leaderboardLoading } = useQuery({
     queryKey: ["leaderboard", markets?.length],
     queryFn: async (): Promise<LeaderboardEntry[]> => {
       if (!markets || markets.length === 0) return []
 
-      // For each resolved market, check common addresses
-      // Since we can't enumerate bettors from the contract, we'll show
-      // aggregate stats from market-level data
       const entries = new Map<string, LeaderboardEntry>()
 
-      // We'll create mock leaderboard entries from market creators
-      // and known participants. In production, this would use an indexer.
+      // For each market, fetch the bettors list, then each bettor's bet
       for (const market of markets) {
-        if (!entries.has(market.creator)) {
-          entries.set(market.creator, {
-            address: market.creator,
-            totalWagered: 0n,
-            totalWon: 0n,
-            wins: 0,
-            losses: 0,
-            activeBets: 0,
-            winRate: 0,
-          })
+        let bettorAddrs: string[]
+        try {
+          bettorAddrs = await fetchBettors(INITIA_REST_URL, market.id)
+        } catch {
+          continue
         }
-        const entry = entries.get(market.creator)!
-        entry.totalWagered += market.totalYesPool + market.totalNoPool
+
+        const status = getMarketStatus(market)
+
+        // Fetch all bets in parallel for this market
+        const betResults = await Promise.allSettled(
+          bettorAddrs.map(async (addr) => {
+            const rawBet = await fetchBet(INITIA_REST_URL, market.id, addr)
+            return { addr, rawBet }
+          }),
+        )
+
+        for (const result of betResults) {
+          if (result.status !== "fulfilled") continue
+          const { addr, rawBet } = result.value
+          const yesAmount = BigInt(rawBet.yesAmount)
+          const noAmount = BigInt(rawBet.noAmount)
+          if (yesAmount === 0n && noAmount === 0n) continue
+
+          if (!entries.has(addr)) {
+            entries.set(addr, {
+              address: addr,
+              totalWagered: 0n,
+              totalWon: 0n,
+              wins: 0,
+              losses: 0,
+              activeBets: 0,
+              winRate: 0,
+            })
+          }
+
+          const entry = entries.get(addr)!
+          entry.totalWagered += yesAmount + noAmount
+
+          if (market.resolved) {
+            const isWinner =
+              (market.outcome && yesAmount > 0n) ||
+              (!market.outcome && noAmount > 0n)
+            if (isWinner) {
+              entry.wins += 1
+              // Approximate winnings from pool proportions
+              const winningPool = market.outcome ? market.totalYesPool : market.totalNoPool
+              const winBet = market.outcome ? yesAmount : noAmount
+              const totalPool = market.totalYesPool + market.totalNoPool
+              if (winningPool > 0n) {
+                entry.totalWon += (winBet * totalPool) / winningPool
+              }
+            } else {
+              entry.losses += 1
+            }
+          } else if (status === "open" || status === "closed") {
+            entry.activeBets += 1
+          }
+        }
       }
 
       const result = Array.from(entries.values())
@@ -64,7 +105,12 @@ export function LeaderboardPage() {
         const total = e.wins + e.losses
         e.winRate = total > 0 ? Math.round((e.wins / total) * 100) : 0
       })
-      result.sort((a, b) => Number(b.totalWagered - a.totalWagered))
+      // Sort by total wagered (volume), then by win rate
+      result.sort((a, b) => {
+        const volumeDiff = Number(b.totalWagered - a.totalWagered)
+        if (volumeDiff !== 0) return volumeDiff
+        return b.winRate - a.winRate
+      })
       return result
     },
     enabled: !!markets && markets.length > 0,
@@ -215,7 +261,7 @@ export function LeaderboardPage() {
                     </span>
 
                     <span className="font-technical text-[12px] font-bold uppercase tracking-widest text-[#888] text-right hidden sm:block">
-                      {entry.wins + entry.losses + entry.activeBets}
+                      {entry.wins + entry.losses + entry.activeBets} <span className="text-[#555]">({entry.wins}W</span>)
                     </span>
 
                     <span className={cn(
