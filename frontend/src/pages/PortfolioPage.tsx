@@ -50,13 +50,12 @@ export function PortfolioPage() {
     queryFn: async (): Promise<Position[]> => {
       if (!markets || !initiaAddress) return []
 
-      const results: Position[] = []
-      for (const market of markets) {
-        try {
+      const betResults = await Promise.allSettled(
+        markets.map(async (market): Promise<Position | null> => {
           const rawBet = await fetchBet(INITIA_REST_URL, market.id, initiaAddress)
           const yesAmount = BigInt(rawBet.yesAmount)
           const noAmount = BigInt(rawBet.noAmount)
-          if (yesAmount === 0n && noAmount === 0n) continue
+          if (yesAmount === 0n && noAmount === 0n) return null
 
           const bet: Bet = { yesAmount, noAmount, claimed: rawBet.claimed }
           const status = getMarketStatus(market)
@@ -75,14 +74,18 @@ export function PortfolioPage() {
             } catch { /* ignore */ }
           }
 
-          results.push({
+          return {
             market, bet, status, isWinner, isLoser, totalBet, mainPosition,
             canClaim: isWinner && !bet.claimed && payout > 0n,
             payout,
-          })
-        } catch { /* market bet fetch failed, skip */ }
-      }
-      return results
+          }
+        }),
+      )
+
+      return betResults
+        .filter((r): r is PromiseFulfilledResult<Position | null> => r.status === "fulfilled")
+        .map((r) => r.value)
+        .filter((p): p is Position => p !== null)
     },
     enabled: !!initiaAddress && !!markets && markets.length > 0,
     refetchInterval: 15_000,
@@ -247,8 +250,8 @@ export function PortfolioPage() {
                     </div>
 
                     {pos.canClaim ? (
-                      <span
-                        role="button"
+                      <button
+                        type="button"
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
@@ -258,13 +261,14 @@ export function PortfolioPage() {
                             { onSettled: () => setClaimingId(null) },
                           )
                         }}
+                        disabled={claimingId === pos.market.id}
                         className={cn(
                           "ml-2 bg-[#CCFF00] text-black px-4 py-2 font-technical text-[12px] font-black uppercase tracking-widest hover:bg-white transition-colors",
-                          claimingId === pos.market.id && "opacity-50 pointer-events-none"
+                          claimingId === pos.market.id && "opacity-50"
                         )}
                       >
                         {claimingId === pos.market.id ? "CLAIMING..." : `CLAIM ${formatUinit(pos.payout)} INIT`}
-                      </span>
+                      </button>
                     ) : (
                       <div className="ml-2 border border-[#333] p-2 bg-black group-hover:border-[#CCFF00] transition-colors">
                         <ArrowRight className="size-4 text-[#555] group-hover:text-[#CCFF00]" strokeWidth={3} />

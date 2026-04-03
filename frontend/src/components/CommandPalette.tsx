@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { Search, ArrowRight, TerminalSquare, FileText, PlusCircle, BarChart3, Command } from "lucide-react"
-import { MOCK_MARKETS } from "@/lib/mock-data"
+import { useMoveAllMarkets } from "@/hooks/useMoveContract"
 import { cn } from "@/lib/utils"
 
 const STATIC_ROUTES = [
@@ -17,6 +17,7 @@ export function CommandPalette() {
   const [activeIndex, setActiveIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
+  const { data: onChainMarkets } = useMoveAllMarkets()
 
   // Cmd+K / Ctrl+K to toggle
   useEffect(() => {
@@ -42,8 +43,9 @@ export function CommandPalette() {
     }
   }, [open])
 
+  const markets = onChainMarkets ?? []
   const filteredMarkets = query.length > 0
-    ? MOCK_MARKETS.filter((m) =>
+    ? markets.filter((m) =>
         m.question.toLowerCase().includes(query.toLowerCase())
       ).slice(0, 5)
     : []
@@ -93,7 +95,7 @@ export function CommandPalette() {
       />
 
       {/* Palette */}
-      <div className="fixed left-1/2 top-[20%] z-[201] w-full max-w-lg -translate-x-1/2 border-2 border-[#CCFF00] bg-black shadow-[8px_8px_0px_0px_#CCFF00]">
+      <div role="dialog" aria-modal="true" aria-label="Search markets and pages" className="fixed left-1/2 top-[20%] z-[201] w-full max-w-lg -translate-x-1/2 border-2 border-[#CCFF00] bg-black shadow-[8px_8px_0px_0px_#CCFF00] mx-4 sm:mx-0" style={{ maxWidth: "calc(100vw - 2rem)" }}>
         {/* Input */}
         <div className="flex items-center gap-3 border-b-2 border-[#333] px-4 py-3">
           <Search className="size-5 shrink-0 text-[#CCFF00]" strokeWidth={2.5} />

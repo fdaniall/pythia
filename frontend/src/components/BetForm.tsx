@@ -340,7 +340,7 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                     ? "MARKET CLOSED"
                     : payout
                       ? `PLACE BET [ ${amount} INIT -> ${position ? "YES" : "NO"} ]`
-                      : "ENTER AN AMOUNT TO SEE YOUR PAYOUT"
+                      : "ENTER AMOUNT"
                 }
               </Button>
             )}

@@ -214,9 +214,9 @@ export function LeaderboardPage() {
               </p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 overflow-x-auto">
               {/* Header row */}
-              <div className="grid grid-cols-[40px_1fr_120px_100px] sm:grid-cols-[40px_1fr_120px_100px_100px] gap-4 px-4 py-2 font-technical text-[10px] font-bold uppercase tracking-widest text-[#555]">
+              <div className="grid grid-cols-[40px_1fr_120px_100px] sm:grid-cols-[40px_1fr_120px_100px_100px] gap-4 px-4 py-2 font-technical text-[10px] font-bold uppercase tracking-widest text-[#555] min-w-[400px]">
                 <span>RANK</span>
                 <span>PREDICTOR</span>
                 <span className="text-right">VOLUME</span>

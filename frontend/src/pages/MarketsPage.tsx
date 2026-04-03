@@ -45,7 +45,7 @@ export function MarketsPage() {
   const debouncedSearch = useDebouncedValue(search, 300)
 
   // Fetch real on-chain markets
-  const { data: onChainMarkets, isLoading, error } = useMoveAllMarkets()
+  const { data: onChainMarkets, isLoading, error, refetch } = useMoveAllMarkets()
   const markets = onChainMarkets ?? []
 
   const filtered = useMemo(() => {
@@ -135,10 +135,17 @@ export function MarketsPage() {
 
       {/* Error state */}
       {error && (
-        <div className="border border-[#FF2A2A]/30 bg-[#FF2A2A]/5 p-4">
+        <div className="border border-[#FF2A2A]/30 bg-[#FF2A2A]/5 p-4 flex items-center justify-between">
           <p className="font-technical text-[11px] uppercase tracking-widest text-[#FF2A2A]">
-            CHAIN CONNECTION ERROR — retrying...
+            CHAIN CONNECTION ERROR
           </p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="font-technical text-[11px] font-bold uppercase tracking-widest text-[#FF2A2A] border border-[#FF2A2A]/50 px-3 py-1 hover:bg-[#FF2A2A] hover:text-white transition-all"
+          >
+            RETRY
+          </button>
         </div>
       )}
 

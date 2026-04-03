@@ -89,6 +89,8 @@ module pythia::prediction_market {
         markets: Table<u64, Market>,
         market_count: u64,
         platform_fee_bps: u64,
+        total_fees_collected: u64,
+        total_fees_withdrawn: u64,
         extend_ref: ExtendRef,
         token_metadata: object::Object<Metadata>,
     }
@@ -109,6 +111,8 @@ module pythia::prediction_market {
             markets: table::new(),
             market_count: 0,
             platform_fee_bps: 200, // 2%
+            total_fees_collected: 0,
+            total_fees_withdrawn: 0,
             extend_ref,
             token_metadata,
         });
@@ -242,6 +246,9 @@ module pythia::prediction_market {
         let market = table::borrow_mut(&mut state.markets, market_id);
         assert!(!market.resolved, error::invalid_state(EMARKET_ALREADY_RESOLVED));
 
+        let now = block::get_current_block_timestamp();
+        assert!(now >= market.deadline, error::invalid_state(EMARKET_EXPIRED));
+
         market.resolved = true;
         market.winning_outcome = winning_outcome;
 
@@ -264,6 +271,7 @@ module pythia::prediction_market {
         // Step 1: Read immutably to compute payout
         let metadata = get_token_metadata();
         let net_payout: u64;
+        let fee_amount: u64;
         {
             let state = borrow_global<State>(@pythia);
             assert!(table::contains(&state.markets, market_id), error::not_found(EMARKET_NOT_FOUND));
@@ -291,12 +299,14 @@ module pythia::prediction_market {
 
             let gross_payout = (winning_amount as u128) * (total_pool as u128) / (winning_pool as u128);
             let fee = gross_payout * (state.platform_fee_bps as u128) / 10000;
+            fee_amount = (fee as u64);
             net_payout = ((gross_payout - fee) as u64);
         };
 
-        // Step 2: Mark claimed (mutable borrow)
+        // Step 2: Mark claimed + track fees (mutable borrow)
         {
             let state = borrow_global_mut<State>(@pythia);
+            state.total_fees_collected = state.total_fees_collected + fee_amount;
             let market = table::borrow_mut(&mut state.markets, market_id);
             let bet = table::borrow_mut(&mut market.bets, bettor_addr);
             bet.claimed = true;
@@ -347,16 +357,29 @@ module pythia::prediction_market {
         amount: u64,
     ) acquires State {
         let admin_addr = signer::address_of(admin);
-        // Auth check + read metadata before transfer
         let metadata = get_token_metadata();
+
+        // Auth check + verify withdrawable amount
         {
             let state = borrow_global<State>(@pythia);
             assert!(admin_addr == state.admin, error::permission_denied(EUNAUTHORIZED));
+            let available = state.total_fees_collected - state.total_fees_withdrawn;
+            assert!(amount <= available, error::invalid_argument(EZERO_AMOUNT));
         };
-        let state = borrow_global<State>(@pythia);
-        let obj_signer = object::generate_signer_for_extending(&state.extend_ref);
-        let fa = primary_fungible_store::withdraw(&obj_signer, metadata, amount);
-        primary_fungible_store::deposit(admin_addr, fa);
+
+        // Track withdrawal
+        {
+            let state = borrow_global_mut<State>(@pythia);
+            state.total_fees_withdrawn = state.total_fees_withdrawn + amount;
+        };
+
+        // Transfer fees to admin
+        {
+            let state = borrow_global<State>(@pythia);
+            let obj_signer = object::generate_signer_for_extending(&state.extend_ref);
+            let fa = primary_fungible_store::withdraw(&obj_signer, metadata, amount);
+            primary_fungible_store::deposit(admin_addr, fa);
+        };
     }
 
     //  View Functions 
@@ -471,6 +494,8 @@ module pythia::prediction_market {
             markets: table::new(),
             market_count: 0,
             platform_fee_bps: 200,
+            total_fees_collected: 0,
+            total_fees_withdrawn: 0,
             extend_ref,
             token_metadata,
         });

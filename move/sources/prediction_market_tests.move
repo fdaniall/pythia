@@ -174,6 +174,7 @@ module pythia::prediction_market_tests {
     fun test_resolve_market_yes(admin: signer, user1: signer, user2: signer) {
         setup_test(&admin, &user1, &user2);
         prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+        block::set_block_info(2, 3000); // advance past deadline
         prediction_market::resolve_market(&admin, 0, 0);
 
         let (_, _, _, _, resolved, outcome, _, _, _) = prediction_market::get_market(0);
@@ -185,6 +186,7 @@ module pythia::prediction_market_tests {
     fun test_resolve_market_no(admin: signer, user1: signer, user2: signer) {
         setup_test(&admin, &user1, &user2);
         prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&admin, 0, 1);
 
         let (_, _, _, _, resolved, outcome, _, _, _) = prediction_market::get_market(0);
@@ -197,6 +199,7 @@ module pythia::prediction_market_tests {
     fun test_resolve_market_not_admin(admin: signer, user1: signer, user2: signer) {
         setup_test(&admin, &user1, &user2);
         prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&user1, 0, 0);
     }
 
@@ -205,6 +208,7 @@ module pythia::prediction_market_tests {
     fun test_resolve_market_twice(admin: signer, user1: signer, user2: signer) {
         setup_test(&admin, &user1, &user2);
         prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&admin, 0, 0);
         prediction_market::resolve_market(&admin, 0, 1);
     }
@@ -224,6 +228,7 @@ module pythia::prediction_market_tests {
 
         let user1_before = prediction_market::test_get_balance(signer::address_of(&user1));
 
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&admin, 0, 0); // YES wins
         prediction_market::claim_winnings(&user1, 0);
 
@@ -254,6 +259,7 @@ module pythia::prediction_market_tests {
 
         let user2_before = prediction_market::test_get_balance(signer::address_of(&user2));
 
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&admin, 0, 1); // NO wins
         prediction_market::claim_winnings(&user2, 0);
 
@@ -277,6 +283,7 @@ module pythia::prediction_market_tests {
         let user1_before = prediction_market::test_get_balance(signer::address_of(&user1));
         let user2_before = prediction_market::test_get_balance(signer::address_of(&user2));
 
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&admin, 0, 0); // YES wins
 
         prediction_market::claim_winnings(&user1, 0);
@@ -298,6 +305,7 @@ module pythia::prediction_market_tests {
         prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
         prediction_market::place_bet(&user1, 0, 0, 10);
         prediction_market::place_bet(&user2, 0, 1, 10);
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&admin, 0, 0);
         prediction_market::claim_winnings(&user1, 0);
         prediction_market::claim_winnings(&user1, 0);
@@ -310,6 +318,7 @@ module pythia::prediction_market_tests {
         prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
         prediction_market::place_bet(&user1, 0, 0, 10);
         prediction_market::place_bet(&user2, 0, 1, 10);
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&admin, 0, 1); // NO wins
         prediction_market::claim_winnings(&user1, 0); // user1 bet YES
     }
@@ -336,6 +345,7 @@ module pythia::prediction_market_tests {
 
         assert!(prediction_market::calculate_payout(0, signer::address_of(&user1)) == 0, 1);
 
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&admin, 0, 0);
 
         // gross = 10*20/10 = 20, fee = 0, net = 20
@@ -441,6 +451,7 @@ module pythia::prediction_market_tests {
     fun test_bet_on_resolved_market(admin: signer, user1: signer, user2: signer) {
         setup_test(&admin, &user1, &user2);
         prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
+        block::set_block_info(2, 3000);
         prediction_market::resolve_market(&admin, 0, 0);
         prediction_market::place_bet(&user1, 0, 0, 5);
     }

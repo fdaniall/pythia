@@ -1,10 +1,19 @@
-import { useEffect, lazy, Suspense } from "react"
+import { useEffect, lazy, Suspense, Component } from "react"
+import type { ReactNode, ErrorInfo } from "react"
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createConfig, http, WagmiProvider } from "wagmi"
 import { mainnet } from "wagmi/chains"
-// initiaAppchain is Initia L1 testnet (initiation-2) for wagmi bootstrapping
-import { initiaAppchain } from "@/lib/contract"
+import { defineChain } from "viem"
+
+const initiaAppchain = defineChain({
+  id: 7658622,
+  name: "Initia Testnet",
+  nativeCurrency: { name: "INIT", symbol: "INIT", decimals: 6 },
+  rpcUrls: { default: { http: ["https://json-rpc.testnet.initia.xyz"] } },
+  blockExplorers: { default: { name: "Initia Scan", url: "https://scan.testnet.initia.xyz" } },
+  testnet: true,
+})
 import {
   InterwovenKitProvider,
   TESTNET,
@@ -36,6 +45,40 @@ const wagmiConfig = createConfig({
 })
 
 const queryClient = new QueryClient()
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("Pythia ErrorBoundary:", error, info.componentStack)
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-black text-white">
+          <div className="text-center space-y-4 px-4">
+            <div className="border-2 border-[#FF2A2A] px-8 py-3 inline-block">
+              <span className="font-mono text-4xl font-black text-[#FF2A2A]">FATAL</span>
+            </div>
+            <p className="font-mono text-sm text-[#888] uppercase">Something went wrong. Please reload.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="border-2 border-[#CCFF00] bg-[#CCFF00] text-black px-6 py-2 font-mono text-sm font-bold uppercase"
+            >
+              RELOAD
+            </button>
+          </div>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 function RouteLoader() {
   return (
@@ -86,6 +129,7 @@ export default function App() {
             <ScrollToTop />
             <BrutalistModalHacker />
             <Toaster position="bottom-right" />
+            <ErrorBoundary>
             <Suspense fallback={<RouteLoader />}>
               <Routes>
                 <Route index element={<LandingPage />} />
@@ -100,6 +144,7 @@ export default function App() {
                 </Route>
               </Routes>
             </Suspense>
+            </ErrorBoundary>
           </BrowserRouter>
         </InterwovenKitProvider>
       </WagmiProvider>

@@ -225,7 +225,7 @@ export function CreateMarketPage() {
                 </p>
               )}
               <p className="font-technical text-[10px] uppercase text-[#555]">
-                // Betting closes at this time. After expiry, market awaits resolution. Minimum 1 hour from now.
+                Betting closes at this time. After expiry, market awaits resolution. Minimum 1 hour from now.
               </p>
             </div>
 

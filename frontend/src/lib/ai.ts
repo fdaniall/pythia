@@ -1,8 +1,6 @@
 /**
- * AI Market Creation — uses Google Gemini API to generate market parameters
- * from natural language input.
- *
- * Free tier: 15 RPM, 1M tokens/day — more than enough for hackathon.
+ * AI Market Creation — uses Groq API (llama-3.3-70b-versatile) to generate
+ * market parameters from natural language input.
  */
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -59,8 +57,7 @@ export async function generateMarketWithAI(
   })
 
   if (!response.ok) {
-    const text = await response.text()
-    throw new Error(`Groq API error [${response.status}]: ${text}`)
+    throw new Error("AI generation failed. Please try again.")
   }
 
   const data = await response.json()
