@@ -499,7 +499,7 @@ module pythia::prediction_market_tests {
         prediction_market::create_market(&admin, string::utf8(b"Test?"), 2000);
         prediction_market::place_bet(&user1, 0, 0, 5);
         prediction_market::place_bet(&user2, 0, 1, 8);
-        // user1 bets again — should NOT duplicate in bettors list
+        // user1 bets again - should NOT duplicate in bettors list
         prediction_market::place_bet(&user1, 0, 1, 3);
 
         let bettors = prediction_market::get_bettors(0);

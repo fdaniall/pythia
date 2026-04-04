@@ -19,8 +19,12 @@
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-/** Module deployer address (also used as @pythia named address in Move) */
-export const MODULE_ADDRESS = "0xF83249D6AB09160493214DE15D7EC623CCB5063E"
+/**
+ * Module deployer address (also used as @pythia named address in Move).
+ * - L1 testnet: 0xF83249D6AB09160493214DE15D7EC623CCB5063E
+ * - Pythia rollup: 0x277c5eadcd5fe81988c46b762f3d024458b9fd7c
+ */
+export const MODULE_ADDRESS = import.meta.env.VITE_MODULE_ADDRESS || "0xF83249D6AB09160493214DE15D7EC623CCB5063E"
 
 export const MODULE_NAME = "prediction_market"
 
@@ -28,17 +32,14 @@ export const MODULE_NAME = "prediction_market"
 export const MSG_EXECUTE_JSON_TYPE_URL = "/initia.move.v1.MsgExecuteJSON"
 
 /**
- * Initia testnet (initiation-2) REST API base URL.
- *
- * InterwovenKit resolves this at runtime from the chain registry, so you
- * should prefer using the `restUrl` returned by the interwovenkit context
- * rather than this hardcoded fallback. Use this constant only for
- * non-hook contexts (e.g. server actions, utility functions).
+ * REST API base URL for view function calls.
+ * - L1 testnet: https://rest.testnet.initia.xyz
+ * - Pythia rollup (local): http://localhost:1317
  */
-export const INITIA_REST_URL = "https://rest.testnet.initia.xyz"
+export const INITIA_REST_URL = import.meta.env.VITE_REST_URL || "https://rest.testnet.initia.xyz"
 
-/** uinit — native fee/bet token on initiation-2 (6 decimals) */
-export const UINIT_DENOM = "uinit"
+/** Native fee/bet token denom and decimals (uinit on L1, umin on rollup) */
+export const UINIT_DENOM = import.meta.env.VITE_TOKEN_DENOM || "uinit"
 export const UINIT_DECIMALS = 6
 
 // ── Formatting helpers ─────────────────────────────────────────────────────

@@ -106,8 +106,8 @@ module pythia::prediction_market {
         let constructor_ref = object::create_object(admin_addr, false);
         let extend_ref = object::generate_extend_ref(&constructor_ref);
 
-        // Use INIT native token
-        let token_metadata = coin::metadata(@initia_std, initia_string::utf8(b"uinit"));
+        // Use native token (umin on rollup, uinit on L1)
+        let token_metadata = coin::metadata(@initia_std, initia_string::utf8(b"umin"));
 
         move_to(admin, State {
             admin: admin_addr,
