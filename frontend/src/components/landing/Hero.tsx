@@ -12,11 +12,11 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000000_100%)] opacity-80" />
 
       {/* Main Content */}
-      <div 
+      <div
         className="relative z-[2] mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center px-6 pb-20 pt-12 lg:px-12"
       >
         <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-          
+
           <div className="lg:col-span-8 flex flex-col items-start text-left">
             <FadeIn>
               <div className="mb-6 inline-flex items-center gap-2 border border-[#333] bg-black px-4 py-2">
@@ -55,7 +55,7 @@ export function Hero() {
               </div>
             </FadeIn>
           </div>
-          
+
           <div className="lg:col-span-4 hidden lg:block">
             {/* Brutalist Data Widget */}
             <FadeIn delay={0.5}>
@@ -91,18 +91,18 @@ export function Hero() {
       {/* Marquee Banner */}
       <div className="w-full mt-auto marquee-container z-10">
         <div className="marquee-content">
-          <span className="mx-8">SYSTEM ONLINE</span> ✦ 
-          <span className="mx-8 text-black">NO WALLET POPUPS</span> ✦ 
-          <span className="mx-8">CROSS-CHAIN DEPOSITS</span> ✦ 
-          <span className="mx-8 text-black">PERMISSIONLESS POOLS</span> ✦ 
-          <span className="mx-8">DYNAMIC ODDS</span> ✦ 
-          <span className="mx-8 text-black">INITIA NATIVE</span> ✦ 
-          <span className="mx-8">SYSTEM ONLINE</span> ✦ 
-          <span className="mx-8 text-black">NO WALLET POPUPS</span> ✦ 
-          <span className="mx-8">CROSS-CHAIN DEPOSITS</span> ✦ 
-          <span className="mx-8 text-black">PERMISSIONLESS POOLS</span> ✦ 
-          <span className="mx-8">DYNAMIC ODDS</span> ✦ 
-          <span className="mx-8 text-black">INITIA NATIVE</span> ✦ 
+          <span className="mx-8">SYSTEM ONLINE</span> ✦
+          <span className="mx-8 text-black">NO WALLET POPUPS</span> ✦
+          <span className="mx-8">CROSS-CHAIN DEPOSITS</span> ✦
+          <span className="mx-8 text-black">PERMISSIONLESS POOLS</span> ✦
+          <span className="mx-8">DYNAMIC ODDS</span> ✦
+          <span className="mx-8 text-black">INITIA NATIVE</span> ✦
+          <span className="mx-8">SYSTEM ONLINE</span> ✦
+          <span className="mx-8 text-black">NO WALLET POPUPS</span> ✦
+          <span className="mx-8">CROSS-CHAIN DEPOSITS</span> ✦
+          <span className="mx-8 text-black">PERMISSIONLESS POOLS</span> ✦
+          <span className="mx-8">DYNAMIC ODDS</span> ✦
+          <span className="mx-8 text-black">INITIA NATIVE</span> ✦
         </div>
       </div>
     </section>
