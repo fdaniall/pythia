@@ -185,12 +185,8 @@ export function BrutalistModalHacker() {
           border: 1px solid #555 !important;
         }
         button:hover, [role="button"]:hover {
-          background-color: #CCFF00 !important;
-          color: #000 !important;
           border-color: #CCFF00 !important;
-        }
-        button:hover *, [role="button"]:hover * {
-          color: #000 !important;
+          background-color: #1a1a1a !important;
         }
         input, select, textarea {
           border-radius: 0px !important;
