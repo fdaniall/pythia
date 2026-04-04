@@ -77,8 +77,8 @@ export function Hero() {
                     </div>
                   </div>
                   <div className="border-t border-[#333] pt-4 space-y-2 font-technical text-[11px] text-[#555] uppercase tracking-widest">
-                    <div className="flex justify-between"><span>Pool</span><span className="text-white">10.0 INIT</span></div>
-                    <div className="flex justify-between"><span>Bettors</span><span className="text-white">12</span></div>
+                    <div className="flex justify-between"><span>Pool</span><span className="text-white">432.5 INIT</span></div>
+                    <div className="flex justify-between"><span>Bettors</span><span className="text-white">298</span></div>
                     <div className="flex justify-between"><span>Fee</span><span className="text-white">2%</span></div>
                   </div>
                 </div>
