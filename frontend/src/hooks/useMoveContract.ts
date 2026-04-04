@@ -102,26 +102,159 @@ export function useMoveMarketCount() {
   })
 }
 
-/** Returns a single market by ID, or undefined if not found. */
+/** Returns a single market by ID, or undefined if not found. Supports seed markets (negative IDs). */
 export function useMoveMarket(marketId: number) {
   return useQuery({
     queryKey: moveQueryKeys.market(marketId),
     queryFn: async () => {
+      // Seed market — return from hardcoded data
+      if (marketId < 0) {
+        const seed = SEED_MARKETS.find((m) => m.id === marketId)
+        if (seed) return seed
+        throw new Error("not_found")
+      }
       const raw = await fetchMarket(REST_URL, marketId)
       return adaptMarket(marketId, raw)
     },
-    enabled: marketId >= 0,
-    refetchInterval: 15_000,
-    staleTime: 10_000,
+    refetchInterval: marketId >= 0 ? 15_000 : false,
+    staleTime: marketId >= 0 ? 10_000 : Infinity,
     retry: (failureCount, error) => {
-      // Don't retry on "market not found" errors
       if (error instanceof Error && error.message.includes("not_found")) return false
       return failureCount < 3
     },
   })
 }
 
-/** Returns all markets from ID 0 to marketCount-1. */
+// ── Seed data for demo ──────────────────────────────────────────────────────
+// Hardcoded markets to showcase the UI. Mixed with real on-chain data.
+// IDs use negative numbers to avoid collision with on-chain market IDs.
+
+const now = BigInt(Math.floor(Date.now() / 1000))
+
+const SEED_MARKETS: Market[] = [
+  {
+    id: -1,
+    question: "Will BTC reach $150,000 by December 2026?",
+    deadline: now + 20_000_000n,
+    totalYesPool: 48_500_000n,  // 48.5 INIT
+    totalNoPool: 31_200_000n,   // 31.2 INIT
+    resolved: false,
+    outcome: false,
+    creator: "0x7a3b1c9d2e4f5a6b8c0d1e2f3a4b5c6d7e8f9a0b",
+    createdAt: now - 432_000n,  // 5 days ago
+    bettorCount: 24,
+  },
+  {
+    id: -2,
+    question: "Will Ethereum implement full danksharding before 2027?",
+    deadline: now + 15_000_000n,
+    totalYesPool: 22_800_000n,
+    totalNoPool: 35_100_000n,
+    resolved: false,
+    outcome: false,
+    creator: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+    createdAt: now - 345_600n,  // 4 days ago
+    bettorCount: 18,
+  },
+  {
+    id: -3,
+    question: "Did ETH break $5,000 in March 2026?",
+    deadline: now - 600_000n,   // past
+    totalYesPool: 15_000_000n,
+    totalNoPool: 42_300_000n,
+    resolved: true,
+    outcome: false,             // NO won
+    creator: "0x2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c",
+    createdAt: now - 2_592_000n, // 30 days ago
+    bettorCount: 31,
+  },
+  {
+    id: -4,
+    question: "Will the US approve spot ETH ETF staking by end of 2026?",
+    deadline: now + 18_000_000n,
+    totalYesPool: 67_200_000n,
+    totalNoPool: 28_900_000n,
+    resolved: false,
+    outcome: false,
+    creator: "0x3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
+    createdAt: now - 259_200n,  // 3 days ago
+    bettorCount: 42,
+  },
+  {
+    id: -5,
+    question: "Will Argentina win Copa America 2026?",
+    deadline: now + 8_000_000n,
+    totalYesPool: 38_700_000n,
+    totalNoPool: 44_100_000n,
+    resolved: false,
+    outcome: false,
+    creator: "0x4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e",
+    createdAt: now - 172_800n,  // 2 days ago
+    bettorCount: 56,
+  },
+  {
+    id: -6,
+    question: "Did Solana hit $300 in Q1 2026?",
+    deadline: now - 400_000n,   // past
+    totalYesPool: 29_400_000n,
+    totalNoPool: 8_700_000n,
+    resolved: true,
+    outcome: true,              // YES won
+    creator: "0x5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f",
+    createdAt: now - 5_184_000n, // 60 days ago
+    bettorCount: 27,
+  },
+  {
+    id: -7,
+    question: "Will OpenAI release GPT-5 before July 2026?",
+    deadline: now + 6_000_000n,
+    totalYesPool: 55_100_000n,
+    totalNoPool: 19_800_000n,
+    resolved: false,
+    outcome: false,
+    creator: "0x6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a",
+    createdAt: now - 86_400n,   // 1 day ago
+    bettorCount: 37,
+  },
+  {
+    id: -8,
+    question: "Will Initia mainnet launch before June 2026?",
+    deadline: now + 4_500_000n,
+    totalYesPool: 71_000_000n,
+    totalNoPool: 12_500_000n,
+    resolved: false,
+    outcome: false,
+    creator: "0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b",
+    createdAt: now - 518_400n,  // 6 days ago
+    bettorCount: 63,
+  },
+  {
+    id: -9,
+    question: "Will NVIDIA hit $200 per share by Q3 2026?",
+    deadline: now - 50_000n,    // past, not yet resolved
+    totalYesPool: 33_400_000n,
+    totalNoPool: 21_800_000n,
+    resolved: false,
+    outcome: false,
+    creator: "0x8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c",
+    createdAt: now - 1_209_600n, // 14 days ago
+    bettorCount: 19,
+  },
+  {
+    id: -10,
+    question: "Did Trump win the 2026 midterm popular vote?",
+    deadline: now - 200_000n,   // past, not yet resolved
+    totalYesPool: 52_100_000n,
+    totalNoPool: 48_700_000n,
+    resolved: false,
+    outcome: false,
+    creator: "0x9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d",
+    createdAt: now - 2_000_000n, // ~23 days ago
+    bettorCount: 71,
+  },
+]
+
+/** Returns all markets from ID 0 to marketCount-1, plus seed data for demo. */
 export function useMoveAllMarkets() {
   const { data: count } = useMoveMarketCount()
   const marketCount = count ?? 0
@@ -129,23 +262,24 @@ export function useMoveAllMarkets() {
   return useQuery({
     queryKey: [...moveQueryKeys.marketCount(), "all"],
     queryFn: async () => {
-      if (marketCount === 0) return []
+      const onChainMarkets: Market[] = []
 
-      // Fetch all markets in parallel
-      const results = await Promise.allSettled(
-        Array.from({ length: marketCount }, (_, i) => fetchMarket(REST_URL, i)),
-      )
-
-      const markets: Market[] = []
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i]
-        if (result.status === "fulfilled") {
-          markets.push(adaptMarket(i, result.value))
+      if (marketCount > 0) {
+        const results = await Promise.allSettled(
+          Array.from({ length: marketCount }, (_, i) => fetchMarket(REST_URL, i)),
+        )
+        for (let i = 0; i < results.length; i++) {
+          const result = results[i]
+          if (result.status === "fulfilled") {
+            onChainMarkets.push(adaptMarket(i, result.value))
+          }
         }
       }
-      return markets
+
+      // Merge: on-chain first, then seed data
+      return [...onChainMarkets, ...SEED_MARKETS]
     },
-    enabled: marketCount > 0,
+    // Always enabled so seed data shows even with 0 on-chain markets
     refetchInterval: 15_000,
     staleTime: 10_000,
   })

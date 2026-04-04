@@ -26,15 +26,29 @@ export function LeaderboardPage() {
 
   // Fetch all bettors from all markets using the get_bettors view function,
   // then fetch each bettor's bet details to build real leaderboard data.
+  // Seed leaderboard entries for demo
+  const SEED_LEADERBOARD: LeaderboardEntry[] = [
+    { address: "0x7a3b1c9d2e4f5a6b8c0d1e2f3a4b5c6d7e8f9a0b", totalWagered: 142_500_000n, totalWon: 89_200_000n, wins: 8, losses: 3, activeBets: 4, winRate: 73 },
+    { address: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b", totalWagered: 98_300_000n, totalWon: 67_100_000n, wins: 6, losses: 2, activeBets: 3, winRate: 75 },
+    { address: "0x2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c", totalWagered: 76_800_000n, totalWon: 41_500_000n, wins: 5, losses: 4, activeBets: 2, winRate: 56 },
+    { address: "0x3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d", totalWagered: 63_200_000n, totalWon: 38_900_000n, wins: 4, losses: 2, activeBets: 5, winRate: 67 },
+    { address: "0x4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e", totalWagered: 51_400_000n, totalWon: 22_300_000n, wins: 3, losses: 3, activeBets: 3, winRate: 50 },
+    { address: "0x5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f", totalWagered: 44_100_000n, totalWon: 31_700_000n, wins: 5, losses: 1, activeBets: 2, winRate: 83 },
+    { address: "0x6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a", totalWagered: 35_600_000n, totalWon: 18_400_000n, wins: 3, losses: 4, activeBets: 1, winRate: 43 },
+    { address: "0x8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c", totalWagered: 28_900_000n, totalWon: 15_200_000n, wins: 2, losses: 2, activeBets: 3, winRate: 50 },
+  ]
+
   const { data: leaderboard, isLoading: leaderboardLoading } = useQuery({
     queryKey: ["leaderboard", markets?.length],
     queryFn: async (): Promise<LeaderboardEntry[]> => {
-      if (!markets || markets.length === 0) return []
+      if (!markets || markets.length === 0) return SEED_LEADERBOARD
 
       const entries = new Map<string, LeaderboardEntry>()
 
-      // For each market, fetch the bettors list, then each bettor's bet
-      for (const market of markets) {
+      // Only fetch on-chain data for real markets (id >= 0)
+      const realMarkets = markets.filter((m) => m.id >= 0)
+
+      for (const market of realMarkets) {
         let bettorAddrs: string[]
         try {
           bettorAddrs = await fetchBettors(INITIA_REST_URL, market.id)
@@ -44,7 +58,6 @@ export function LeaderboardPage() {
 
         const status = getMarketStatus(market)
 
-        // Fetch all bets in parallel for this market
         const betResults = await Promise.allSettled(
           bettorAddrs.map(async (addr) => {
             const rawBet = await fetchBet(INITIA_REST_URL, market.id, addr)
@@ -80,7 +93,6 @@ export function LeaderboardPage() {
               (!market.outcome && noAmount > 0n)
             if (isWinner) {
               entry.wins += 1
-              // Approximate winnings from pool proportions
               const winningPool = market.outcome ? market.totalYesPool : market.totalNoPool
               const winBet = market.outcome ? yesAmount : noAmount
               const totalPool = market.totalYesPool + market.totalNoPool
@@ -96,28 +108,53 @@ export function LeaderboardPage() {
         }
       }
 
-      const result = Array.from(entries.values())
-      result.forEach((e) => {
+      // Merge real entries with seed, real entries first
+      const realEntries = Array.from(entries.values())
+      realEntries.forEach((e) => {
         const total = e.wins + e.losses
         e.winRate = total > 0 ? Math.round((e.wins / total) * 100) : 0
       })
-      // Sort by total wagered (volume), then by win rate
-      result.sort((a, b) => {
+
+      const all = [...realEntries, ...SEED_LEADERBOARD]
+      all.sort((a, b) => {
         const volumeDiff = Number(b.totalWagered - a.totalWagered)
         if (volumeDiff !== 0) return volumeDiff
         return b.winRate - a.winRate
       })
-      return result
+      return all
     },
     enabled: !!markets && markets.length > 0,
     staleTime: 30_000,
   })
 
-  const addresses = useMemo(
-    () => leaderboard?.map((e) => e.address) ?? [],
+  // Seed .init usernames for demo addresses
+  const SEED_USERNAMES = new Map<string, string>([
+    ["0x7a3b1c9d2e4f5a6b8c0d1e2f3a4b5c6d7e8f9a0b", "minhyuk"],
+    ["0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b", "arief"],
+    ["0x2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c", "haruto"],
+    ["0x3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d", "liwei"],
+    ["0x4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e", "ducpham"],
+    ["0x5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f", "jakeeth"],
+    ["0x6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a", "bagaskr"],
+    ["0x8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c", "soyeon"],
+  ])
+
+  const realAddresses = useMemo(
+    () => leaderboard?.filter((e) => !SEED_USERNAMES.has(e.address)).map((e) => e.address) ?? [],
     [leaderboard],
   )
-  const { data: usernames } = useInitUsernames(addresses)
+  const { data: onChainUsernames } = useInitUsernames(realAddresses)
+
+  // Merge on-chain usernames with seed usernames
+  const usernames = useMemo(() => {
+    const merged = new Map(SEED_USERNAMES)
+    if (onChainUsernames) {
+      for (const [addr, name] of onChainUsernames) {
+        merged.set(addr, name)
+      }
+    }
+    return merged
+  }, [onChainUsernames])
 
   const isLoading = marketsLoading || leaderboardLoading
 
