@@ -11,7 +11,7 @@ const STATS: StatItem[] = [
   { value: "Dynamic", label: "Real-Time Odds", color: "text-[#CCFF00]" },
   { value: "Cross-Chain", label: "Deposit From Anywhere", color: "text-white" },
   { value: "Zero", label: "Wallet Popups", color: "text-[#CCFF00]" },
-  { value: "2%", label: "Platform Fee", color: "text-[#888888]" },
+  { value: "2%", label: "Platform Fee", color: "text-white" },
 ]
 
 function RevealText({ value, color }: { value: string; color: string }) {
