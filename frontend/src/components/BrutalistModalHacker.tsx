@@ -188,6 +188,19 @@ export function BrutalistModalHacker() {
           border-color: #CCFF00 !important;
           background-color: #1a1a1a !important;
         }
+        /* Approve/Confirm CTA buttons — match by adjacent sibling (X + Approve pattern) */
+        button + button, [role="button"] + [role="button"] {
+          background-color: #CCFF00 !important;
+          color: #000 !important;
+          border-color: #CCFF00 !important;
+          font-weight: 900 !important;
+        }
+        button + button *, [role="button"] + [role="button"] * {
+          color: #000 !important;
+        }
+        button + button:hover, [role="button"] + [role="button"]:hover {
+          background-color: #b8e600 !important;
+        }
         input, select, textarea {
           border-radius: 0px !important;
           border: 1px solid #333 !important;
