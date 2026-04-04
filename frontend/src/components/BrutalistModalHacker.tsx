@@ -183,14 +183,6 @@ export function BrutalistModalHacker() {
           text-transform: uppercase !important;
           transition: all 0.1s !important;
           border: 1px solid #555 !important;
-          background-color: #111 !important;
-          color: #fff !important;
-        }
-        button:last-of-type, [role="button"]:last-of-type {
-          background-color: #CCFF00 !important;
-          color: #000 !important;
-          border-color: #CCFF00 !important;
-          font-weight: 900 !important;
         }
         button:hover, [role="button"]:hover {
           background-color: #CCFF00 !important;
@@ -206,9 +198,17 @@ export function BrutalistModalHacker() {
           background-color: #0A0A0A !important;
           color: #fff !important;
         }
-        span, p, div, label {
+        span, p, div, label, h1, h2, h3, h4, h5, h6, a {
           border: none !important;
           box-shadow: none !important;
+          color: #fff !important;
+        }
+        h1, h2, h3, [class*="title"], [class*="header"] {
+          color: #fff !important;
+          font-weight: 900 !important;
+        }
+        [class*="description"], [class*="subtitle"], [class*="secondary"], [class*="label"] {
+          color: #888 !important;
         }
         [class*="modal"], [class*="drawer"], [class*="dialog"] {
           border-radius: 0px !important;
@@ -224,11 +224,40 @@ export function BrutalistModalHacker() {
       shadowRoot.appendChild(style)
     }
 
+    // Runtime fix: find lime-bg buttons and force black text on all children
+    // Also fix modal container styling
+    const fixLimeButtonText = (shadowRoot: ShadowRoot) => {
+      const buttons = shadowRoot.querySelectorAll("button, [role='button']")
+      buttons.forEach((btn) => {
+        const bg = window.getComputedStyle(btn).backgroundColor
+        // Check if bg is lime-ish (#CCFF00 = rgb(204, 255, 0))
+        if (bg.includes("204") && bg.includes("255") && bg.includes("0")) {
+          (btn as HTMLElement).style.setProperty("color", "#000", "important")
+          btn.querySelectorAll("*").forEach((child) => {
+            (child as HTMLElement).style.setProperty("color", "#000", "important")
+          })
+        }
+      })
+
+      // Find the main modal/panel container and add brutalist border
+      const containers = shadowRoot.querySelectorAll("[class*='panel'], [class*='content'], [class*='container'], [class*='wrapper'], [role='dialog']")
+      containers.forEach((el) => {
+        const h = (el as HTMLElement).offsetHeight
+        if (h > 200) {
+          (el as HTMLElement).style.setProperty("border", "2px solid #333", "important")
+          ;(el as HTMLElement).style.setProperty("box-shadow", "8px 8px 0px 0px #CCFF00", "important")
+          ;(el as HTMLElement).style.setProperty("border-radius", "0px", "important")
+        }
+      })
+    }
+
     const setupIwkShadowObserver = (shadowRoot: ShadowRoot) => {
       if (iwkShadowObserver) return
       injectIwkStyles(shadowRoot)
+      fixLimeButtonText(shadowRoot)
       iwkShadowObserver = new MutationObserver(() => {
         injectIwkStyles(shadowRoot)
+        fixLimeButtonText(shadowRoot)
         updateOverlayState()
       })
       iwkShadowObserver.observe(shadowRoot, { childList: true, subtree: true, attributes: true })
@@ -371,6 +400,13 @@ export function BrutalistModalHacker() {
         border-radius: 0px !important;
       }
 
+      [class*="_modal_"] span, [class*="_modal_"] p, [class*="_modal_"] div,
+      [class*="_modal_"] label, [class*="_modal_"] h1, [class*="_modal_"] h2,
+      [class*="_modal_"] h3, [class*="_modal_"] a,
+      [class*="_content_"] span, [class*="_content_"] p, [class*="_content_"] div {
+        color: #fff !important;
+      }
+
       [class*="_modal_"] button, [class*="_modal_"] li, [class*="_modal_"] [role="button"], [class*="_modal_"] input,
       [class*="_button_"], [class*="_socialButton_"], [class*="_listItem_"] {
         border-radius: 0px !important;
@@ -382,14 +418,9 @@ export function BrutalistModalHacker() {
         transition: all 0.1s !important;
       }
 
-      /* Make ALL modal buttons visible — especially Approve/Confirm CTAs */
-      [class*="_modal_"] button:last-of-type,
-      [class*="_content_"] button:last-of-type,
-      [class*="_inner_"] button:last-of-type {
-        background-color: #CCFF00 !important;
+      /* Lime bg buttons: force black text on children */
+      [class*="_socialButton_"] * {
         color: #000 !important;
-        border-color: #CCFF00 !important;
-        font-weight: 900 !important;
       }
 
       [class*="_modal_"] button:hover, [class*="_modal_"] li:hover,
