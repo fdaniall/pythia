@@ -26,7 +26,11 @@ function initToUinit(value: string): bigint {
 
 
 export function BetForm({ market, total, expired }: BetFormProps) {
-  const { isConnected, openConnect, openBridge, initiaAddress } = useInterwovenKit()
+  const { isConnected, openConnect, openBridge, initiaAddress, autoSign } = useInterwovenKit()
+  // Auto-sign: check all chains since chain ID key may vary
+  const isAutoSignEnabled = autoSign
+    ? Object.values(autoSign.isEnabledByChain ?? {}).some(Boolean)
+    : false
   const [amount, setAmount] = useState("")
   const [position, setPosition] = useState<boolean>(true)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -78,9 +82,18 @@ export function BetForm({ market, total, expired }: BetFormProps) {
   const userHasBet = userBet && (userBet.yesAmount > 0n || userBet.noAmount > 0n)
   const canClaim = market.resolved && userHasBet && !userBet?.claimed && calculatedPayout && calculatedPayout > 0n
 
-  const handlePlaceBet = () => {
+  const handlePlaceBet = async () => {
     const amountUinit = initToUinit(amount)
     if (amountUinit <= 0n) return
+
+    // Auto-enable auto-sign if not already enabled
+    if (autoSign && !isAutoSignEnabled) {
+      try {
+        await autoSign.enable()
+      } catch {
+        // User declined auto-sign — proceed with manual signing
+      }
+    }
 
     placeBet(
       {
@@ -312,6 +325,36 @@ export function BetForm({ market, total, expired }: BetFormProps) {
                 </>
               )}
             </div>
+
+            {/* Auto-sign toggle */}
+            {isConnected && autoSign && (
+              <button
+                type="button"
+                onClick={() => isAutoSignEnabled ? autoSign.disable() : autoSign.enable()}
+                className={cn(
+                  "flex w-full items-center justify-between border-2 p-3 transition-all",
+                  isAutoSignEnabled
+                    ? "border-[#CCFF00]/50 bg-[#CCFF00]/5"
+                    : "border-[#333] bg-[#050505] hover:border-[#CCFF00]/30"
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <Zap className={cn("size-3.5", isAutoSignEnabled ? "text-[#CCFF00]" : "text-[#555]")} strokeWidth={2.5} />
+                  <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#888]">
+                    AUTO-SIGN
+                  </span>
+                </div>
+                <div className={cn(
+                  "w-8 h-4 border relative transition-all",
+                  isAutoSignEnabled ? "border-[#CCFF00] bg-[#CCFF00]/20" : "border-[#555] bg-[#111]"
+                )}>
+                  <div className={cn(
+                    "absolute top-0.5 size-2.5 transition-all",
+                    isAutoSignEnabled ? "right-0.5 bg-[#CCFF00]" : "left-0.5 bg-[#555]"
+                  )} />
+                </div>
+              </button>
+            )}
 
             {/* Submit / Connect */}
             {!isConnected ? (
