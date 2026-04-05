@@ -7,7 +7,7 @@ import {
   TrendingUp, TrendingDown, Info, TerminalSquare, Wallet, Zap, ArrowDownToLine
 } from "lucide-react"
 import { fireBrutalistConfetti } from "@/lib/confetti"
-import { useMovePlaceBet, useMoveClaimWinnings, useMoveUserBet, useMoveCalculatePayout } from "@/hooks/useMoveContract"
+import { useMovePlaceBet, useMoveClaimWinnings, useMoveUserBet, useMoveCalculatePayout, isSeedMarket } from "@/hooks/useMoveContract"
 import { UINIT_DECIMALS, INITIA_REST_URL, fetchBalance, formatUinit } from "@/lib/move"
 import { useQuery } from "@tanstack/react-query"
 import type { Market } from "@/types/market"
@@ -34,11 +34,10 @@ export function BetForm({ market, total, expired }: BetFormProps) {
   const { mutate: placeBet, isPending: isBetting } = useMovePlaceBet()
   const { mutate: claimWinnings, isPending: isClaiming } = useMoveClaimWinnings()
 
-  const isSeed = market.id < 0
-  const { data: userBet } = useMoveUserBet(isSeed ? -1 : market.id, isSeed ? undefined : (initiaAddress || undefined))
+  const { data: userBet } = useMoveUserBet(market.id, initiaAddress || undefined)
   const { data: calculatedPayout } = useMoveCalculatePayout(
-    isSeed ? -1 : market.id,
-    isSeed ? undefined : (market.resolved ? (initiaAddress || undefined) : undefined),
+    market.id,
+    market.resolved ? (initiaAddress || undefined) : undefined,
   )
 
   const { data: balanceUinit } = useQuery({
@@ -179,8 +178,20 @@ export function BetForm({ market, total, expired }: BetFormProps) {
           </div>
         )}
 
-        {/* Betting form (only for open markets) */}
-        {!market.resolved && !expired && (
+        {/* Seed market — demo only, no real betting */}
+        {isSeedMarket(market.id) && (
+          <div className="border border-[#333] bg-[#050505] p-4 text-center">
+            <p className="font-technical text-[12px] font-bold uppercase tracking-widest text-[#888]">
+              DEMO MARKET
+            </p>
+            <p className="mt-1 font-technical text-[10px] uppercase tracking-widest text-[#555]">
+              This is sample data. Create a real market to place bets.
+            </p>
+          </div>
+        )}
+
+        {/* Betting form (only for open, real markets) */}
+        {!isSeedMarket(market.id) && !market.resolved && !expired && (
           <>
             {/* Position buttons */}
             <div className="space-y-2">

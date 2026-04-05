@@ -102,22 +102,22 @@ export function useMoveMarketCount() {
   })
 }
 
-/** Returns a single market by ID, or undefined if not found. Supports seed markets (negative IDs). */
+/** Returns a single market by ID, or undefined if not found. Supports seed markets (ID >= 1000). */
 export function useMoveMarket(marketId: number) {
+  const seed = isSeedMarket(marketId)
   return useQuery({
     queryKey: moveQueryKeys.market(marketId),
     queryFn: async () => {
-      // Seed market — return from hardcoded data
-      if (marketId < 0) {
-        const seed = SEED_MARKETS.find((m) => m.id === marketId)
-        if (seed) return seed
+      if (seed) {
+        const found = SEED_MARKETS.find((m) => m.id === marketId)
+        if (found) return found
         throw new Error("not_found")
       }
       const raw = await fetchMarket(REST_URL, marketId)
       return adaptMarket(marketId, raw)
     },
-    refetchInterval: marketId >= 0 ? 15_000 : false,
-    staleTime: marketId >= 0 ? 10_000 : Infinity,
+    refetchInterval: seed ? false : 15_000,
+    staleTime: seed ? Infinity : 10_000,
     retry: (failureCount, error) => {
       if (error instanceof Error && error.message.includes("not_found")) return false
       return failureCount < 3
@@ -127,13 +127,17 @@ export function useMoveMarket(marketId: number) {
 
 // ── Seed data for demo ──────────────────────────────────────────────────────
 // Hardcoded markets to showcase the UI. Mixed with real on-chain data.
-// IDs use negative numbers to avoid collision with on-chain market IDs.
+// IDs use 1000+ to avoid collision with on-chain market IDs.
+export const SEED_MARKET_ID_START = 1000
+export function isSeedMarket(id: number): boolean {
+  return id >= SEED_MARKET_ID_START
+}
 
 const now = BigInt(Math.floor(Date.now() / 1000))
 
 const SEED_MARKETS: Market[] = [
   {
-    id: -1,
+    id: 1001,
     question: "Will BTC reach $150,000 by December 2026?",
     deadline: now + 20_000_000n,
     totalYesPool: 48_500_000n,  // 48.5 INIT
@@ -145,7 +149,7 @@ const SEED_MARKETS: Market[] = [
     bettorCount: 24,
   },
   {
-    id: -2,
+    id: 1002,
     question: "Will Ethereum implement full danksharding before 2027?",
     deadline: now + 15_000_000n,
     totalYesPool: 22_800_000n,
@@ -157,7 +161,7 @@ const SEED_MARKETS: Market[] = [
     bettorCount: 18,
   },
   {
-    id: -3,
+    id: 1003,
     question: "Did ETH break $5,000 in March 2026?",
     deadline: now - 600_000n,   // past
     totalYesPool: 15_000_000n,
@@ -169,7 +173,7 @@ const SEED_MARKETS: Market[] = [
     bettorCount: 31,
   },
   {
-    id: -4,
+    id: 1004,
     question: "Will the US approve spot ETH ETF staking by end of 2026?",
     deadline: now + 18_000_000n,
     totalYesPool: 67_200_000n,
@@ -181,7 +185,7 @@ const SEED_MARKETS: Market[] = [
     bettorCount: 42,
   },
   {
-    id: -5,
+    id: 1005,
     question: "Will Argentina win Copa America 2026?",
     deadline: now + 8_000_000n,
     totalYesPool: 38_700_000n,
@@ -193,7 +197,7 @@ const SEED_MARKETS: Market[] = [
     bettorCount: 56,
   },
   {
-    id: -6,
+    id: 1006,
     question: "Did Solana hit $300 in Q1 2026?",
     deadline: now - 400_000n,   // past
     totalYesPool: 29_400_000n,
@@ -205,7 +209,7 @@ const SEED_MARKETS: Market[] = [
     bettorCount: 27,
   },
   {
-    id: -7,
+    id: 1007,
     question: "Will OpenAI release GPT-5 before July 2026?",
     deadline: now + 6_000_000n,
     totalYesPool: 55_100_000n,
@@ -217,7 +221,7 @@ const SEED_MARKETS: Market[] = [
     bettorCount: 37,
   },
   {
-    id: -8,
+    id: 1008,
     question: "Will Initia mainnet launch before June 2026?",
     deadline: now + 4_500_000n,
     totalYesPool: 71_000_000n,
@@ -229,7 +233,7 @@ const SEED_MARKETS: Market[] = [
     bettorCount: 63,
   },
   {
-    id: -9,
+    id: 1009,
     question: "Will NVIDIA hit $200 per share by Q3 2026?",
     deadline: now - 50_000n,    // past, not yet resolved
     totalYesPool: 33_400_000n,
@@ -241,7 +245,7 @@ const SEED_MARKETS: Market[] = [
     bettorCount: 19,
   },
   {
-    id: -10,
+    id: 1010,
     question: "Did Trump win the 2026 midterm popular vote?",
     deadline: now - 200_000n,   // past, not yet resolved
     totalYesPool: 52_100_000n,
@@ -294,7 +298,7 @@ export function useMoveUserBet(marketId: number, bettorAddress: string | undefin
       const raw = await fetchBet(REST_URL, marketId, bettorAddress)
       return adaptBet(raw)
     },
-    enabled: !!bettorAddress && marketId >= 0,
+    enabled: !!bettorAddress && !isSeedMarket(marketId),
     refetchInterval: 15_000,
     staleTime: 5_000,
   })
@@ -309,7 +313,7 @@ export function useMoveCalculatePayout(marketId: number, bettorAddress: string |
       const raw = await fetchCalculatePayout(REST_URL, marketId, bettorAddress)
       return BigInt(raw)
     },
-    enabled: !!bettorAddress && marketId >= 0,
+    enabled: !!bettorAddress && !isSeedMarket(marketId),
     staleTime: 10_000,
   })
 }

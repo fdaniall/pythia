@@ -46,7 +46,7 @@ export function LeaderboardPage() {
       const entries = new Map<string, LeaderboardEntry>()
 
       // Only fetch on-chain data for real markets (id >= 0)
-      const realMarkets = markets.filter((m) => m.id >= 0)
+      const realMarkets = markets.filter((m) => m.id < 1000)
 
       for (const market of realMarkets) {
         let bettorAddrs: string[]
