@@ -124,6 +124,7 @@ export default function App() {
           dexUrl={TESTNET.dexUrl}
           vipUrl={TESTNET.vipUrl}
           theme="dark"
+          enableAutoSign
         >
           <BrowserRouter>
             <ScrollToTop />

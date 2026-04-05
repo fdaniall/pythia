@@ -23,6 +23,7 @@ import {
   INITIA_REST_URL,
   DEFAULT_GAS,
   DEFAULT_GAS_ADJUSTMENT,
+  UINIT_DENOM,
   buildCreateMarketMsg,
   buildPlaceBetMsg,
   buildClaimWinningsMsg,
@@ -329,17 +330,36 @@ export function useMovePlatformFee() {
 
 // ── Write hooks (InterwovenKit) ─────────────────────────────────────────────
 //
-// InterwovenKit's `requestTxBlock` method:
-//   - Takes a TxRequest with `messages`, optional `gas`, `gasAdjustment`, `gasPrices`
-//   - Returns DeliverTxResponse on success, throws on failure
-//   - Handles wallet interaction (popup/signing) internally
+// Two methods for sending transactions:
+//   - `requestTxBlock`: Always shows wallet popup for manual approval
+//   - `submitTxBlock`: Uses auto-sign (ghost wallet) — NO popup when enabled
 //
-// `initiaAddress` from useInterwovenKit() returns the bech32 Cosmos address
-// (init1...) which is what MsgExecuteJSON.sender expects.
+// We use submitTxBlock when auto-sign is active, requestTxBlock as fallback.
+
+/** Helper: send tx with auto-sign if enabled, fallback to manual approval */
+function useSendTx() {
+  const kit = useInterwovenKit()
+  return async (txRequest: { messages: any[]; gas?: number; gasAdjustment?: number }) => {
+    const autoSignEnabled = Object.values(kit.autoSign?.isEnabledByChain ?? {}).some(Boolean)
+    if (autoSignEnabled) {
+      // submitTxBlock needs { messages, fee } not { messages, gas }
+      const gasAmount = txRequest.gas ?? DEFAULT_GAS
+      return kit.submitTxBlock({
+        messages: txRequest.messages,
+        fee: {
+          amount: [{ denom: UINIT_DENOM, amount: String(Math.ceil(gasAmount * 0.015)) }],
+          gas: String(gasAmount),
+        },
+      } as any)
+    }
+    return kit.requestTxBlock(txRequest)
+  }
+}
 
 /** Creates a new prediction market. */
 export function useMoveCreateMarket() {
-  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+  const { initiaAddress } = useInterwovenKit()
+  const sendTx = useSendTx()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -352,7 +372,7 @@ export function useMoveCreateMarket() {
     }) => {
       const msg = buildCreateMarketMsg(initiaAddress, question, deadlineUnixSec)
 
-      return requestTxBlock({
+      return sendTx({
         messages: [msg],
         gas: DEFAULT_GAS,
         gasAdjustment: DEFAULT_GAS_ADJUSTMENT,
@@ -379,7 +399,8 @@ export function useMoveCreateMarket() {
  * Amount should be in uinit (1 INIT = 1_000_000 uinit).
  */
 export function useMovePlaceBet() {
-  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+  const { initiaAddress } = useInterwovenKit()
+  const sendTx = useSendTx()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -394,7 +415,7 @@ export function useMovePlaceBet() {
     }) => {
       const msg = buildPlaceBetMsg(initiaAddress, marketId, outcome, amountUinit)
 
-      return requestTxBlock({
+      return sendTx({
         messages: [msg],
         gas: DEFAULT_GAS,
         gasAdjustment: DEFAULT_GAS_ADJUSTMENT,
@@ -426,14 +447,15 @@ export function useMovePlaceBet() {
 
 /** Claims winnings from a resolved market. */
 export function useMoveClaimWinnings() {
-  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+  const { initiaAddress } = useInterwovenKit()
+  const sendTx = useSendTx()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({ marketId }: { marketId: number }) => {
       const msg = buildClaimWinningsMsg(initiaAddress, marketId)
 
-      return requestTxBlock({
+      return sendTx({
         messages: [msg],
         gas: DEFAULT_GAS,
         gasAdjustment: DEFAULT_GAS_ADJUSTMENT,
@@ -475,7 +497,8 @@ export function useMoveAdmin() {
 
 /** Resolves a market (admin only). */
 export function useMoveResolveMarket() {
-  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+  const { initiaAddress } = useInterwovenKit()
+  const sendTx = useSendTx()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -488,7 +511,7 @@ export function useMoveResolveMarket() {
     }) => {
       const msg = buildResolveMarketMsg(initiaAddress, marketId, winningOutcome)
 
-      return requestTxBlock({
+      return sendTx({
         messages: [msg],
         gas: DEFAULT_GAS,
         gasAdjustment: DEFAULT_GAS_ADJUSTMENT,
@@ -511,14 +534,15 @@ export function useMoveResolveMarket() {
 
 /** Cancels a market and refunds all bettors (admin only). */
 export function useMoveCancelMarket() {
-  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+  const { initiaAddress } = useInterwovenKit()
+  const sendTx = useSendTx()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({ marketId }: { marketId: number }) => {
       const { buildCancelMarketMsg } = await import("@/lib/move")
       const msg = buildCancelMarketMsg(initiaAddress, marketId)
-      return requestTxBlock({
+      return sendTx({
         messages: [msg],
         gas: DEFAULT_GAS,
         gasAdjustment: DEFAULT_GAS_ADJUSTMENT,
@@ -541,13 +565,14 @@ export function useMoveCancelMarket() {
 
 /** Proposes a new admin (step 1 of two-step ownership transfer). */
 export function useMoveProposeAdmin() {
-  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+  const { initiaAddress } = useInterwovenKit()
+  const sendTx = useSendTx()
 
   return useMutation({
     mutationFn: async ({ newAdmin }: { newAdmin: string }) => {
       const { buildProposeAdminMsg } = await import("@/lib/move")
       const msg = buildProposeAdminMsg(initiaAddress, newAdmin)
-      return requestTxBlock({
+      return sendTx({
         messages: [msg],
         gas: DEFAULT_GAS,
         gasAdjustment: DEFAULT_GAS_ADJUSTMENT,
@@ -568,13 +593,14 @@ export function useMoveProposeAdmin() {
 
 /** Accepts admin role (step 2 of two-step ownership transfer). */
 export function useMoveAcceptAdmin() {
-  const { requestTxBlock, initiaAddress } = useInterwovenKit()
+  const { initiaAddress } = useInterwovenKit()
+  const sendTx = useSendTx()
 
   return useMutation({
     mutationFn: async () => {
       const { buildAcceptAdminMsg } = await import("@/lib/move")
       const msg = buildAcceptAdminMsg(initiaAddress)
-      return requestTxBlock({
+      return sendTx({
         messages: [msg],
         gas: DEFAULT_GAS,
         gasAdjustment: DEFAULT_GAS_ADJUSTMENT,

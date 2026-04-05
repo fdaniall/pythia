@@ -253,6 +253,9 @@ export function BrutalistModalHacker() {
       iwkShadowObserver = new MutationObserver(() => {
         injectIwkStyles(shadowRoot)
         fixLimeButtonText(shadowRoot)
+        // Delayed re-run to catch elements rendered after mutation
+        setTimeout(() => fixLimeButtonText(shadowRoot), 100)
+        setTimeout(() => fixLimeButtonText(shadowRoot), 500)
         updateOverlayState()
       })
       iwkShadowObserver.observe(shadowRoot, { childList: true, subtree: true, attributes: true })
@@ -288,11 +291,28 @@ export function BrutalistModalHacker() {
     // Polling fallback — only active when a modal overlay is present
     let pollInterval: number | null = null
     const originalUpdate = updateOverlayState
+    // Fix lime-bg elements in regular DOM (not just shadow DOM)
+    const fixLimeButtonsGlobal = () => {
+      document.querySelectorAll("button, [role='button']").forEach((el) => {
+        const bg = window.getComputedStyle(el).backgroundColor
+        if (bg.includes("204") && bg.includes("255") && bg.includes("0")) {
+          (el as HTMLElement).style.setProperty("color", "#000", "important")
+          el.querySelectorAll("*").forEach((child) => {
+            (child as HTMLElement).style.setProperty("color", "#000", "important")
+          })
+        }
+      })
+    }
+
     const wrappedUpdate = () => {
       originalUpdate()
+      fixLimeButtonsGlobal()
       const overlayExists = !!document.getElementById("brutalist-mega-overlay")
       if (overlayExists && !pollInterval) {
-        pollInterval = window.setInterval(originalUpdate, 500)
+        pollInterval = window.setInterval(() => {
+          originalUpdate()
+          fixLimeButtonsGlobal()
+        }, 500)
       } else if (!overlayExists && pollInterval) {
         window.clearInterval(pollInterval)
         pollInterval = null
@@ -415,6 +435,25 @@ export function BrutalistModalHacker() {
 
       /* Lime bg buttons: force black text on children */
       [class*="_socialButton_"] * {
+        color: #000 !important;
+      }
+
+      /* Auto-sign ENABLE/APPROVE button — lime bg needs black text */
+      [class*="_modal_"] button[class*="_primary_"],
+      [class*="_modal_"] button[class*="_confirm_"],
+      [class*="_modal_"] button[class*="_approve_"],
+      [class*="_content_"] button[class*="_primary_"],
+      [class*="_content_"] button[class*="_confirm_"] {
+        background-color: #CCFF00 !important;
+        color: #000 !important;
+        border-color: #CCFF00 !important;
+        font-weight: 900 !important;
+      }
+      [class*="_modal_"] button[class*="_primary_"] *,
+      [class*="_modal_"] button[class*="_confirm_"] *,
+      [class*="_modal_"] button[class*="_approve_"] *,
+      [class*="_content_"] button[class*="_primary_"] *,
+      [class*="_content_"] button[class*="_confirm_"] * {
         color: #000 !important;
       }
 
