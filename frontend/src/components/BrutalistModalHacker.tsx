@@ -183,10 +183,26 @@ export function BrutalistModalHacker() {
           text-transform: uppercase !important;
           transition: all 0.1s !important;
           border: 1px solid #555 !important;
+          background-color: #111 !important;
+          color: #fff !important;
+        }
+        /* CTA button (Approve/Enable/Confirm) — second button in footer */
+        button:not(:first-child):last-child {
+          background-color: #CCFF00 !important;
+          color: #000 !important;
+          border-color: #CCFF00 !important;
+          font-weight: 900 !important;
+        }
+        button:not(:first-child):last-child * {
+          color: #000 !important;
         }
         button:hover, [role="button"]:hover {
           border-color: #CCFF00 !important;
-          background-color: #1a1a1a !important;
+          background-color: #222 !important;
+        }
+        button:not(:first-child):last-child:hover {
+          background-color: #b8e600 !important;
+          color: #000 !important;
         }
         input, select, textarea {
           border-radius: 0px !important;
@@ -291,9 +307,10 @@ export function BrutalistModalHacker() {
     // Polling fallback — only active when a modal overlay is present
     let pollInterval: number | null = null
     const originalUpdate = updateOverlayState
-    // Fix lime-bg elements in regular DOM (not just shadow DOM)
+    // Fix lime-bg elements everywhere — regular DOM, shadow DOM, Privy iframes
     const fixLimeButtonsGlobal = () => {
-      document.querySelectorAll("button, [role='button']").forEach((el) => {
+      // Fix in regular DOM
+      document.querySelectorAll("button, [role='button'], a, div, span").forEach((el) => {
         const bg = window.getComputedStyle(el).backgroundColor
         if (bg.includes("204") && bg.includes("255") && bg.includes("0")) {
           (el as HTMLElement).style.setProperty("color", "#000", "important")
@@ -302,6 +319,26 @@ export function BrutalistModalHacker() {
           })
         }
       })
+
+      // Fix in Privy shadow DOM
+      const privyDialog = document.querySelector("#privy-dialog") as HTMLElement
+      if (privyDialog?.shadowRoot) {
+        privyDialog.shadowRoot.querySelectorAll("button, [role='button'], a, div").forEach((el) => {
+          const bg = window.getComputedStyle(el).backgroundColor
+          if (bg.includes("204") && bg.includes("255") && bg.includes("0")) {
+            (el as HTMLElement).style.setProperty("color", "#000", "important")
+            el.querySelectorAll("*").forEach((child) => {
+              (child as HTMLElement).style.setProperty("color", "#000", "important")
+            })
+          }
+        })
+      }
+
+      // Fix in IWK shadow DOM
+      const iwk = document.querySelector("interwoven-kit") as HTMLElement
+      if (iwk?.shadowRoot) {
+        fixLimeButtonText(iwk.shadowRoot)
+      }
     }
 
     const wrappedUpdate = () => {
@@ -312,7 +349,7 @@ export function BrutalistModalHacker() {
         pollInterval = window.setInterval(() => {
           originalUpdate()
           fixLimeButtonsGlobal()
-        }, 500)
+        }, 200)
       } else if (!overlayExists && pollInterval) {
         window.clearInterval(pollInterval)
         pollInterval = null

@@ -90,19 +90,19 @@ export function Hero() {
 
       {/* Marquee Banner */}
       <div className="w-full mt-auto marquee-container z-10">
-        <div className="marquee-content">
+        <div className="marquee-content text-black">
           <span className="mx-8">SYSTEM ONLINE</span> ✦
-          <span className="mx-8 text-black">NO WALLET POPUPS</span> ✦
+          <span className="mx-8 opacity-50">NO WALLET POPUPS</span> ✦
           <span className="mx-8">CROSS-CHAIN DEPOSITS</span> ✦
-          <span className="mx-8 text-black">PERMISSIONLESS POOLS</span> ✦
+          <span className="mx-8 opacity-50">PERMISSIONLESS POOLS</span> ✦
           <span className="mx-8">DYNAMIC ODDS</span> ✦
-          <span className="mx-8 text-black">INITIA NATIVE</span> ✦
+          <span className="mx-8 opacity-50">INITIA NATIVE</span> ✦
           <span className="mx-8">SYSTEM ONLINE</span> ✦
-          <span className="mx-8 text-black">NO WALLET POPUPS</span> ✦
+          <span className="mx-8 opacity-50">NO WALLET POPUPS</span> ✦
           <span className="mx-8">CROSS-CHAIN DEPOSITS</span> ✦
-          <span className="mx-8 text-black">PERMISSIONLESS POOLS</span> ✦
+          <span className="mx-8 opacity-50">PERMISSIONLESS POOLS</span> ✦
           <span className="mx-8">DYNAMIC ODDS</span> ✦
-          <span className="mx-8 text-black">INITIA NATIVE</span> ✦
+          <span className="mx-8 opacity-50">INITIA NATIVE</span> ✦
         </div>
       </div>
     </section>

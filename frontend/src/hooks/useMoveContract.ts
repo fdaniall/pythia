@@ -264,7 +264,7 @@ export function useMoveAllMarkets() {
   const marketCount = count ?? 0
 
   return useQuery({
-    queryKey: [...moveQueryKeys.marketCount(), "all"],
+    queryKey: [...moveQueryKeys.marketCount(), "all", marketCount],
     queryFn: async () => {
       const onChainMarkets: Market[] = []
 

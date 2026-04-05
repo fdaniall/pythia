@@ -223,9 +223,8 @@
 }
 
 /* Force square corners and brutalist styles on ALL interwovenkit hashed classes */
-[class*="_modal_"], 
-[class*="_content_"], 
-[class*="_inner_"], 
+[class*="_modal_"],
+[class*="_inner_"],
 [class*="_card_"],
 [class*="_overlay_"] > div {
     border-radius: 0px !important;
@@ -267,10 +266,9 @@
     font-weight: 900 !important;
 }
 
-/* Nuclear: ANY button with text "Approve" or similar CTA inside modals */
-[class*="_modal_"] button:not([class*="_close_"]):not([class*="_back_"]),
-[class*="_content_"] > div:last-child button:last-child,
-[class*="_inner_"] > div:last-child button:last-child {
+/* CTA buttons in modal footers only — not wallet list items */
+[class*="_footer_"] button:last-child,
+[class*="_actions_"] button:last-child {
     background-color: #CCFF00 !important;
     color: #000 !important;
     border-color: #CCFF00 !important;
@@ -293,8 +291,20 @@
 }
 
 /* Modals backdrop */
-[class*="_overlay_"], 
+[class*="_overlay_"],
 [class*="_backdrop_"] {
     background-color: rgba(0, 0, 0, 0.85) !important;
     backdrop-filter: blur(4px) grayscale(100%) !important;
+}
+
+/* UNIVERSAL: any element with lime bg MUST have black text — prevents invisible text */
+[style*="background-color: rgb(204, 255, 0)"],
+[style*="background-color:rgb(204, 255, 0)"],
+[style*="background: rgb(204, 255, 0)"] {
+    color: #000 !important;
+}
+[style*="background-color: rgb(204, 255, 0)"] *,
+[style*="background-color:rgb(204, 255, 0)"] *,
+[style*="background: rgb(204, 255, 0)"] * {
+    color: #000 !important;
 }

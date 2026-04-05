@@ -83,10 +83,11 @@ function AdminResolvePanel({ marketId, expired, resolved, question }: { marketId
   const { initiaAddress } = useInterwovenKit()
   const { data: adminAddr } = useMoveAdmin()
   const { mutate: resolveMarket, isPending } = useMoveResolveMarket()
-  // Seed markets — no admin panel
-  if (marketId >= 1000) return null
   const [oraclePrice, setOraclePrice] = useState<number | null>(null)
   const [oracleLoading, setOracleLoading] = useState(false)
+
+  // Seed markets — no admin panel
+  if (marketId >= 1000) return null
 
   const isAdmin = adminAddr && initiaAddress
     ? bech32ToHex(initiaAddress).toLowerCase() === adminAddr.toLowerCase()
