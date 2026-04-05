@@ -50,9 +50,9 @@ Pythia is **not a Blueprint clone**. Every component is custom-built:
 ## Native Feature Integration
 
 ### 1. Auto-Signing (Primary Feature)
-Users enable a signing session via InterwovenKit and place unlimited bets without wallet popups. This is the **core UX differentiator** — high-frequency betting feels instant, like a Web2 app. Without auto-signing, every bet requires a manual wallet approval, destroying the betting flow.
+Pythia integrates Initia's Ghost Wallet auto-signing via `enableAutoSign` on `InterwovenKitProvider`. Users who connect via Email/Socials (Privy embedded wallet) can enable a signing session and place unlimited bets without wallet popups — high-frequency betting that feels like a Web2 app. The UI shows auto-sign status in the bet form and uses `submitTxBlock()` for zero-popup transactions when a session is active, falling back to `requestTxBlock()` for standard wallet approval.
 
-**Implementation:** `requestTxBlock()` from `useInterwovenKit()` handles session-based signing transparently. See [`frontend/src/hooks/useMoveContract.ts`](frontend/src/hooks/useMoveContract.ts).
+**Implementation:** `enableAutoSign` configured on provider ([`App.tsx`](frontend/src/App.tsx)), transaction routing in [`frontend/src/hooks/useMoveContract.ts`](frontend/src/hooks/useMoveContract.ts).
 
 ### 2. Interwoven Bridge
 New users can deposit INIT from any connected chain directly from the betting interface. When a user's balance is low, the bet form shows a "Bridge Funds" CTA that opens InterwovenKit's bridge modal.

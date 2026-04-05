@@ -353,7 +353,7 @@ export function DocsPage() {
             {[
               {
                 title: "Auto-Signing",
-                desc: "Enable a session and place unlimited bets without wallet popups. High-frequency betting feels instant — like a Web2 app.",
+                desc: "Connect via Email or Socials, enable a Ghost Wallet session, and place unlimited bets without wallet popups. Powered by Initia's authz grants.",
                 badge: "INITIA NATIVE",
                 color: "#CCFF00",
               },
@@ -461,7 +461,7 @@ export function DocsPage() {
                 <h3 className="font-technical text-[13px] font-bold uppercase tracking-widest text-white">Zero-Friction Betting</h3>
               </div>
               <p className="font-technical text-[12px] leading-[1.7] text-[#888]">
-                Prediction markets live or die on speed of conviction. When odds shift, users need to bet NOW. Initia's auto-signing sessions let users place unlimited bets without a single wallet popup. On Ethereum, that's a MetaMask confirmation per bet. On Solana, a Phantom approval each time. No other chain has protocol-level session signing this seamless.
+                Prediction markets live or die on speed of conviction. When odds shift, users need to bet NOW. Initia's Ghost Wallet auto-signing lets users connect via Email or Socials, enable a one-time session, and place unlimited bets without wallet popups. On Ethereum, that's a MetaMask confirmation per bet. On Solana, a Phantom approval each time. Initia's authz-based Ghost Wallet eliminates this entirely.
               </p>
               <div className="border border-[#333] bg-[#050505] p-3 text-center">
                 <p className="font-sans text-2xl font-black text-[#CCFF00]">0</p>

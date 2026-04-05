@@ -26,11 +26,7 @@ function initToUinit(value: string): bigint {
 
 
 export function BetForm({ market, total, expired }: BetFormProps) {
-  const { isConnected, openConnect, openBridge, initiaAddress, autoSign } = useInterwovenKit()
-  // Auto-sign: check all chains since chain ID key may vary
-  const isAutoSignEnabled = autoSign
-    ? Object.values(autoSign.isEnabledByChain ?? {}).some(Boolean)
-    : false
+  const { isConnected, openConnect, openBridge, initiaAddress } = useInterwovenKit()
   const [amount, setAmount] = useState("")
   const [position, setPosition] = useState<boolean>(true)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -317,37 +313,14 @@ export function BetForm({ market, total, expired }: BetFormProps) {
               )}
             </div>
 
-            {/* Auto-sign status */}
-            {isConnected && autoSign && (
-              isAutoSignEnabled ? (
-                <div className="flex w-full items-center justify-between border-2 border-[#CCFF00]/50 bg-[#CCFF00]/5 p-3">
-                  <div className="flex items-center gap-2">
-                    <Zap className="size-3.5 text-[#CCFF00]" strokeWidth={2.5} />
-                    <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">
-                      AUTO-SIGN ACTIVE
-                    </span>
-                  </div>
-                  <span className="font-technical text-[9px] uppercase tracking-widest text-[#555]">NO POPUPS</span>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await autoSign.enable()
-                    } catch {
-                      // user cancelled
-                    }
-                  }}
-                  disabled={autoSign.isLoading}
-                  className="flex w-full items-center justify-center gap-2 border-2 border-[#CCFF00]/30 bg-[#CCFF00]/5 p-3 hover:border-[#CCFF00] hover:bg-[#CCFF00]/10 transition-all"
-                >
-                  <Zap className="size-3.5 text-[#CCFF00]" strokeWidth={2.5} />
-                  <span className="font-technical text-[10px] font-bold uppercase tracking-widest text-[#CCFF00]">
-                    {autoSign.isLoading ? "ENABLING..." : "ENABLE AUTO-SIGN (ZERO POPUPS)"}
-                  </span>
-                </button>
-              )
+            {/* Auto-sign info */}
+            {isConnected && (
+              <div className="flex w-full items-center gap-2 border border-[#CCFF00]/30 bg-[#CCFF00]/5 p-3">
+                <Zap className="size-3.5 text-[#CCFF00] shrink-0" strokeWidth={2.5} />
+                <span className="font-technical text-[9px] uppercase tracking-widest text-[#888]">
+                  Auto-signing available — enable via wallet settings for zero-popup betting
+                </span>
+              </div>
             )}
 
             {/* Submit / Connect */}

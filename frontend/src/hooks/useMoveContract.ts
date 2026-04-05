@@ -23,7 +23,6 @@ import {
   INITIA_REST_URL,
   DEFAULT_GAS,
   DEFAULT_GAS_ADJUSTMENT,
-  UINIT_DENOM,
   buildCreateMarketMsg,
   buildPlaceBetMsg,
   buildClaimWinningsMsg,
@@ -336,22 +335,10 @@ export function useMovePlatformFee() {
 //
 // We use submitTxBlock when auto-sign is active, requestTxBlock as fallback.
 
-/** Helper: send tx with auto-sign if enabled, fallback to manual approval */
+/** Send transaction via InterwovenKit with wallet approval */
 function useSendTx() {
   const kit = useInterwovenKit()
   return async (txRequest: { messages: any[]; gas?: number; gasAdjustment?: number }) => {
-    const autoSignEnabled = Object.values(kit.autoSign?.isEnabledByChain ?? {}).some(Boolean)
-    if (autoSignEnabled) {
-      // submitTxBlock needs { messages, fee } not { messages, gas }
-      const gasAmount = txRequest.gas ?? DEFAULT_GAS
-      return kit.submitTxBlock({
-        messages: txRequest.messages,
-        fee: {
-          amount: [{ denom: UINIT_DENOM, amount: String(Math.ceil(gasAmount * 0.015)) }],
-          gas: String(gasAmount),
-        },
-      } as any)
-    }
     return kit.requestTxBlock(txRequest)
   }
 }
