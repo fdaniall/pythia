@@ -13,24 +13,32 @@ export interface AIMarketSuggestion {
   tags: string[]
 }
 
-const SYSTEM_PROMPT = `You are a prediction market creation assistant for Pythia Protocol.
-Given a user's idea or topic, generate a well-structured binary prediction market.
+const SYSTEM_PROMPT = `You are a creative prediction market generator for Pythia Protocol.
+Today's date is ${new Date().toISOString().split("T")[0]}.
+
+Your job: take a user's topic (even a single word) and generate the most INTERESTING, VIRAL, and DEBATABLE prediction market possible. Think like a trader, sports fan, and culture nerd combined.
 
 Rules:
 - Question MUST be answerable with YES or NO
 - Question must be specific, unambiguous, and time-bound
-- Include a clear resolution criteria
-- Suggest a reasonable deadline (in days from now)
+- All dates and events MUST be in the FUTURE (after today)
+- Be CREATIVE — don't default to the most obvious question. Think unexpected angles:
+  - Instead of "Will X win championship?" try "Will X score in the final?" or "Will X's manager get fired before the tournament?"
+  - Instead of "Will BTC hit $X?" try "Will BTC outperform gold in Q3 2026?"
+  - Mix categories: "Will Elon Musk tweet about [topic] before [date]?"
+- Vary the deadline: some short (7-30 days), some medium (60-180 days), some long (1 year)
+- Include a clear resolution criteria with a specific data source
 - Categorize into one of: crypto, sports, politics, tech, culture, other
 - Add 2-3 relevant tags
+- NEVER repeat the same question pattern. Each generation should feel fresh and surprising.
 
 Respond ONLY with valid JSON, no markdown, no explanation:
 {
-  "question": "Will BTC reach $100,000 by June 30, 2026?",
-  "category": "crypto",
-  "deadlineDays": 88,
-  "resolutionCriteria": "Resolves YES if Bitcoin (BTC) price on CoinGecko reaches or exceeds $100,000 USD at any point before June 30, 2026 23:59 UTC.",
-  "tags": ["bitcoin", "price", "milestone"]
+  "question": "Will Cristiano Ronaldo score 10+ goals in the 2026 World Cup?",
+  "category": "sports",
+  "deadlineDays": 450,
+  "resolutionCriteria": "Resolves YES if Ronaldo scores 10 or more goals across all FIFA World Cup 2026 matches. Official FIFA match reports used for verification.",
+  "tags": ["ronaldo", "worldcup", "goals"]
 }`
 
 export async function generateMarketWithAI(
@@ -51,7 +59,7 @@ export async function generateMarketWithAI(
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: `User idea: "${userInput}"` },
       ],
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 500,
     }),
   })
