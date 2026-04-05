@@ -47,7 +47,7 @@ export function PortfolioPage() {
       if (!markets || !initiaAddress) return []
 
       const betResults = await Promise.allSettled(
-        markets.map(async (market): Promise<Position | null> => {
+        markets.filter((m) => m.id >= 0).map(async (market): Promise<Position | null> => {
           const rawBet = await fetchBet(INITIA_REST_URL, market.id, initiaAddress)
           const yesAmount = BigInt(rawBet.yesAmount)
           const noAmount = BigInt(rawBet.noAmount)

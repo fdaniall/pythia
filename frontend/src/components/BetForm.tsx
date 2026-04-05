@@ -34,10 +34,11 @@ export function BetForm({ market, total, expired }: BetFormProps) {
   const { mutate: placeBet, isPending: isBetting } = useMovePlaceBet()
   const { mutate: claimWinnings, isPending: isClaiming } = useMoveClaimWinnings()
 
-  const { data: userBet } = useMoveUserBet(market.id, initiaAddress || undefined)
+  const isSeed = market.id < 0
+  const { data: userBet } = useMoveUserBet(isSeed ? -1 : market.id, isSeed ? undefined : (initiaAddress || undefined))
   const { data: calculatedPayout } = useMoveCalculatePayout(
-    market.id,
-    market.resolved ? (initiaAddress || undefined) : undefined,
+    isSeed ? -1 : market.id,
+    isSeed ? undefined : (market.resolved ? (initiaAddress || undefined) : undefined),
   )
 
   const { data: balanceUinit } = useQuery({
