@@ -188,19 +188,6 @@ export function BrutalistModalHacker() {
           border-color: #CCFF00 !important;
           background-color: #1a1a1a !important;
         }
-        /* Approve/Confirm CTA buttons — match by adjacent sibling (X + Approve pattern) */
-        button + button, [role="button"] + [role="button"] {
-          background-color: #CCFF00 !important;
-          color: #000 !important;
-          border-color: #CCFF00 !important;
-          font-weight: 900 !important;
-        }
-        button + button *, [role="button"] + [role="button"] * {
-          color: #000 !important;
-        }
-        button + button:hover, [role="button"] + [role="button"]:hover {
-          background-color: #b8e600 !important;
-        }
         input, select, textarea {
           border-radius: 0px !important;
           border: 1px solid #333 !important;
@@ -233,16 +220,15 @@ export function BrutalistModalHacker() {
       shadowRoot.appendChild(style)
     }
 
-    // Runtime fix: find lime-bg buttons and force black text on all children
-    // Also fix modal container styling
+    // Runtime fix: find lime-bg elements and force black text, fix modal borders
     const fixLimeButtonText = (shadowRoot: ShadowRoot) => {
-      const buttons = shadowRoot.querySelectorAll("button, [role='button']")
-      buttons.forEach((btn) => {
-        const bg = window.getComputedStyle(btn).backgroundColor
+      const allEls = shadowRoot.querySelectorAll("button, [role='button'], a, div")
+      allEls.forEach((el) => {
+        const bg = window.getComputedStyle(el).backgroundColor
         // Check if bg is lime-ish (#CCFF00 = rgb(204, 255, 0))
         if (bg.includes("204") && bg.includes("255") && bg.includes("0")) {
-          (btn as HTMLElement).style.setProperty("color", "#000", "important")
-          btn.querySelectorAll("*").forEach((child) => {
+          (el as HTMLElement).style.setProperty("color", "#000", "important")
+          el.querySelectorAll("*").forEach((child) => {
             (child as HTMLElement).style.setProperty("color", "#000", "important")
           })
         }
