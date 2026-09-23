@@ -11,15 +11,13 @@ interface FadeInProps {
 export function FadeIn({ children, delay = 0, className, direction = "up" }: FadeInProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
-  const prefersReducedMotion = useRef(
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  const [noMotion] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   )
 
   useEffect(() => {
-    if (prefersReducedMotion.current) {
-      setVisible(true)
-      return
-    }
+    // Reduced motion renders with no animation styles, so visibility is irrelevant
+    if (noMotion) return
 
     const el = ref.current
     if (!el) return
@@ -36,10 +34,9 @@ export function FadeIn({ children, delay = 0, className, direction = "up" }: Fad
 
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [noMotion])
 
   const y = direction === "up" ? 30 : direction === "down" ? -30 : 0
-  const noMotion = prefersReducedMotion.current
 
   const style: CSSProperties = noMotion
     ? {}

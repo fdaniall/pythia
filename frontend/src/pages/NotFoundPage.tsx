@@ -28,55 +28,34 @@ const CRASH_LOG = [
 const GLITCH_CHARS = "▓▒░█▄▀■□▪▫◊◈◇◆●○"
 
 function useTypewriter(lines: typeof CRASH_LOG, speed = 30) {
-  const [visibleLines, setVisibleLines] = useState<typeof CRASH_LOG>([])
   const [currentLine, setCurrentLine] = useState(0)
   const [currentChar, setCurrentChar] = useState(0)
-  const [done, setDone] = useState(false)
 
   useEffect(() => {
-    if (currentLine >= lines.length) {
-      setDone(true)
-      return
-    }
+    if (currentLine >= lines.length) return
 
     const line = lines[currentLine]
-
-    if (line.text === "") {
-      // Empty line — just push and move on
-      setVisibleLines((prev) => [...prev, line])
-      setCurrentLine((l) => l + 1)
-      setCurrentChar(0)
-      return
-    }
-
-    if (currentChar === 0) {
-      setVisibleLines((prev) => [...prev, { text: "", color: line.color }])
-    }
-
-    if (currentChar < line.text.length) {
-      const id = setTimeout(() => {
-        setVisibleLines((prev) => {
-          const copy = [...prev]
-          copy[copy.length - 1] = {
-            text: line.text.slice(0, currentChar + 1),
-            color: line.color,
-          }
-          return copy
-        })
-        setCurrentChar((c) => c + 1)
-      }, speed)
-      return () => clearTimeout(id)
-    } else {
-      // Line done — small pause then next
-      const id = setTimeout(() => {
+    const lineDone = currentChar >= line.text.length
+    // Empty lines move on at once, a finished line pauses before the next
+    const delay = line.text === "" ? 0 : lineDone ? 200 : speed
+    const id = setTimeout(() => {
+      if (lineDone) {
         setCurrentLine((l) => l + 1)
         setCurrentChar(0)
-      }, 200)
-      return () => clearTimeout(id)
-    }
+      } else {
+        setCurrentChar((c) => c + 1)
+      }
+    }, delay)
+    return () => clearTimeout(id)
   }, [currentLine, currentChar, lines, speed])
 
-  return { visibleLines, done }
+  const visibleLines = lines.slice(0, currentLine)
+  const typing = lines[currentLine]
+  if (typing && typing.text !== "") {
+    visibleLines.push({ text: typing.text.slice(0, currentChar), color: typing.color })
+  }
+
+  return { visibleLines, done: currentLine >= lines.length }
 }
 
 function GlitchBar() {

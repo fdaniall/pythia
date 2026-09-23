@@ -10,7 +10,7 @@ interface Countdown {
 }
 
 // Single shared timer — all useCountdown instances share one setInterval
-let listeners = new Set<() => void>()
+const listeners = new Set<() => void>()
 let currentTime = Date.now()
 
 function subscribe(cb: () => void) {
