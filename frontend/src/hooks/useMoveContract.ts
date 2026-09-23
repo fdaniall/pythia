@@ -342,7 +342,7 @@ export function useMovePlatformFee() {
 /** Send transaction via InterwovenKit with wallet approval */
 function useSendTx() {
   const kit = useInterwovenKit()
-  return async (txRequest: { messages: any[]; gas?: number; gasAdjustment?: number }) => {
+  return async (txRequest: Parameters<typeof kit.requestTxBlock>[0]) => {
     return kit.requestTxBlock(txRequest)
   }
 }

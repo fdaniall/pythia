@@ -34,13 +34,19 @@ export function CommandPalette() {
     return () => window.removeEventListener("keydown", handler)
   }, [])
 
-  // Focus input on open
-  useEffect(() => {
+  // Reset the search each time the palette opens
+  const [prevOpen, setPrevOpen] = useState(open)
+  if (open !== prevOpen) {
+    setPrevOpen(open)
     if (open) {
       setQuery("")
       setActiveIndex(0)
-      requestAnimationFrame(() => inputRef.current?.focus())
     }
+  }
+
+  // Focus input on open
+  useEffect(() => {
+    if (open) requestAnimationFrame(() => inputRef.current?.focus())
   }, [open])
 
   const markets = onChainMarkets ?? []
